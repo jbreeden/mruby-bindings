@@ -1,15 +1,4 @@
 - (Maybe?) Throw exception, not StandardError, when int->mrb_int conversions fails (due to bounds check). The user shouldn't be catching these
-- How the hell does ruby-ffi generate c functions & funtion pointers?
-- Is `mrb_class_ptr(self)` the right way to convert mrb_value -> RClass* for a class object? (pretty damn sure it is)
-- Once freed, set a "freed" variable to true on the ruby object.
-  + Seriously need all duplicated references to a native type (in ruby land) to point to the same *ruby* object.
-    This is an issue when...
-    - A field is retrieved twice (since we're boxing every time)
-      This is difficult to manage because...
-      + C code may change the field, so we don't know when it stops being the same object.
-    - A native function returns the same object on multiple invocations (like a hash get called twice)
-    We could assume & warn, or maybe check the pointer address. Of course, pointer addresses may be reused.
-    We also don't know when a function call may free an object (such as apr_pool_destroy)
-- Add type validations to all function invocations and field sets
-- instead of unboxing, just use mrb_get_args specifiers for simple types like int & bool
+- How the hell does ruby-ffi generate c functions & funtion pointers? (Oh... trampolining, and it's complicated...)
+- (Maybe?) instead of unboxing, just use mrb_get_args specifiers for simple types like int & bool
 - boxing functions should use class retrieving macros
