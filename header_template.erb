@@ -1,0 +1,119 @@
+<%
+  concrete_classes = classes
+    .reject { |c| c['is_template'] }
+-%>
+
+#ifndef <%= module_name %>_HEADER
+#define <%= module_name %>_HEADER
+
+/*
+ * RClass Macros
+ * -------------
+ *
+ * Macros for retrieving the RClass*'s defined by this gem.
+ */
+
+#define <%= module_name %>_module(mrb) mrb_module_get(mrb, "<%= module_name %>")
+<% classes.each do |klass| -%>
+#define <%= klass['ruby_name'] %>_class(mrb) mrb_class_get_under(mrb, <%= module_name %>_module(mrb), "<%= klass['ruby_name'] %>")
+<% end -%>
+
+/*
+ * Class Bindings Options
+ * ----------------------
+ *
+ * Use these macros to configure the generated bindings for classes & structs.
+ *
+ * Key:
+ *
+ * BIND_{type name}_TYPE                     : Should we bind the class at all?
+ * BIND_{type name}_MALLOC                   : If the class is bound, should we also bind a class level malloc?
+ * BIND_{type name}_{field name}_FIELD       : If the class is bound, should we also bind this field?
+ * BIND_{type name}_{function name}_FUNCTION : If the class is bound, should we also bind this member function?
+ *
+ * Fields & method are disabled by default so that bindings may be added and
+ * tested incrementally. The generated bindings are a good start, but they
+ * will need to be verified and, sometimes, customized.
+ */
+
+<% classes.each do |klass| -%>
+#define BIND_<%= klass['ruby_name'] %>_TYPE TRUE
+#define BIND_<%= klass['ruby_name'] %>_MALLOC FALSE
+<%   klass['fields'].sort_by { |f| f['name'] }.each do |field| -%>
+#define BIND_<%= klass['ruby_name'] %>_<%= field['name'] %>_FIELD FALSE
+<%   end -%>
+<%   klass['member_functions'].sort_by { |f| f['name'] }.each do |function| -%>
+#define BIND_<%= klass['ruby_name'] %>_<%= function['name'] %>_FUNCTION FALSE
+<%   end -%>
+
+<% end -%>
+
+/*
+ * Global Function Options
+ * -----------------------
+ *
+ * Set these macros to TRUE to enable bindings for these functions.
+ * They are disabled initially so that bindings may be added and tested
+ * incrementally. The generated bindings are a good start, but they
+ * will need to be verified and, sometimes, customized.
+ */
+
+<% module_functions.each do |function| -%>
+#define BIND_<%= function['name'] %>_FUNCTION FALSE
+<% end -%>
+
+/*
+ * Header Files
+ * ------------
+ *
+ * These are the header files that defined the
+ * classes and functions for which bindings have
+ * been generated. If any of these are not needed
+ * they should be commented out.
+ */
+
+#include "mruby.h"
+#include "mruby/array.h"
+#include "mruby/class.h"
+#include "mruby/data.h"
+#include "mruby/string.h"
+#include "mruby/value.h"
+#include "mruby/variable.h"
+<% classes.map { |c| File.basename(c['file']) }.concat(module_functions.map { |f| File.basename(f['file']) }).uniq.sort.each do |file| -%>
+#include "<%= file %>"
+<% end -%>
+
+/*
+ * Class initialization function declarations
+ * ------------------------------------------
+ *
+ * These declarations are controlled by the macros in the
+ * "Class Bindings Options" section above.
+ */
+
+<% classes.each do |klass| -%>
+#if BIND_<%= klass['ruby_name'] %>_TYPE
+void mrb_<%= module_name %>_<%= klass['ruby_name'] %>_init(mrb_state* mrb);
+#endif
+<% end -%>
+
+/*
+ * Boxing declarations
+ * -------------------
+ *
+ * These declarations are controlled by the macros in the
+ * "Class Bindings Options" section above.
+ */
+
+<% concrete_classes.each do |klass| -%>
+#if BIND_<%= klass['ruby_name'] %>_TYPE
+mrb_value
+mruby_box_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed);
+
+<%= klass['name'] %> *
+mruby_unbox_<%= klass['name'] %>(mrb_value boxed);
+#endif
+
+<% end -%>
+
+#endif

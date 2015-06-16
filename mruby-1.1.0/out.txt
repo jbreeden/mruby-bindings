@@ -1,0 +1,180 @@
+Your branch is up-to-date with 'origin/master'.
+Your branch is up-to-date with 'origin/master'.
+Your branch is up-to-date with 'origin/master'.
+Your branch is up-to-date with 'origin/master'.
+array.c
+backtrace.c
+class.c
+compar.c
+crc.c
+debug.c
+dump.c
+enum.c
+etc.c
+gc.c
+hash.c
+init.c
+kernel.c
+load.c
+numeric.c
+c:\projects\mruby-1.1.0\src\numeric.c(306) : warning C4756: overflow in constant arithmetic
+c:\projects\mruby-1.1.0\src\numeric.c(807) : warning C4756: overflow in constant arithmetic
+c:\projects\mruby-1.1.0\src\numeric.c(1342) : warning C4756: overflow in constant arithmetic
+object.c
+pool.c
+print.c
+proc.c
+range.c
+state.c
+string.c
+symbol.c
+variable.c
+version.c
+codegen.cxx
+C:/projects/mruby-1.1.0/src/codegen.c(107) : warning C4297: 'codegen_error' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+C:/projects/mruby-1.1.0/src/codegen.c(3136) : warning C4297: 'mrb_generate_code' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+error.cxx
+C:/projects/mruby-1.1.0/src/error.c(216) : warning C4297: 'mrb_exc_raise' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+vm.cxx
+C:/projects/mruby-1.1.0/src/vm.c(327) : warning C4297: 'mrb_funcall_with_block' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+C:/projects/mruby-1.1.0/src/vm.c(2366) : warning C4297: 'mrb_context_run' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+y.tab.cxx
+src\parse.y(110) : warning C4297: 'parser_palloc' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+C:/projects/mruby-1.1.0/build/host/src/y.tab.c(4755) : warning C4065: switch statement contains 'default' but no 'case' labels
+C:/projects/mruby-1.1.0/build/host/src/y.tab.c(5125) : warning C4065: switch statement contains 'default' but no 'case' labels
+src\parse.y(5387) : warning C4297: 'mrb_parser_parse' : function assumed not to throw an exception but does
+        The function is extern "C" and /EHc was specified
+mrbc.c
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isalpha already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isupper already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isdigit already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isxdigit already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isspace already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isalnum already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _tolower already defined in LIBCMT.lib(tolower.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: __errno already defined in LIBCMT.lib(dosmap.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _atoi already defined in LIBCMT.lib(atox.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _strtod already defined in LIBCMT.lib(strtod.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _memmove already defined in LIBCMT.lib(memmove.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _strncmp already defined in LIBCMT.lib(strncmp.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: ___iob_func already defined in LIBCMT.lib(_file.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _fprintf already defined in LIBCMT.lib(fprintf.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _printf already defined in LIBCMT.lib(printf.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _putc already defined in LIBCMT.lib(fputc.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _exit already defined in LIBCMT.lib(crt0dat.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _abort already defined in LIBCMT.lib(abort.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _fputs already defined in LIBCMT.lib(fputs.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _fwrite already defined in LIBCMT.lib(fwrite.obj)
+MSVCRT.lib(ti_inst.obj) : error LNK2005: "private: __thiscall type_info::type_info(class type_info const &)" (??0type_info@@AAE@ABV0@@Z) already defined in LIBCMT.lib(typinfo.obj)
+MSVCRT.lib(ti_inst.obj) : error LNK2005: "private: class type_info & __thiscall type_info::operator=(class type_info const &)" (??4type_info@@AAEAAV0@ABV0@@Z) already defined in LIBCMT.lib(typinfo.obj)
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+C:\projects\mruby-1.1.0\build\host\bin\mrbc.exe : fatal error LNK1169: one or more multiply defined symbols found
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isalpha already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isupper already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isdigit already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isxdigit already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isspace already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _isalnum already defined in LIBCMT.lib(_ctype.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _tolower already defined in LIBCMT.lib(tolower.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: __errno already defined in LIBCMT.lib(dosmap.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _atoi already defined in LIBCMT.lib(atox.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _strtod already defined in LIBCMT.lib(strtod.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _memmove already defined in LIBCMT.lib(memmove.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _strncmp already defined in LIBCMT.lib(strncmp.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: ___iob_func already defined in LIBCMT.lib(_file.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _fprintf already defined in LIBCMT.lib(fprintf.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _printf already defined in LIBCMT.lib(printf.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _putc already defined in LIBCMT.lib(fputc.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _exit already defined in LIBCMT.lib(crt0dat.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _abort already defined in LIBCMT.lib(abort.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _fputs already defined in LIBCMT.lib(fputs.obj)
+MSVCRT.lib(MSVCR120.dll) : error LNK2005: _fwrite already defined in LIBCMT.lib(fwrite.obj)
+MSVCRT.lib(ti_inst.obj) : error LNK2005: "private: __thiscall type_info::type_info(class type_info const &)" (??0type_info@@AAE@ABV0@@Z) already defined in LIBCMT.lib(typinfo.obj)
+MSVCRT.lib(ti_inst.obj) : error LNK2005: "private: class type_info & __thiscall type_info::operator=(class type_info const &)" (??4type_info@@AAEAAV0@ABV0@@Z) already defined in LIBCMT.lib(typinfo.obj)
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+C:\projects\mruby-1.1.0\build\host\bin\mrbc.exe : fatal error LNK1169: one or more multiply defined symbols found
+(in C:/projects/mruby-1.1.0)
+Checking /c false
+Checking /nologo false
+Checking /W3 false
+Checking /we4013 false
+Checking /Zi false
+Checking /MD true
+Checking /O2 false
+Checking /D_CRT_SECURE_NO_WARNINGS false
+GIT CHECKOUT master 
+GIT CHECKOUT master 
+GIT CHECKOUT master 
+GIT CHECKOUT master 
+CC    src/array.c -> build/host/src/array.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/backtrace.c -> build/host/src/backtrace.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/class.c -> build/host/src/class.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/compar.c -> build/host/src/compar.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/crc.c -> build/host/src/crc.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/debug.c -> build/host/src/debug.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/dump.c -> build/host/src/dump.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/enum.c -> build/host/src/enum.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/etc.c -> build/host/src/etc.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/gc.c -> build/host/src/gc.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/hash.c -> build/host/src/hash.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/init.c -> build/host/src/init.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/kernel.c -> build/host/src/kernel.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/load.c -> build/host/src/load.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/numeric.c -> build/host/src/numeric.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/object.c -> build/host/src/object.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/pool.c -> build/host/src/pool.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/print.c -> build/host/src/print.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/proc.c -> build/host/src/proc.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/range.c -> build/host/src/range.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/state.c -> build/host/src/state.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/string.c -> build/host/src/string.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/symbol.c -> build/host/src/symbol.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/variable.c -> build/host/src/variable.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    src/version.c -> build/host/src/version.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+CC    build/host/src/codegen.cxx -> build/host/src/codegen.cxx.obj
+/c /nologo /W3 /Zi /MD /O2 /EHsc /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include" /I"src"
+CC    build/host/src/error.cxx -> build/host/src/error.cxx.obj
+/c /nologo /W3 /Zi /MD /O2 /EHsc /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include" /I"src"
+CC    build/host/src/vm.cxx -> build/host/src/vm.cxx.obj
+/c /nologo /W3 /Zi /MD /O2 /EHsc /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include" /I"src"
+YACC  src/parse.y -> build/host/src/y.tab.c
+CC    build/host/src/y.tab.cxx -> build/host/src/y.tab.obj
+/c /nologo /W3 /Zi /MD /O2 /EHsc /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include" /I"src"
+CC    tools/mrbc/mrbc.c -> build/host/tools/mrbc/mrbc.obj
+/c /nologo /W3 /we4013 /Zi /MT /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /I"C:\projects\mruby-1.1.0\include"
+AR    build/host/lib/libmruby_core.lib 
+LD    build/host/bin/mrbc.exe 
+rake aborted!
+Command Failed: [link.exe /NOLOGO /DEBUG /INCREMENTAL:NO /OPT:ICF /OPT:REF /OUT:"C:\projects\mruby-1.1.0\build\host\bin\mrbc.exe" "C:\projects\mruby-1.1.0\build\host\tools\mrbc\mrbc.obj" "C:\projects\mruby-1.1.0\build\host\lib\libmruby_core.lib"   ]
+

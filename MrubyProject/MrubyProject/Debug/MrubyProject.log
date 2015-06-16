@@ -1,0 +1,61 @@
+﻿Build started 6/15/2015 6:57:18 PM.
+     1>Project "C:\projects\mruby-bindings\MrubyProject\MrubyProject\MrubyProject.vcxproj" on node 2 (Build target(s)).
+     1>Build:
+         rake mruby:build
+         (in C:/projects/mruby-bindings)
+         ruby minirake
+         mruby.cpp
+         (in C:/projects/mruby-bindings/mruby-1.1.0)
+         CC    mrbgems/mruby-bin-mruby/tools/mruby/mruby.cpp -> build/host/mrbgems/mruby-bin-mruby/tools/mruby/mruby.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_BIN_MRUBY_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win"
+         LD    build/host/bin/mruby 
+         
+         Build summary:
+         
+         ================================================
+               Config Name: host
+          Output Directory: build/host
+                  Binaries: mrbc, mruby-config.bat
+             Included Gems:
+                      mruby-sprintf - standard Kernel#sprintf method
+                      mruby-print - standard print/puts/p
+                      mruby-array-ext - extensional Array class
+                      mruby-bin-mirb - mirb command
+                        - Binaries: mirb
+                      mruby-bin-mruby - mruby command
+                        - Binaries: mruby
+                      mruby-bin-strip - irep dump debug section remover command
+                        - Binaries: mruby-strip
+                      mruby-enum-ext - extensional Enumerable module
+                      mruby-fiber - Fiber class
+                      mruby-enumerator - Enumerator class
+                      mruby-enum-lazy - Enumerable::Lazy class
+                      mruby-eval - standard Kernel#eval method
+                      mruby-exit - Kernel#exit method
+                      mruby-hash-ext - extensional Hash class
+                      mruby-kernel-ext - extensional Kernel module
+                      mruby-math - standard Math module
+                      mruby-numeric-ext - extensional Numeric class
+                      mruby-object-ext - extensional Object class
+                      mruby-objectspace - ObjectSpace class
+                      mruby-proc-ext - extensional Proc class
+                      mruby-random - Random class
+                      mruby-range-ext - extensional Range class
+                      mruby-string-ext - extensional String class
+                      mruby-string-utf8 - UTF-8 support in String class
+                      mruby-struct - standard Struct class
+                      mruby-symbol-ext - extensional Symbol class
+                      mruby-time - standard Time class
+                      mruby-toplevel-ext - extended toplevel object (main) methods
+                      mruby-apr - Bindings to the APR libraries
+         ================================================
+         
+         mv mirb mirb.exe
+         mv mruby mruby.exe
+         mv mrbc mrbc.exe
+         mv mruby-strip mruby-strip.exe
+     1>Done Building Project "C:\projects\mruby-bindings\MrubyProject\MrubyProject\MrubyProject.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:07.01

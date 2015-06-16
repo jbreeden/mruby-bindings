@@ -1,0 +1,45 @@
+/*
+ * TODO: Update includes
+ */
+
+#include "mruby_<%= module_name %>.h"
+
+<%
+  concrete_classes = classes
+    .reject { |c| c['is_template'] }
+    .sort_by { |c| c['name']}
+-%>
+
+<% concrete_classes.each do |klass| -%>
+#if BIND_<%= klass['ruby_name'] %>_TYPE
+/*
+ * Boxing implementation for <%= klass['name'] %>
+ */
+
+static void free_<%= klass['name'] %>(mrb_state* mrb, void* ptr) {
+  /*
+   * TODO:
+   * If you'd like to participate in Ruby's garbage collection,
+   * you'll need to fill in this function body
+   */
+}
+
+static const mrb_data_type <%= klass['name'] %>_data_type = {
+   "<%= klass['name'] %>", free_<%= klass['name'] %>
+};
+
+mrb_value
+mruby_box_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
+  RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name %>");
+  RClass* <%= klass['name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module, "<%= klass['ruby_name'] %>", mrb->object_class);
+
+  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= klass['name'] %>_class, &<%= klass['name'] %>_data_type, unboxed));
+}
+
+<%= klass['name'] %> *
+mruby_unbox_<%= klass['name'] %>(mrb_value boxed) {
+  return (<%= klass['name'] %> *)DATA_PTR(boxed);
+}
+#endif
+
+<% end -%>

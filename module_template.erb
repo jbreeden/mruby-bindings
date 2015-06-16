@@ -1,0 +1,111 @@
+/*
+ * TODO: INCLUDES
+ */
+
+#include "mruby_<%= module_name %>.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+<% module_functions.each do |function| -%>
+#if BIND_<%= function['name'] %>_FUNCTION
+#define <%= function['name'] %>_REQUIRED_ARGC <%= function['argc'] %>
+#define <%= function['name'] %>_OPTIONAL_ARGC 0
+/* <%= function['name'] %>
+ *
+ * Parameters:<%= " None" unless function['params'].any? %>
+<% if function['params'].any? -%>
+<%   function['params'].each do |param| -%>
+ * - <%= param['name'] %>: <%= param['type']['type_name'] %>
+<%   end -%>
+<% end -%>
+ * Return Type: <%= function['return_type']['type_name'] %>
+ */
+mrb_value
+mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
+<%   if function['params'].any? -%>
+<%     function['params'].each do |param| -%>
+  mrb_value <%= param['name'] %>;
+<%     end -%>
+
+  /* Fetch the args */
+  mrb_get_args(mrb, "<%= 'o' * function['params'].length %>", <%= function['params'].map { |p| "&#{p['name']}" }.join(', ') %>);
+
+<%     if function['params'].any? %>
+  /* Type checking */
+<%       function['params'].each do |param| -%>
+<%         (CTypes[param['type']['type_name']].type_check % ({:value => param['name']})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%         end -%>
+<%       end -%>
+<%     end -%>
+
+<%     if function['params'].any? %>
+  /* Unbox parameters */
+<%       function['params'].each do |param| -%>
+<%         (CTypes[param['type']['type_name']].unboxing_fn.invocation_template % ({:unbox => param['name'], :as => "native_#{param['name']}"})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%         end -%>
+
+<%       end -%>
+<%     end -%>
+<%   end -%>
+  /* Invocation */
+  <%= function['return_type']['type_name'] == 'void' ? '' : "#{function['return_type']['type_name']} result = "  %><%= function['name'] %>(<%= function['params'].map { |p| "native_#{p['name']}" }.join(', ') %>);
+
+<%   if function['return_type']['type_name'] != 'void' -%>
+  /* Box the return value */
+<%     (CTypes[function['return_type']['type_name']].boxing_fn.invocation_template % ({:box => 'result', :as => 'return_value'})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%     end -%>
+
+<%   end -%>
+<%   function['params'].each do |param| -%>
+<%     if CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template -%>
+<%       (CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template % ({:clean => "native_#{param['name']}"})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%       end -%>
+
+<%     end -%>
+<%   end -%>
+<%   if function['return_type']['type_name'] == 'void' -%>
+  return mrb_nil_value();
+<%   else -%>
+  return return_value;
+<%   end -%>
+}
+#endif
+
+<% end -%>
+
+void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
+  RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name%>");
+
+  /*
+   * Initialize class bindings
+   */
+<% classes.each do |klass| -%>
+#if BIND_<%= klass['ruby_name'] %>_TYPE
+  mrb_<%= module_name %>_<%= klass['ruby_name'] %>_init(mrb);
+#endif
+<% end -%>
+
+  /*
+   * Global Functions
+   */
+<% module_functions.each do |function| -%>
+#if BIND_<%= function['name'] %>_FUNCTION
+  mrb_define_class_method(mrb, <%= module_name %>_module, "<%= function['name'] %>", mrb_<%= module_name %>_<%= function['name'] %>, MRB_ARGS_ARG(<%= function['name'] %>_REQUIRED_ARGC, <%= function['name'] %>_OPTIONAL_ARGC));
+#endif
+<% end -%>
+
+}
+
+void mrb_<%= gem_name.gsub('-', '_') %>_gem_final(mrb_state* mrb){
+
+}
+
+#ifdef __cplusplus
+}
+#endif
