@@ -27,7 +27,7 @@
  * Key:
  *
  * BIND_{type name}_TYPE                     : Should we bind the class at all?
- * BIND_{type name}_MALLOC                   : If the class is bound, should we also bind a class level malloc?
+ * BIND_{type name}_INITIALIZE               : If the class is bound, should we also bind initialize to malloc a new instance on `new`?
  * BIND_{type name}_{field name}_FIELD       : If the class is bound, should we also bind this field?
  * BIND_{type name}_{function name}_FUNCTION : If the class is bound, should we also bind this member function?
  *
@@ -38,7 +38,7 @@
 
 <% classes.each do |klass| -%>
 #define BIND_<%= klass['ruby_name'] %>_TYPE TRUE
-#define BIND_<%= klass['ruby_name'] %>_MALLOC FALSE
+#define BIND_<%= klass['ruby_name'] %>_INITIALIZE FALSE
 <%   klass['fields'].sort_by { |f| f['name'] }.each do |field| -%>
 #define BIND_<%= klass['ruby_name'] %>_<%= field['name'] %>_FIELD FALSE
 <%   end -%>
@@ -109,6 +109,9 @@ void mrb_<%= module_name %>_<%= klass['ruby_name'] %>_init(mrb_state* mrb);
 #if BIND_<%= klass['ruby_name'] %>_TYPE
 mrb_value
 mruby_box_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed);
+
+void
+mruby_set_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed);
 
 <%= klass['name'] %> *
 mruby_unbox_<%= klass['name'] %>(mrb_value boxed);

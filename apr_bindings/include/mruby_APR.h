@@ -52,10 +52,6 @@
 #define AprTimeExpT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprTimeExpT")
 #define AprVersionT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprVersionT")
 #define AprVformatterBuffT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprVformatterBuffT")
-#define InAddr_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "InAddr")
-#define Sockaddr_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "Sockaddr")
-#define SockaddrIn_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "SockaddrIn")
-#define SockaddrIn6_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "SockaddrIn6")
 
 /*
  * Class Bindings Options
@@ -66,7 +62,7 @@
  * Key:
  *
  * BIND_{type name}_TYPE                     : Should we bind the class at all?
- * BIND_{type name}_MALLOC                   : If the class is bound, should we also bind a class level malloc?
+ * BIND_{type name}_INITIALIZE               : If the class is bound, should we also bind initialize to malloc a new instance on `new`?
  * BIND_{type name}_{field name}_FIELD       : If the class is bound, should we also bind this field?
  * BIND_{type name}_{function name}_FUNCTION : If the class is bound, should we also bind this member function?
  *
@@ -76,10 +72,10 @@
  */
 
 #define BIND_AprAllocatorT_TYPE TRUE
-#define BIND_AprAllocatorT_MALLOC FALSE
+#define BIND_AprAllocatorT_INITIALIZE FALSE
 
 #define BIND_AprArrayHeaderT_TYPE TRUE
-#define BIND_AprArrayHeaderT_MALLOC FALSE
+#define BIND_AprArrayHeaderT_INITIALIZE FALSE
 #define BIND_AprArrayHeaderT_elt_size_FIELD FALSE
 #define BIND_AprArrayHeaderT_elts_FIELD FALSE
 #define BIND_AprArrayHeaderT_nalloc_FIELD FALSE
@@ -87,7 +83,7 @@
 #define BIND_AprArrayHeaderT_pool_FIELD FALSE
 
 #define BIND_AprCryptoHashT_TYPE TRUE
-#define BIND_AprCryptoHashT_MALLOC FALSE
+#define BIND_AprCryptoHashT_INITIALIZE FALSE
 #define BIND_AprCryptoHashT_add_FIELD FALSE
 #define BIND_AprCryptoHashT_data_FIELD FALSE
 #define BIND_AprCryptoHashT_finish_FIELD FALSE
@@ -95,16 +91,16 @@
 #define BIND_AprCryptoHashT_size_FIELD FALSE
 
 #define BIND_AprDirT_TYPE TRUE
-#define BIND_AprDirT_MALLOC FALSE
+#define BIND_AprDirT_INITIALIZE FALSE
 
 #define BIND_AprDsoHandleT_TYPE TRUE
-#define BIND_AprDsoHandleT_MALLOC FALSE
+#define BIND_AprDsoHandleT_INITIALIZE FALSE
 
 #define BIND_AprFileT_TYPE TRUE
-#define BIND_AprFileT_MALLOC FALSE
+#define BIND_AprFileT_INITIALIZE FALSE
 
 #define BIND_AprFinfoT_TYPE TRUE
-#define BIND_AprFinfoT_MALLOC FALSE
+#define BIND_AprFinfoT_INITIALIZE FALSE
 #define BIND_AprFinfoT_atime_FIELD FALSE
 #define BIND_AprFinfoT_csize_FIELD FALSE
 #define BIND_AprFinfoT_ctime_FIELD FALSE
@@ -124,14 +120,14 @@
 #define BIND_AprFinfoT_valid_FIELD FALSE
 
 #define BIND_AprGetoptOptionT_TYPE TRUE
-#define BIND_AprGetoptOptionT_MALLOC FALSE
+#define BIND_AprGetoptOptionT_INITIALIZE FALSE
 #define BIND_AprGetoptOptionT_description_FIELD FALSE
 #define BIND_AprGetoptOptionT_has_arg_FIELD FALSE
 #define BIND_AprGetoptOptionT_name_FIELD FALSE
 #define BIND_AprGetoptOptionT_optch_FIELD FALSE
 
 #define BIND_AprGetoptT_TYPE TRUE
-#define BIND_AprGetoptT_MALLOC FALSE
+#define BIND_AprGetoptT_INITIALIZE FALSE
 #define BIND_AprGetoptT_argc_FIELD FALSE
 #define BIND_AprGetoptT_argv_FIELD FALSE
 #define BIND_AprGetoptT_cont_FIELD FALSE
@@ -146,23 +142,23 @@
 #define BIND_AprGetoptT_skip_start_FIELD FALSE
 
 #define BIND_AprHashIndexT_TYPE TRUE
-#define BIND_AprHashIndexT_MALLOC FALSE
+#define BIND_AprHashIndexT_INITIALIZE FALSE
 
 #define BIND_AprHashT_TYPE TRUE
-#define BIND_AprHashT_MALLOC FALSE
+#define BIND_AprHashT_INITIALIZE FALSE
 
 #define BIND_AprHdtrT_TYPE TRUE
-#define BIND_AprHdtrT_MALLOC FALSE
+#define BIND_AprHdtrT_INITIALIZE FALSE
 #define BIND_AprHdtrT_headers_FIELD FALSE
 #define BIND_AprHdtrT_numheaders_FIELD FALSE
 #define BIND_AprHdtrT_numtrailers_FIELD FALSE
 #define BIND_AprHdtrT_trailers_FIELD FALSE
 
 #define BIND_AprIpsubnetT_TYPE TRUE
-#define BIND_AprIpsubnetT_MALLOC FALSE
+#define BIND_AprIpsubnetT_INITIALIZE FALSE
 
 #define BIND_AprMemnodeT_TYPE TRUE
-#define BIND_AprMemnodeT_MALLOC FALSE
+#define BIND_AprMemnodeT_INITIALIZE FALSE
 #define BIND_AprMemnodeT_endp_FIELD FALSE
 #define BIND_AprMemnodeT_first_avail_FIELD FALSE
 #define BIND_AprMemnodeT_free_index_FIELD FALSE
@@ -171,7 +167,7 @@
 #define BIND_AprMemnodeT_ref_FIELD FALSE
 
 #define BIND_AprMmapT_TYPE TRUE
-#define BIND_AprMmapT_MALLOC FALSE
+#define BIND_AprMmapT_INITIALIZE FALSE
 #define BIND_AprMmapT_cntxt_FIELD FALSE
 #define BIND_AprMmapT_link_FIELD FALSE
 #define BIND_AprMmapT_mhandle_FIELD FALSE
@@ -183,7 +179,7 @@
 #define BIND_AprMmapT_size_FIELD FALSE
 
 #define BIND_AprOsSockInfoT_TYPE TRUE
-#define BIND_AprOsSockInfoT_MALLOC FALSE
+#define BIND_AprOsSockInfoT_INITIALIZE FALSE
 #define BIND_AprOsSockInfoT_family_FIELD FALSE
 #define BIND_AprOsSockInfoT_local_FIELD FALSE
 #define BIND_AprOsSockInfoT_os_sock_FIELD FALSE
@@ -192,13 +188,13 @@
 #define BIND_AprOsSockInfoT_type_FIELD FALSE
 
 #define BIND_AprOtherChildRecT_TYPE TRUE
-#define BIND_AprOtherChildRecT_MALLOC FALSE
+#define BIND_AprOtherChildRecT_INITIALIZE FALSE
 
 #define BIND_AprPollcbT_TYPE TRUE
-#define BIND_AprPollcbT_MALLOC FALSE
+#define BIND_AprPollcbT_INITIALIZE FALSE
 
 #define BIND_AprPollfdT_TYPE TRUE
-#define BIND_AprPollfdT_MALLOC FALSE
+#define BIND_AprPollfdT_INITIALIZE FALSE
 #define BIND_AprPollfdT_client_data_FIELD FALSE
 #define BIND_AprPollfdT_desc_FIELD FALSE
 #define BIND_AprPollfdT_desc_type_FIELD FALSE
@@ -207,16 +203,16 @@
 #define BIND_AprPollfdT_rtnevents_FIELD FALSE
 
 #define BIND_AprPollsetT_TYPE TRUE
-#define BIND_AprPollsetT_MALLOC FALSE
+#define BIND_AprPollsetT_INITIALIZE FALSE
 
 #define BIND_AprPoolT_TYPE TRUE
-#define BIND_AprPoolT_MALLOC FALSE
+#define BIND_AprPoolT_INITIALIZE FALSE
 
 #define BIND_AprProcMutexT_TYPE TRUE
-#define BIND_AprProcMutexT_MALLOC FALSE
+#define BIND_AprProcMutexT_INITIALIZE FALSE
 
 #define BIND_AprProcT_TYPE TRUE
-#define BIND_AprProcT_MALLOC FALSE
+#define BIND_AprProcT_INITIALIZE FALSE
 #define BIND_AprProcT_err_FIELD FALSE
 #define BIND_AprProcT_hproc_FIELD FALSE
 #define BIND_AprProcT_in_FIELD FALSE
@@ -225,22 +221,22 @@
 #define BIND_AprProcT_pid_FIELD FALSE
 
 #define BIND_AprProcattrT_TYPE TRUE
-#define BIND_AprProcattrT_MALLOC FALSE
+#define BIND_AprProcattrT_INITIALIZE FALSE
 
 #define BIND_AprRandomT_TYPE TRUE
-#define BIND_AprRandomT_MALLOC FALSE
+#define BIND_AprRandomT_INITIALIZE FALSE
 
 #define BIND_AprShmT_TYPE TRUE
-#define BIND_AprShmT_MALLOC FALSE
+#define BIND_AprShmT_INITIALIZE FALSE
 
 #define BIND_AprSkiplist_TYPE TRUE
-#define BIND_AprSkiplist_MALLOC FALSE
+#define BIND_AprSkiplist_INITIALIZE FALSE
 
 #define BIND_AprSkiplistnode_TYPE TRUE
-#define BIND_AprSkiplistnode_MALLOC FALSE
+#define BIND_AprSkiplistnode_INITIALIZE FALSE
 
 #define BIND_AprSockaddrT_TYPE TRUE
-#define BIND_AprSockaddrT_MALLOC FALSE
+#define BIND_AprSockaddrT_INITIALIZE FALSE
 #define BIND_AprSockaddrT_addr_str_len_FIELD FALSE
 #define BIND_AprSockaddrT_family_FIELD FALSE
 #define BIND_AprSockaddrT_hostname_FIELD FALSE
@@ -254,40 +250,40 @@
 #define BIND_AprSockaddrT_servname_FIELD FALSE
 
 #define BIND_AprSocketT_TYPE TRUE
-#define BIND_AprSocketT_MALLOC FALSE
+#define BIND_AprSocketT_INITIALIZE FALSE
 
 #define BIND_AprTableEntryT_TYPE TRUE
-#define BIND_AprTableEntryT_MALLOC FALSE
+#define BIND_AprTableEntryT_INITIALIZE FALSE
 #define BIND_AprTableEntryT_key_FIELD FALSE
 #define BIND_AprTableEntryT_key_checksum_FIELD FALSE
 #define BIND_AprTableEntryT_val_FIELD FALSE
 
 #define BIND_AprTableT_TYPE TRUE
-#define BIND_AprTableT_MALLOC FALSE
+#define BIND_AprTableT_INITIALIZE FALSE
 
 #define BIND_AprThreadCondT_TYPE TRUE
-#define BIND_AprThreadCondT_MALLOC FALSE
+#define BIND_AprThreadCondT_INITIALIZE FALSE
 
 #define BIND_AprThreadMutexT_TYPE TRUE
-#define BIND_AprThreadMutexT_MALLOC FALSE
+#define BIND_AprThreadMutexT_INITIALIZE FALSE
 
 #define BIND_AprThreadOnceT_TYPE TRUE
-#define BIND_AprThreadOnceT_MALLOC FALSE
+#define BIND_AprThreadOnceT_INITIALIZE FALSE
 
 #define BIND_AprThreadRwlockT_TYPE TRUE
-#define BIND_AprThreadRwlockT_MALLOC FALSE
+#define BIND_AprThreadRwlockT_INITIALIZE FALSE
 
 #define BIND_AprThreadT_TYPE TRUE
-#define BIND_AprThreadT_MALLOC FALSE
+#define BIND_AprThreadT_INITIALIZE FALSE
 
 #define BIND_AprThreadattrT_TYPE TRUE
-#define BIND_AprThreadattrT_MALLOC FALSE
+#define BIND_AprThreadattrT_INITIALIZE FALSE
 
 #define BIND_AprThreadkeyT_TYPE TRUE
-#define BIND_AprThreadkeyT_MALLOC FALSE
+#define BIND_AprThreadkeyT_INITIALIZE FALSE
 
 #define BIND_AprTimeExpT_TYPE TRUE
-#define BIND_AprTimeExpT_MALLOC FALSE
+#define BIND_AprTimeExpT_INITIALIZE FALSE
 #define BIND_AprTimeExpT_tm_gmtoff_FIELD FALSE
 #define BIND_AprTimeExpT_tm_hour_FIELD FALSE
 #define BIND_AprTimeExpT_tm_isdst_FIELD FALSE
@@ -301,32 +297,16 @@
 #define BIND_AprTimeExpT_tm_year_FIELD FALSE
 
 #define BIND_AprVersionT_TYPE TRUE
-#define BIND_AprVersionT_MALLOC FALSE
-#define BIND_AprVersionT_is_dev_FIELD FALSE
+#define BIND_AprVersionT_INITIALIZE FALSE
 #define BIND_AprVersionT_is_dev_FIELD FALSE
 #define BIND_AprVersionT_major_FIELD FALSE
-#define BIND_AprVersionT_major_FIELD FALSE
 #define BIND_AprVersionT_minor_FIELD FALSE
-#define BIND_AprVersionT_minor_FIELD FALSE
-#define BIND_AprVersionT_patch_FIELD FALSE
 #define BIND_AprVersionT_patch_FIELD FALSE
 
 #define BIND_AprVformatterBuffT_TYPE TRUE
-#define BIND_AprVformatterBuffT_MALLOC FALSE
+#define BIND_AprVformatterBuffT_INITIALIZE FALSE
 #define BIND_AprVformatterBuffT_curpos_FIELD FALSE
 #define BIND_AprVformatterBuffT_endpos_FIELD FALSE
-
-#define BIND_InAddr_TYPE TRUE
-#define BIND_InAddr_MALLOC FALSE
-
-#define BIND_Sockaddr_TYPE TRUE
-#define BIND_Sockaddr_MALLOC FALSE
-
-#define BIND_SockaddrIn_TYPE TRUE
-#define BIND_SockaddrIn_MALLOC FALSE
-
-#define BIND_SockaddrIn6_TYPE TRUE
-#define BIND_SockaddrIn6_MALLOC FALSE
 
 
 /*
@@ -980,18 +960,6 @@ void mrb_APR_AprVersionT_init(mrb_state* mrb);
 #if BIND_AprVformatterBuffT_TYPE
 void mrb_APR_AprVformatterBuffT_init(mrb_state* mrb);
 #endif
-#if BIND_InAddr_TYPE
-void mrb_APR_InAddr_init(mrb_state* mrb);
-#endif
-#if BIND_Sockaddr_TYPE
-void mrb_APR_Sockaddr_init(mrb_state* mrb);
-#endif
-#if BIND_SockaddrIn_TYPE
-void mrb_APR_SockaddrIn_init(mrb_state* mrb);
-#endif
-#if BIND_SockaddrIn6_TYPE
-void mrb_APR_SockaddrIn6_init(mrb_state* mrb);
-#endif
 
 /*
  * Boxing declarations
@@ -1001,9 +969,21 @@ void mrb_APR_SockaddrIn6_init(mrb_state* mrb);
  * "Class Bindings Options" section above.
  */
 
+mrb_value
+mruby_box_apr_time_t(mrb_state* mrb, apr_time_t *unboxed);
+
+void
+mruby_set_apr_time_t_data_ptr(mrb_value obj, apr_time_t *unboxed);
+
+apr_time_t *
+mruby_unbox_apr_time_t(mrb_value boxed);
+
 #if BIND_AprAllocatorT_TYPE
 mrb_value
 mruby_box_apr_allocator_t(mrb_state* mrb, apr_allocator_t *unboxed);
+
+void
+mruby_set_apr_allocator_t_data_ptr(mrb_value obj, apr_allocator_t *unboxed);
 
 apr_allocator_t *
 mruby_unbox_apr_allocator_t(mrb_value boxed);
@@ -1013,6 +993,9 @@ mruby_unbox_apr_allocator_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_array_header_t(mrb_state* mrb, apr_array_header_t *unboxed);
 
+void
+mruby_set_apr_array_header_t_data_ptr(mrb_value obj, apr_array_header_t *unboxed);
+
 apr_array_header_t *
 mruby_unbox_apr_array_header_t(mrb_value boxed);
 #endif
@@ -1020,6 +1003,9 @@ mruby_unbox_apr_array_header_t(mrb_value boxed);
 #if BIND_AprCryptoHashT_TYPE
 mrb_value
 mruby_box_apr_crypto_hash_t(mrb_state* mrb, apr_crypto_hash_t *unboxed);
+
+void
+mruby_set_apr_crypto_hash_t_data_ptr(mrb_value obj, apr_crypto_hash_t *unboxed);
 
 apr_crypto_hash_t *
 mruby_unbox_apr_crypto_hash_t(mrb_value boxed);
@@ -1029,6 +1015,9 @@ mruby_unbox_apr_crypto_hash_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_dir_t(mrb_state* mrb, apr_dir_t *unboxed);
 
+void
+mruby_set_apr_dir_t_data_ptr(mrb_value obj, apr_dir_t *unboxed);
+
 apr_dir_t *
 mruby_unbox_apr_dir_t(mrb_value boxed);
 #endif
@@ -1036,6 +1025,9 @@ mruby_unbox_apr_dir_t(mrb_value boxed);
 #if BIND_AprDsoHandleT_TYPE
 mrb_value
 mruby_box_apr_dso_handle_t(mrb_state* mrb, apr_dso_handle_t *unboxed);
+
+void
+mruby_set_apr_dso_handle_t_data_ptr(mrb_value obj, apr_dso_handle_t *unboxed);
 
 apr_dso_handle_t *
 mruby_unbox_apr_dso_handle_t(mrb_value boxed);
@@ -1045,6 +1037,9 @@ mruby_unbox_apr_dso_handle_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_file_t(mrb_state* mrb, apr_file_t *unboxed);
 
+void
+mruby_set_apr_file_t_data_ptr(mrb_value obj, apr_file_t *unboxed);
+
 apr_file_t *
 mruby_unbox_apr_file_t(mrb_value boxed);
 #endif
@@ -1052,6 +1047,9 @@ mruby_unbox_apr_file_t(mrb_value boxed);
 #if BIND_AprFinfoT_TYPE
 mrb_value
 mruby_box_apr_finfo_t(mrb_state* mrb, apr_finfo_t *unboxed);
+
+void
+mruby_set_apr_finfo_t_data_ptr(mrb_value obj, apr_finfo_t *unboxed);
 
 apr_finfo_t *
 mruby_unbox_apr_finfo_t(mrb_value boxed);
@@ -1061,6 +1059,9 @@ mruby_unbox_apr_finfo_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_getopt_option_t(mrb_state* mrb, apr_getopt_option_t *unboxed);
 
+void
+mruby_set_apr_getopt_option_t_data_ptr(mrb_value obj, apr_getopt_option_t *unboxed);
+
 apr_getopt_option_t *
 mruby_unbox_apr_getopt_option_t(mrb_value boxed);
 #endif
@@ -1068,6 +1069,9 @@ mruby_unbox_apr_getopt_option_t(mrb_value boxed);
 #if BIND_AprGetoptT_TYPE
 mrb_value
 mruby_box_apr_getopt_t(mrb_state* mrb, apr_getopt_t *unboxed);
+
+void
+mruby_set_apr_getopt_t_data_ptr(mrb_value obj, apr_getopt_t *unboxed);
 
 apr_getopt_t *
 mruby_unbox_apr_getopt_t(mrb_value boxed);
@@ -1077,6 +1081,9 @@ mruby_unbox_apr_getopt_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_hash_index_t(mrb_state* mrb, apr_hash_index_t *unboxed);
 
+void
+mruby_set_apr_hash_index_t_data_ptr(mrb_value obj, apr_hash_index_t *unboxed);
+
 apr_hash_index_t *
 mruby_unbox_apr_hash_index_t(mrb_value boxed);
 #endif
@@ -1084,6 +1091,9 @@ mruby_unbox_apr_hash_index_t(mrb_value boxed);
 #if BIND_AprHashT_TYPE
 mrb_value
 mruby_box_apr_hash_t(mrb_state* mrb, apr_hash_t *unboxed);
+
+void
+mruby_set_apr_hash_t_data_ptr(mrb_value obj, apr_hash_t *unboxed);
 
 apr_hash_t *
 mruby_unbox_apr_hash_t(mrb_value boxed);
@@ -1093,6 +1103,9 @@ mruby_unbox_apr_hash_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_hdtr_t(mrb_state* mrb, apr_hdtr_t *unboxed);
 
+void
+mruby_set_apr_hdtr_t_data_ptr(mrb_value obj, apr_hdtr_t *unboxed);
+
 apr_hdtr_t *
 mruby_unbox_apr_hdtr_t(mrb_value boxed);
 #endif
@@ -1100,6 +1113,9 @@ mruby_unbox_apr_hdtr_t(mrb_value boxed);
 #if BIND_AprIpsubnetT_TYPE
 mrb_value
 mruby_box_apr_ipsubnet_t(mrb_state* mrb, apr_ipsubnet_t *unboxed);
+
+void
+mruby_set_apr_ipsubnet_t_data_ptr(mrb_value obj, apr_ipsubnet_t *unboxed);
 
 apr_ipsubnet_t *
 mruby_unbox_apr_ipsubnet_t(mrb_value boxed);
@@ -1109,6 +1125,9 @@ mruby_unbox_apr_ipsubnet_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_memnode_t(mrb_state* mrb, apr_memnode_t *unboxed);
 
+void
+mruby_set_apr_memnode_t_data_ptr(mrb_value obj, apr_memnode_t *unboxed);
+
 apr_memnode_t *
 mruby_unbox_apr_memnode_t(mrb_value boxed);
 #endif
@@ -1116,6 +1135,9 @@ mruby_unbox_apr_memnode_t(mrb_value boxed);
 #if BIND_AprMmapT_TYPE
 mrb_value
 mruby_box_apr_mmap_t(mrb_state* mrb, apr_mmap_t *unboxed);
+
+void
+mruby_set_apr_mmap_t_data_ptr(mrb_value obj, apr_mmap_t *unboxed);
 
 apr_mmap_t *
 mruby_unbox_apr_mmap_t(mrb_value boxed);
@@ -1125,6 +1147,9 @@ mruby_unbox_apr_mmap_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_os_sock_info_t(mrb_state* mrb, apr_os_sock_info_t *unboxed);
 
+void
+mruby_set_apr_os_sock_info_t_data_ptr(mrb_value obj, apr_os_sock_info_t *unboxed);
+
 apr_os_sock_info_t *
 mruby_unbox_apr_os_sock_info_t(mrb_value boxed);
 #endif
@@ -1132,6 +1157,9 @@ mruby_unbox_apr_os_sock_info_t(mrb_value boxed);
 #if BIND_AprOtherChildRecT_TYPE
 mrb_value
 mruby_box_apr_other_child_rec_t(mrb_state* mrb, apr_other_child_rec_t *unboxed);
+
+void
+mruby_set_apr_other_child_rec_t_data_ptr(mrb_value obj, apr_other_child_rec_t *unboxed);
 
 apr_other_child_rec_t *
 mruby_unbox_apr_other_child_rec_t(mrb_value boxed);
@@ -1141,6 +1169,9 @@ mruby_unbox_apr_other_child_rec_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_pollcb_t(mrb_state* mrb, apr_pollcb_t *unboxed);
 
+void
+mruby_set_apr_pollcb_t_data_ptr(mrb_value obj, apr_pollcb_t *unboxed);
+
 apr_pollcb_t *
 mruby_unbox_apr_pollcb_t(mrb_value boxed);
 #endif
@@ -1148,6 +1179,9 @@ mruby_unbox_apr_pollcb_t(mrb_value boxed);
 #if BIND_AprPollfdT_TYPE
 mrb_value
 mruby_box_apr_pollfd_t(mrb_state* mrb, apr_pollfd_t *unboxed);
+
+void
+mruby_set_apr_pollfd_t_data_ptr(mrb_value obj, apr_pollfd_t *unboxed);
 
 apr_pollfd_t *
 mruby_unbox_apr_pollfd_t(mrb_value boxed);
@@ -1157,6 +1191,9 @@ mruby_unbox_apr_pollfd_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_pollset_t(mrb_state* mrb, apr_pollset_t *unboxed);
 
+void
+mruby_set_apr_pollset_t_data_ptr(mrb_value obj, apr_pollset_t *unboxed);
+
 apr_pollset_t *
 mruby_unbox_apr_pollset_t(mrb_value boxed);
 #endif
@@ -1164,6 +1201,9 @@ mruby_unbox_apr_pollset_t(mrb_value boxed);
 #if BIND_AprPoolT_TYPE
 mrb_value
 mruby_box_apr_pool_t(mrb_state* mrb, apr_pool_t *unboxed);
+
+void
+mruby_set_apr_pool_t_data_ptr(mrb_value obj, apr_pool_t *unboxed);
 
 apr_pool_t *
 mruby_unbox_apr_pool_t(mrb_value boxed);
@@ -1173,6 +1213,9 @@ mruby_unbox_apr_pool_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_proc_mutex_t(mrb_state* mrb, apr_proc_mutex_t *unboxed);
 
+void
+mruby_set_apr_proc_mutex_t_data_ptr(mrb_value obj, apr_proc_mutex_t *unboxed);
+
 apr_proc_mutex_t *
 mruby_unbox_apr_proc_mutex_t(mrb_value boxed);
 #endif
@@ -1180,6 +1223,9 @@ mruby_unbox_apr_proc_mutex_t(mrb_value boxed);
 #if BIND_AprProcT_TYPE
 mrb_value
 mruby_box_apr_proc_t(mrb_state* mrb, apr_proc_t *unboxed);
+
+void
+mruby_set_apr_proc_t_data_ptr(mrb_value obj, apr_proc_t *unboxed);
 
 apr_proc_t *
 mruby_unbox_apr_proc_t(mrb_value boxed);
@@ -1189,6 +1235,9 @@ mruby_unbox_apr_proc_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_procattr_t(mrb_state* mrb, apr_procattr_t *unboxed);
 
+void
+mruby_set_apr_procattr_t_data_ptr(mrb_value obj, apr_procattr_t *unboxed);
+
 apr_procattr_t *
 mruby_unbox_apr_procattr_t(mrb_value boxed);
 #endif
@@ -1196,6 +1245,9 @@ mruby_unbox_apr_procattr_t(mrb_value boxed);
 #if BIND_AprRandomT_TYPE
 mrb_value
 mruby_box_apr_random_t(mrb_state* mrb, apr_random_t *unboxed);
+
+void
+mruby_set_apr_random_t_data_ptr(mrb_value obj, apr_random_t *unboxed);
 
 apr_random_t *
 mruby_unbox_apr_random_t(mrb_value boxed);
@@ -1205,6 +1257,9 @@ mruby_unbox_apr_random_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_shm_t(mrb_state* mrb, apr_shm_t *unboxed);
 
+void
+mruby_set_apr_shm_t_data_ptr(mrb_value obj, apr_shm_t *unboxed);
+
 apr_shm_t *
 mruby_unbox_apr_shm_t(mrb_value boxed);
 #endif
@@ -1212,6 +1267,9 @@ mruby_unbox_apr_shm_t(mrb_value boxed);
 #if BIND_AprSkiplist_TYPE
 mrb_value
 mruby_box_apr_skiplist(mrb_state* mrb, apr_skiplist *unboxed);
+
+void
+mruby_set_apr_skiplist_data_ptr(mrb_value obj, apr_skiplist *unboxed);
 
 apr_skiplist *
 mruby_unbox_apr_skiplist(mrb_value boxed);
@@ -1221,6 +1279,9 @@ mruby_unbox_apr_skiplist(mrb_value boxed);
 mrb_value
 mruby_box_apr_skiplistnode(mrb_state* mrb, apr_skiplistnode *unboxed);
 
+void
+mruby_set_apr_skiplistnode_data_ptr(mrb_value obj, apr_skiplistnode *unboxed);
+
 apr_skiplistnode *
 mruby_unbox_apr_skiplistnode(mrb_value boxed);
 #endif
@@ -1228,6 +1289,9 @@ mruby_unbox_apr_skiplistnode(mrb_value boxed);
 #if BIND_AprSockaddrT_TYPE
 mrb_value
 mruby_box_apr_sockaddr_t(mrb_state* mrb, apr_sockaddr_t *unboxed);
+
+void
+mruby_set_apr_sockaddr_t_data_ptr(mrb_value obj, apr_sockaddr_t *unboxed);
 
 apr_sockaddr_t *
 mruby_unbox_apr_sockaddr_t(mrb_value boxed);
@@ -1237,6 +1301,9 @@ mruby_unbox_apr_sockaddr_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_socket_t(mrb_state* mrb, apr_socket_t *unboxed);
 
+void
+mruby_set_apr_socket_t_data_ptr(mrb_value obj, apr_socket_t *unboxed);
+
 apr_socket_t *
 mruby_unbox_apr_socket_t(mrb_value boxed);
 #endif
@@ -1244,6 +1311,9 @@ mruby_unbox_apr_socket_t(mrb_value boxed);
 #if BIND_AprTableEntryT_TYPE
 mrb_value
 mruby_box_apr_table_entry_t(mrb_state* mrb, apr_table_entry_t *unboxed);
+
+void
+mruby_set_apr_table_entry_t_data_ptr(mrb_value obj, apr_table_entry_t *unboxed);
 
 apr_table_entry_t *
 mruby_unbox_apr_table_entry_t(mrb_value boxed);
@@ -1253,6 +1323,9 @@ mruby_unbox_apr_table_entry_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_table_t(mrb_state* mrb, apr_table_t *unboxed);
 
+void
+mruby_set_apr_table_t_data_ptr(mrb_value obj, apr_table_t *unboxed);
+
 apr_table_t *
 mruby_unbox_apr_table_t(mrb_value boxed);
 #endif
@@ -1260,6 +1333,9 @@ mruby_unbox_apr_table_t(mrb_value boxed);
 #if BIND_AprThreadCondT_TYPE
 mrb_value
 mruby_box_apr_thread_cond_t(mrb_state* mrb, apr_thread_cond_t *unboxed);
+
+void
+mruby_set_apr_thread_cond_t_data_ptr(mrb_value obj, apr_thread_cond_t *unboxed);
 
 apr_thread_cond_t *
 mruby_unbox_apr_thread_cond_t(mrb_value boxed);
@@ -1269,6 +1345,9 @@ mruby_unbox_apr_thread_cond_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_mutex_t(mrb_state* mrb, apr_thread_mutex_t *unboxed);
 
+void
+mruby_set_apr_thread_mutex_t_data_ptr(mrb_value obj, apr_thread_mutex_t *unboxed);
+
 apr_thread_mutex_t *
 mruby_unbox_apr_thread_mutex_t(mrb_value boxed);
 #endif
@@ -1276,6 +1355,9 @@ mruby_unbox_apr_thread_mutex_t(mrb_value boxed);
 #if BIND_AprThreadOnceT_TYPE
 mrb_value
 mruby_box_apr_thread_once_t(mrb_state* mrb, apr_thread_once_t *unboxed);
+
+void
+mruby_set_apr_thread_once_t_data_ptr(mrb_value obj, apr_thread_once_t *unboxed);
 
 apr_thread_once_t *
 mruby_unbox_apr_thread_once_t(mrb_value boxed);
@@ -1285,6 +1367,9 @@ mruby_unbox_apr_thread_once_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_rwlock_t(mrb_state* mrb, apr_thread_rwlock_t *unboxed);
 
+void
+mruby_set_apr_thread_rwlock_t_data_ptr(mrb_value obj, apr_thread_rwlock_t *unboxed);
+
 apr_thread_rwlock_t *
 mruby_unbox_apr_thread_rwlock_t(mrb_value boxed);
 #endif
@@ -1292,6 +1377,9 @@ mruby_unbox_apr_thread_rwlock_t(mrb_value boxed);
 #if BIND_AprThreadT_TYPE
 mrb_value
 mruby_box_apr_thread_t(mrb_state* mrb, apr_thread_t *unboxed);
+
+void
+mruby_set_apr_thread_t_data_ptr(mrb_value obj, apr_thread_t *unboxed);
 
 apr_thread_t *
 mruby_unbox_apr_thread_t(mrb_value boxed);
@@ -1301,6 +1389,9 @@ mruby_unbox_apr_thread_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_threadattr_t(mrb_state* mrb, apr_threadattr_t *unboxed);
 
+void
+mruby_set_apr_threadattr_t_data_ptr(mrb_value obj, apr_threadattr_t *unboxed);
+
 apr_threadattr_t *
 mruby_unbox_apr_threadattr_t(mrb_value boxed);
 #endif
@@ -1308,6 +1399,9 @@ mruby_unbox_apr_threadattr_t(mrb_value boxed);
 #if BIND_AprThreadkeyT_TYPE
 mrb_value
 mruby_box_apr_threadkey_t(mrb_state* mrb, apr_threadkey_t *unboxed);
+
+void
+mruby_set_apr_threadkey_t_data_ptr(mrb_value obj, apr_threadkey_t *unboxed);
 
 apr_threadkey_t *
 mruby_unbox_apr_threadkey_t(mrb_value boxed);
@@ -1317,6 +1411,9 @@ mruby_unbox_apr_threadkey_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_time_exp_t(mrb_state* mrb, apr_time_exp_t *unboxed);
 
+void
+mruby_set_apr_time_exp_t_data_ptr(mrb_value obj, apr_time_exp_t *unboxed);
+
 apr_time_exp_t *
 mruby_unbox_apr_time_exp_t(mrb_value boxed);
 #endif
@@ -1324,6 +1421,9 @@ mruby_unbox_apr_time_exp_t(mrb_value boxed);
 #if BIND_AprVersionT_TYPE
 mrb_value
 mruby_box_apr_version_t(mrb_state* mrb, apr_version_t *unboxed);
+
+void
+mruby_set_apr_version_t_data_ptr(mrb_value obj, apr_version_t *unboxed);
 
 apr_version_t *
 mruby_unbox_apr_version_t(mrb_value boxed);
@@ -1333,40 +1433,11 @@ mruby_unbox_apr_version_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_vformatter_buff_t(mrb_state* mrb, apr_vformatter_buff_t *unboxed);
 
+void
+mruby_set_apr_vformatter_buff_t_data_ptr(mrb_value obj, apr_vformatter_buff_t *unboxed);
+
 apr_vformatter_buff_t *
 mruby_unbox_apr_vformatter_buff_t(mrb_value boxed);
-#endif
-
-#if BIND_InAddr_TYPE
-mrb_value
-mruby_box_in_addr(mrb_state* mrb, in_addr *unboxed);
-
-in_addr *
-mruby_unbox_in_addr(mrb_value boxed);
-#endif
-
-#if BIND_Sockaddr_TYPE
-mrb_value
-mruby_box_sockaddr(mrb_state* mrb, sockaddr *unboxed);
-
-sockaddr *
-mruby_unbox_sockaddr(mrb_value boxed);
-#endif
-
-#if BIND_SockaddrIn_TYPE
-mrb_value
-mruby_box_sockaddr_in(mrb_state* mrb, sockaddr_in *unboxed);
-
-sockaddr_in *
-mruby_unbox_sockaddr_in(mrb_value boxed);
-#endif
-
-#if BIND_SockaddrIn6_TYPE
-mrb_value
-mruby_box_sockaddr_in6(mrb_state* mrb, sockaddr_in6 *unboxed);
-
-sockaddr_in6 *
-mruby_unbox_sockaddr_in6(mrb_value boxed);
 #endif
 
 

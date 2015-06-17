@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprThreadT_MALLOC
+#if BIND_AprThreadT_INITIALIZE
 mrb_value
-mrb_APR_AprThreadT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprThreadT_initialize(mrb_state* mrb, mrb_value self) {
   apr_thread_t* native_object = (apr_thread_t*)malloc(sizeof(apr_thread_t));
-  return mruby_box_apr_thread_t(mrb, native_object);
+  mruby_set_apr_thread_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprThreadT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprThreadT_init(mrb_state* mrb) {
   RClass* AprThreadT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprThreadT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprThreadT_class, MRB_TT_DATA);
 
-#if BIND_AprThreadT_MALLOC
-  mrb_define_class_method(mrb, AprThreadT_class, "malloc", mrb_APR_AprThreadT_malloc, MRB_ARGS_NONE());
+#if BIND_AprThreadT_INITIALIZE
+  mrb_define_method(mrb, AprThreadT_class, "initialize", mrb_APR_AprThreadT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprThreadT_class, "free", mrb_APR_AprThreadT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprThreadT_class, "clear_pointer", mrb_APR_AprThreadT_clear_pointer, MRB_ARGS_ARG(1, 0));

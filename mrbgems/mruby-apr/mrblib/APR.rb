@@ -76,20 +76,12 @@ module APR
     Apr_Nowait = 1
   end
 
-  APR_FOPEN_READ = 0x00001  # Open the file for reading
-  APR_FOPEN_WRITE = 0x00002  # Open the file for writing */
-  APR_FOPEN_CREATE = 0x00004  # Create the file if not there */
-  APR_FOPEN_APPEND = 0x00008  # Append to the end of the file */
-  APR_FOPEN_TRUNCATE = 0x00010  # Open the file and truncate to 0 length */
-  APR_FOPEN_BINARY = 0x00020  # Open the file in binary mode (This flag is ignored on UNIX because it has no meaning)*/
-  APR_FOPEN_EXCL = 0x00040  # Open should fail if #APR_FOPEN_CREATE and file exists. */
-  APR_FOPEN_BUFFERED = 0x00080  # Open the file for buffered I/O
-  APR_FOPEN_DELONCLOSE = 0x00100  # Delete the file after close
-  APR_FOPEN_XTHREAD = 0x00200  # Platform dependent tag to open the file for use across multiple threads */
-  APR_FOPEN_SHARELOCK = 0x00400  # Platform dependent support for higher level locked read/write access to support writes across process/machines */
-  APR_FOPEN_NOCLEANUP = 0x00800  # Do not register a cleanup when the file is opened. The apr_os_file_t handle in apr_file_t will not be closed when the pool is destroyed. */
-  APR_FOPEN_SENDFILE_ENABLED = 0x01000 # Advisory flag that this file should support apr_socket_sendfile operation */
-  APR_FOPEN_LARGEFILE = 0x04000 # Platform dependent flag to enable large file support
-  APR_FOPEN_SPARSE = 0x08000 # Platform dependent flag to enable
-  APR_FOPEN_NONBLOCK = 0x40000 # Platform dependent flag to enable non blocking file io */
+  self.apr_initialize
+  @pool = nil
+  def self.pool
+    unless @pool
+      err, @pool = self.apr_pool_create(nil)
+    end
+    @pool
+  end
 end

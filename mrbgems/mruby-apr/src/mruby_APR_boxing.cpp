@@ -5,6 +5,27 @@
 #include "mruby_APR.h"
 
 
+static void free_apr_time_t(mrb_state* mrb, void* ptr) {
+   /* These are really just int64's, not shared by pointers. Just free it... */
+   if (ptr != NULL) free(ptr);
+}
+
+static const mrb_data_type apr_time_t_data_type = {
+   "apr_time_t", free_apr_time_t
+};
+
+mrb_value
+mruby_box_apr_time_t(mrb_state* mrb, apr_time_t *unboxed) {
+   apr_time_t* boxed = (apr_time_t*)malloc(sizeof(apr_time_t));
+   memcpy(boxed, unboxed, sizeof(apr_time_t));
+   return mrb_obj_value(Data_Wrap_Struct(mrb, AprTimeT_class(mrb), &apr_time_t_data_type, boxed));
+}
+
+apr_time_t *
+mruby_unbox_apr_time_t(mrb_value boxed) {
+   return (apr_time_t*)DATA_PTR(boxed);
+}
+
 #if BIND_AprAllocatorT_TYPE
 /*
  * Boxing implementation for apr_allocator_t
@@ -24,10 +45,12 @@ static const mrb_data_type apr_allocator_t_data_type = {
 
 mrb_value
 mruby_box_apr_allocator_t(mrb_state* mrb, apr_allocator_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_allocator_t_class = mrb_define_class_under(mrb, APR_module, "AprAllocatorT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprAllocatorT_class(mrb), &apr_allocator_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_allocator_t_class, &apr_allocator_t_data_type, unboxed));
+void
+mruby_set_apr_allocator_t_data_ptr(mrb_value obj, apr_allocator_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_allocator_t_data_type);
 }
 
 apr_allocator_t *
@@ -55,10 +78,12 @@ static const mrb_data_type apr_array_header_t_data_type = {
 
 mrb_value
 mruby_box_apr_array_header_t(mrb_state* mrb, apr_array_header_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_array_header_t_class = mrb_define_class_under(mrb, APR_module, "AprArrayHeaderT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprArrayHeaderT_class(mrb), &apr_array_header_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_array_header_t_class, &apr_array_header_t_data_type, unboxed));
+void
+mruby_set_apr_array_header_t_data_ptr(mrb_value obj, apr_array_header_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_array_header_t_data_type);
 }
 
 apr_array_header_t *
@@ -86,10 +111,12 @@ static const mrb_data_type apr_crypto_hash_t_data_type = {
 
 mrb_value
 mruby_box_apr_crypto_hash_t(mrb_state* mrb, apr_crypto_hash_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_crypto_hash_t_class = mrb_define_class_under(mrb, APR_module, "AprCryptoHashT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprCryptoHashT_class(mrb), &apr_crypto_hash_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_crypto_hash_t_class, &apr_crypto_hash_t_data_type, unboxed));
+void
+mruby_set_apr_crypto_hash_t_data_ptr(mrb_value obj, apr_crypto_hash_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_crypto_hash_t_data_type);
 }
 
 apr_crypto_hash_t *
@@ -117,10 +144,12 @@ static const mrb_data_type apr_dir_t_data_type = {
 
 mrb_value
 mruby_box_apr_dir_t(mrb_state* mrb, apr_dir_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_dir_t_class = mrb_define_class_under(mrb, APR_module, "AprDirT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprDirT_class(mrb), &apr_dir_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_dir_t_class, &apr_dir_t_data_type, unboxed));
+void
+mruby_set_apr_dir_t_data_ptr(mrb_value obj, apr_dir_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_dir_t_data_type);
 }
 
 apr_dir_t *
@@ -148,10 +177,12 @@ static const mrb_data_type apr_dso_handle_t_data_type = {
 
 mrb_value
 mruby_box_apr_dso_handle_t(mrb_state* mrb, apr_dso_handle_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_dso_handle_t_class = mrb_define_class_under(mrb, APR_module, "AprDsoHandleT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprDsoHandleT_class(mrb), &apr_dso_handle_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_dso_handle_t_class, &apr_dso_handle_t_data_type, unboxed));
+void
+mruby_set_apr_dso_handle_t_data_ptr(mrb_value obj, apr_dso_handle_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_dso_handle_t_data_type);
 }
 
 apr_dso_handle_t *
@@ -179,10 +210,12 @@ static const mrb_data_type apr_file_t_data_type = {
 
 mrb_value
 mruby_box_apr_file_t(mrb_state* mrb, apr_file_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_file_t_class = mrb_define_class_under(mrb, APR_module, "AprFileT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprFileT_class(mrb), &apr_file_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_file_t_class, &apr_file_t_data_type, unboxed));
+void
+mruby_set_apr_file_t_data_ptr(mrb_value obj, apr_file_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_file_t_data_type);
 }
 
 apr_file_t *
@@ -197,11 +230,7 @@ mruby_unbox_apr_file_t(mrb_value boxed) {
  */
 
 static void free_apr_finfo_t(mrb_state* mrb, void* ptr) {
-  /*
-   * TODO:
-   * If you'd like to participate in Ruby's garbage collection,
-   * you'll need to fill in this function body
-   */
+   if (ptr != NULL) free(ptr);
 }
 
 static const mrb_data_type apr_finfo_t_data_type = {
@@ -210,10 +239,12 @@ static const mrb_data_type apr_finfo_t_data_type = {
 
 mrb_value
 mruby_box_apr_finfo_t(mrb_state* mrb, apr_finfo_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_finfo_t_class = mrb_define_class_under(mrb, APR_module, "AprFinfoT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprFinfoT_class(mrb), &apr_finfo_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_finfo_t_class, &apr_finfo_t_data_type, unboxed));
+void
+mruby_set_apr_finfo_t_data_ptr(mrb_value obj, apr_finfo_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_finfo_t_data_type);
 }
 
 apr_finfo_t *
@@ -241,10 +272,12 @@ static const mrb_data_type apr_getopt_option_t_data_type = {
 
 mrb_value
 mruby_box_apr_getopt_option_t(mrb_state* mrb, apr_getopt_option_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_getopt_option_t_class = mrb_define_class_under(mrb, APR_module, "AprGetoptOptionT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprGetoptOptionT_class(mrb), &apr_getopt_option_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_getopt_option_t_class, &apr_getopt_option_t_data_type, unboxed));
+void
+mruby_set_apr_getopt_option_t_data_ptr(mrb_value obj, apr_getopt_option_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_getopt_option_t_data_type);
 }
 
 apr_getopt_option_t *
@@ -272,10 +305,12 @@ static const mrb_data_type apr_getopt_t_data_type = {
 
 mrb_value
 mruby_box_apr_getopt_t(mrb_state* mrb, apr_getopt_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_getopt_t_class = mrb_define_class_under(mrb, APR_module, "AprGetoptT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprGetoptT_class(mrb), &apr_getopt_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_getopt_t_class, &apr_getopt_t_data_type, unboxed));
+void
+mruby_set_apr_getopt_t_data_ptr(mrb_value obj, apr_getopt_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_getopt_t_data_type);
 }
 
 apr_getopt_t *
@@ -303,10 +338,12 @@ static const mrb_data_type apr_hash_index_t_data_type = {
 
 mrb_value
 mruby_box_apr_hash_index_t(mrb_state* mrb, apr_hash_index_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_hash_index_t_class = mrb_define_class_under(mrb, APR_module, "AprHashIndexT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprHashIndexT_class(mrb), &apr_hash_index_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_hash_index_t_class, &apr_hash_index_t_data_type, unboxed));
+void
+mruby_set_apr_hash_index_t_data_ptr(mrb_value obj, apr_hash_index_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_hash_index_t_data_type);
 }
 
 apr_hash_index_t *
@@ -334,10 +371,12 @@ static const mrb_data_type apr_hash_t_data_type = {
 
 mrb_value
 mruby_box_apr_hash_t(mrb_state* mrb, apr_hash_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_hash_t_class = mrb_define_class_under(mrb, APR_module, "AprHashT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprHashT_class(mrb), &apr_hash_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_hash_t_class, &apr_hash_t_data_type, unboxed));
+void
+mruby_set_apr_hash_t_data_ptr(mrb_value obj, apr_hash_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_hash_t_data_type);
 }
 
 apr_hash_t *
@@ -365,10 +404,12 @@ static const mrb_data_type apr_hdtr_t_data_type = {
 
 mrb_value
 mruby_box_apr_hdtr_t(mrb_state* mrb, apr_hdtr_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_hdtr_t_class = mrb_define_class_under(mrb, APR_module, "AprHdtrT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprHdtrT_class(mrb), &apr_hdtr_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_hdtr_t_class, &apr_hdtr_t_data_type, unboxed));
+void
+mruby_set_apr_hdtr_t_data_ptr(mrb_value obj, apr_hdtr_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_hdtr_t_data_type);
 }
 
 apr_hdtr_t *
@@ -396,10 +437,12 @@ static const mrb_data_type apr_ipsubnet_t_data_type = {
 
 mrb_value
 mruby_box_apr_ipsubnet_t(mrb_state* mrb, apr_ipsubnet_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_ipsubnet_t_class = mrb_define_class_under(mrb, APR_module, "AprIpsubnetT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprIpsubnetT_class(mrb), &apr_ipsubnet_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_ipsubnet_t_class, &apr_ipsubnet_t_data_type, unboxed));
+void
+mruby_set_apr_ipsubnet_t_data_ptr(mrb_value obj, apr_ipsubnet_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_ipsubnet_t_data_type);
 }
 
 apr_ipsubnet_t *
@@ -427,10 +470,12 @@ static const mrb_data_type apr_memnode_t_data_type = {
 
 mrb_value
 mruby_box_apr_memnode_t(mrb_state* mrb, apr_memnode_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_memnode_t_class = mrb_define_class_under(mrb, APR_module, "AprMemnodeT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprMemnodeT_class(mrb), &apr_memnode_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_memnode_t_class, &apr_memnode_t_data_type, unboxed));
+void
+mruby_set_apr_memnode_t_data_ptr(mrb_value obj, apr_memnode_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_memnode_t_data_type);
 }
 
 apr_memnode_t *
@@ -458,10 +503,12 @@ static const mrb_data_type apr_mmap_t_data_type = {
 
 mrb_value
 mruby_box_apr_mmap_t(mrb_state* mrb, apr_mmap_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_mmap_t_class = mrb_define_class_under(mrb, APR_module, "AprMmapT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprMmapT_class(mrb), &apr_mmap_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_mmap_t_class, &apr_mmap_t_data_type, unboxed));
+void
+mruby_set_apr_mmap_t_data_ptr(mrb_value obj, apr_mmap_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_mmap_t_data_type);
 }
 
 apr_mmap_t *
@@ -489,10 +536,12 @@ static const mrb_data_type apr_os_sock_info_t_data_type = {
 
 mrb_value
 mruby_box_apr_os_sock_info_t(mrb_state* mrb, apr_os_sock_info_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_os_sock_info_t_class = mrb_define_class_under(mrb, APR_module, "AprOsSockInfoT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprOsSockInfoT_class(mrb), &apr_os_sock_info_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_os_sock_info_t_class, &apr_os_sock_info_t_data_type, unboxed));
+void
+mruby_set_apr_os_sock_info_t_data_ptr(mrb_value obj, apr_os_sock_info_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_os_sock_info_t_data_type);
 }
 
 apr_os_sock_info_t *
@@ -520,10 +569,12 @@ static const mrb_data_type apr_other_child_rec_t_data_type = {
 
 mrb_value
 mruby_box_apr_other_child_rec_t(mrb_state* mrb, apr_other_child_rec_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_other_child_rec_t_class = mrb_define_class_under(mrb, APR_module, "AprOtherChildRecT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprOtherChildRecT_class(mrb), &apr_other_child_rec_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_other_child_rec_t_class, &apr_other_child_rec_t_data_type, unboxed));
+void
+mruby_set_apr_other_child_rec_t_data_ptr(mrb_value obj, apr_other_child_rec_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_other_child_rec_t_data_type);
 }
 
 apr_other_child_rec_t *
@@ -551,10 +602,12 @@ static const mrb_data_type apr_pollcb_t_data_type = {
 
 mrb_value
 mruby_box_apr_pollcb_t(mrb_state* mrb, apr_pollcb_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_pollcb_t_class = mrb_define_class_under(mrb, APR_module, "AprPollcbT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprPollcbT_class(mrb), &apr_pollcb_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_pollcb_t_class, &apr_pollcb_t_data_type, unboxed));
+void
+mruby_set_apr_pollcb_t_data_ptr(mrb_value obj, apr_pollcb_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_pollcb_t_data_type);
 }
 
 apr_pollcb_t *
@@ -582,10 +635,12 @@ static const mrb_data_type apr_pollfd_t_data_type = {
 
 mrb_value
 mruby_box_apr_pollfd_t(mrb_state* mrb, apr_pollfd_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_pollfd_t_class = mrb_define_class_under(mrb, APR_module, "AprPollfdT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprPollfdT_class(mrb), &apr_pollfd_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_pollfd_t_class, &apr_pollfd_t_data_type, unboxed));
+void
+mruby_set_apr_pollfd_t_data_ptr(mrb_value obj, apr_pollfd_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_pollfd_t_data_type);
 }
 
 apr_pollfd_t *
@@ -613,10 +668,12 @@ static const mrb_data_type apr_pollset_t_data_type = {
 
 mrb_value
 mruby_box_apr_pollset_t(mrb_state* mrb, apr_pollset_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_pollset_t_class = mrb_define_class_under(mrb, APR_module, "AprPollsetT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprPollsetT_class(mrb), &apr_pollset_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_pollset_t_class, &apr_pollset_t_data_type, unboxed));
+void
+mruby_set_apr_pollset_t_data_ptr(mrb_value obj, apr_pollset_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_pollset_t_data_type);
 }
 
 apr_pollset_t *
@@ -644,10 +701,12 @@ static const mrb_data_type apr_pool_t_data_type = {
 
 mrb_value
 mruby_box_apr_pool_t(mrb_state* mrb, apr_pool_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_pool_t_class = mrb_define_class_under(mrb, APR_module, "AprPoolT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprPoolT_class(mrb), &apr_pool_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_pool_t_class, &apr_pool_t_data_type, unboxed));
+void
+mruby_set_apr_pool_t_data_ptr(mrb_value obj, apr_pool_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_pool_t_data_type);
 }
 
 apr_pool_t *
@@ -675,10 +734,12 @@ static const mrb_data_type apr_proc_mutex_t_data_type = {
 
 mrb_value
 mruby_box_apr_proc_mutex_t(mrb_state* mrb, apr_proc_mutex_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_proc_mutex_t_class = mrb_define_class_under(mrb, APR_module, "AprProcMutexT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprProcMutexT_class(mrb), &apr_proc_mutex_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_proc_mutex_t_class, &apr_proc_mutex_t_data_type, unboxed));
+void
+mruby_set_apr_proc_mutex_t_data_ptr(mrb_value obj, apr_proc_mutex_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_proc_mutex_t_data_type);
 }
 
 apr_proc_mutex_t *
@@ -706,10 +767,12 @@ static const mrb_data_type apr_proc_t_data_type = {
 
 mrb_value
 mruby_box_apr_proc_t(mrb_state* mrb, apr_proc_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_proc_t_class = mrb_define_class_under(mrb, APR_module, "AprProcT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprProcT_class(mrb), &apr_proc_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_proc_t_class, &apr_proc_t_data_type, unboxed));
+void
+mruby_set_apr_proc_t_data_ptr(mrb_value obj, apr_proc_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_proc_t_data_type);
 }
 
 apr_proc_t *
@@ -737,10 +800,12 @@ static const mrb_data_type apr_procattr_t_data_type = {
 
 mrb_value
 mruby_box_apr_procattr_t(mrb_state* mrb, apr_procattr_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_procattr_t_class = mrb_define_class_under(mrb, APR_module, "AprProcattrT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprProcattrT_class(mrb), &apr_procattr_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_procattr_t_class, &apr_procattr_t_data_type, unboxed));
+void
+mruby_set_apr_procattr_t_data_ptr(mrb_value obj, apr_procattr_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_procattr_t_data_type);
 }
 
 apr_procattr_t *
@@ -768,10 +833,12 @@ static const mrb_data_type apr_random_t_data_type = {
 
 mrb_value
 mruby_box_apr_random_t(mrb_state* mrb, apr_random_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_random_t_class = mrb_define_class_under(mrb, APR_module, "AprRandomT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprRandomT_class(mrb), &apr_random_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_random_t_class, &apr_random_t_data_type, unboxed));
+void
+mruby_set_apr_random_t_data_ptr(mrb_value obj, apr_random_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_random_t_data_type);
 }
 
 apr_random_t *
@@ -799,10 +866,12 @@ static const mrb_data_type apr_shm_t_data_type = {
 
 mrb_value
 mruby_box_apr_shm_t(mrb_state* mrb, apr_shm_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_shm_t_class = mrb_define_class_under(mrb, APR_module, "AprShmT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprShmT_class(mrb), &apr_shm_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_shm_t_class, &apr_shm_t_data_type, unboxed));
+void
+mruby_set_apr_shm_t_data_ptr(mrb_value obj, apr_shm_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_shm_t_data_type);
 }
 
 apr_shm_t *
@@ -830,10 +899,12 @@ static const mrb_data_type apr_skiplist_data_type = {
 
 mrb_value
 mruby_box_apr_skiplist(mrb_state* mrb, apr_skiplist *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_skiplist_class = mrb_define_class_under(mrb, APR_module, "AprSkiplist", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprSkiplist_class(mrb), &apr_skiplist_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_skiplist_class, &apr_skiplist_data_type, unboxed));
+void
+mruby_set_apr_skiplist_data_ptr(mrb_value obj, apr_skiplist *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_skiplist_data_type);
 }
 
 apr_skiplist *
@@ -861,10 +932,12 @@ static const mrb_data_type apr_skiplistnode_data_type = {
 
 mrb_value
 mruby_box_apr_skiplistnode(mrb_state* mrb, apr_skiplistnode *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_skiplistnode_class = mrb_define_class_under(mrb, APR_module, "AprSkiplistnode", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprSkiplistnode_class(mrb), &apr_skiplistnode_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_skiplistnode_class, &apr_skiplistnode_data_type, unboxed));
+void
+mruby_set_apr_skiplistnode_data_ptr(mrb_value obj, apr_skiplistnode *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_skiplistnode_data_type);
 }
 
 apr_skiplistnode *
@@ -892,10 +965,12 @@ static const mrb_data_type apr_sockaddr_t_data_type = {
 
 mrb_value
 mruby_box_apr_sockaddr_t(mrb_state* mrb, apr_sockaddr_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_sockaddr_t_class = mrb_define_class_under(mrb, APR_module, "AprSockaddrT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprSockaddrT_class(mrb), &apr_sockaddr_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_sockaddr_t_class, &apr_sockaddr_t_data_type, unboxed));
+void
+mruby_set_apr_sockaddr_t_data_ptr(mrb_value obj, apr_sockaddr_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_sockaddr_t_data_type);
 }
 
 apr_sockaddr_t *
@@ -923,10 +998,12 @@ static const mrb_data_type apr_socket_t_data_type = {
 
 mrb_value
 mruby_box_apr_socket_t(mrb_state* mrb, apr_socket_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_socket_t_class = mrb_define_class_under(mrb, APR_module, "AprSocketT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprSocketT_class(mrb), &apr_socket_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_socket_t_class, &apr_socket_t_data_type, unboxed));
+void
+mruby_set_apr_socket_t_data_ptr(mrb_value obj, apr_socket_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_socket_t_data_type);
 }
 
 apr_socket_t *
@@ -954,10 +1031,12 @@ static const mrb_data_type apr_table_entry_t_data_type = {
 
 mrb_value
 mruby_box_apr_table_entry_t(mrb_state* mrb, apr_table_entry_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_table_entry_t_class = mrb_define_class_under(mrb, APR_module, "AprTableEntryT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprTableEntryT_class(mrb), &apr_table_entry_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_table_entry_t_class, &apr_table_entry_t_data_type, unboxed));
+void
+mruby_set_apr_table_entry_t_data_ptr(mrb_value obj, apr_table_entry_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_table_entry_t_data_type);
 }
 
 apr_table_entry_t *
@@ -985,10 +1064,12 @@ static const mrb_data_type apr_table_t_data_type = {
 
 mrb_value
 mruby_box_apr_table_t(mrb_state* mrb, apr_table_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_table_t_class = mrb_define_class_under(mrb, APR_module, "AprTableT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprTableT_class(mrb), &apr_table_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_table_t_class, &apr_table_t_data_type, unboxed));
+void
+mruby_set_apr_table_t_data_ptr(mrb_value obj, apr_table_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_table_t_data_type);
 }
 
 apr_table_t *
@@ -1016,10 +1097,12 @@ static const mrb_data_type apr_thread_cond_t_data_type = {
 
 mrb_value
 mruby_box_apr_thread_cond_t(mrb_state* mrb, apr_thread_cond_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_thread_cond_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadCondT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadCondT_class(mrb), &apr_thread_cond_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_thread_cond_t_class, &apr_thread_cond_t_data_type, unboxed));
+void
+mruby_set_apr_thread_cond_t_data_ptr(mrb_value obj, apr_thread_cond_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_thread_cond_t_data_type);
 }
 
 apr_thread_cond_t *
@@ -1047,10 +1130,12 @@ static const mrb_data_type apr_thread_mutex_t_data_type = {
 
 mrb_value
 mruby_box_apr_thread_mutex_t(mrb_state* mrb, apr_thread_mutex_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_thread_mutex_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadMutexT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadMutexT_class(mrb), &apr_thread_mutex_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_thread_mutex_t_class, &apr_thread_mutex_t_data_type, unboxed));
+void
+mruby_set_apr_thread_mutex_t_data_ptr(mrb_value obj, apr_thread_mutex_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_thread_mutex_t_data_type);
 }
 
 apr_thread_mutex_t *
@@ -1078,10 +1163,12 @@ static const mrb_data_type apr_thread_once_t_data_type = {
 
 mrb_value
 mruby_box_apr_thread_once_t(mrb_state* mrb, apr_thread_once_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_thread_once_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadOnceT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadOnceT_class(mrb), &apr_thread_once_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_thread_once_t_class, &apr_thread_once_t_data_type, unboxed));
+void
+mruby_set_apr_thread_once_t_data_ptr(mrb_value obj, apr_thread_once_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_thread_once_t_data_type);
 }
 
 apr_thread_once_t *
@@ -1109,10 +1196,12 @@ static const mrb_data_type apr_thread_rwlock_t_data_type = {
 
 mrb_value
 mruby_box_apr_thread_rwlock_t(mrb_state* mrb, apr_thread_rwlock_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_thread_rwlock_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadRwlockT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadRwlockT_class(mrb), &apr_thread_rwlock_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_thread_rwlock_t_class, &apr_thread_rwlock_t_data_type, unboxed));
+void
+mruby_set_apr_thread_rwlock_t_data_ptr(mrb_value obj, apr_thread_rwlock_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_thread_rwlock_t_data_type);
 }
 
 apr_thread_rwlock_t *
@@ -1140,10 +1229,12 @@ static const mrb_data_type apr_thread_t_data_type = {
 
 mrb_value
 mruby_box_apr_thread_t(mrb_state* mrb, apr_thread_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_thread_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadT_class(mrb), &apr_thread_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_thread_t_class, &apr_thread_t_data_type, unboxed));
+void
+mruby_set_apr_thread_t_data_ptr(mrb_value obj, apr_thread_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_thread_t_data_type);
 }
 
 apr_thread_t *
@@ -1171,10 +1262,12 @@ static const mrb_data_type apr_threadattr_t_data_type = {
 
 mrb_value
 mruby_box_apr_threadattr_t(mrb_state* mrb, apr_threadattr_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_threadattr_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadattrT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadattrT_class(mrb), &apr_threadattr_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_threadattr_t_class, &apr_threadattr_t_data_type, unboxed));
+void
+mruby_set_apr_threadattr_t_data_ptr(mrb_value obj, apr_threadattr_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_threadattr_t_data_type);
 }
 
 apr_threadattr_t *
@@ -1202,10 +1295,12 @@ static const mrb_data_type apr_threadkey_t_data_type = {
 
 mrb_value
 mruby_box_apr_threadkey_t(mrb_state* mrb, apr_threadkey_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_threadkey_t_class = mrb_define_class_under(mrb, APR_module, "AprThreadkeyT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprThreadkeyT_class(mrb), &apr_threadkey_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_threadkey_t_class, &apr_threadkey_t_data_type, unboxed));
+void
+mruby_set_apr_threadkey_t_data_ptr(mrb_value obj, apr_threadkey_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_threadkey_t_data_type);
 }
 
 apr_threadkey_t *
@@ -1233,10 +1328,12 @@ static const mrb_data_type apr_time_exp_t_data_type = {
 
 mrb_value
 mruby_box_apr_time_exp_t(mrb_state* mrb, apr_time_exp_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_time_exp_t_class = mrb_define_class_under(mrb, APR_module, "AprTimeExpT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprTimeExpT_class(mrb), &apr_time_exp_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_time_exp_t_class, &apr_time_exp_t_data_type, unboxed));
+void
+mruby_set_apr_time_exp_t_data_ptr(mrb_value obj, apr_time_exp_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_time_exp_t_data_type);
 }
 
 apr_time_exp_t *
@@ -1264,10 +1361,12 @@ static const mrb_data_type apr_version_t_data_type = {
 
 mrb_value
 mruby_box_apr_version_t(mrb_state* mrb, apr_version_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_version_t_class = mrb_define_class_under(mrb, APR_module, "AprVersionT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprVersionT_class(mrb), &apr_version_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_version_t_class, &apr_version_t_data_type, unboxed));
+void
+mruby_set_apr_version_t_data_ptr(mrb_value obj, apr_version_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_version_t_data_type);
 }
 
 apr_version_t *
@@ -1295,139 +1394,17 @@ static const mrb_data_type apr_vformatter_buff_t_data_type = {
 
 mrb_value
 mruby_box_apr_vformatter_buff_t(mrb_state* mrb, apr_vformatter_buff_t *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* apr_vformatter_buff_t_class = mrb_define_class_under(mrb, APR_module, "AprVformatterBuffT", mrb->object_class);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprVformatterBuffT_class(mrb), &apr_vformatter_buff_t_data_type, unboxed));
+}
 
-  return mrb_obj_value(Data_Wrap_Struct(mrb, apr_vformatter_buff_t_class, &apr_vformatter_buff_t_data_type, unboxed));
+void
+mruby_set_apr_vformatter_buff_t_data_ptr(mrb_value obj, apr_vformatter_buff_t *unboxed) {
+  mrb_data_init(obj, unboxed, &apr_vformatter_buff_t_data_type);
 }
 
 apr_vformatter_buff_t *
 mruby_unbox_apr_vformatter_buff_t(mrb_value boxed) {
   return (apr_vformatter_buff_t *)DATA_PTR(boxed);
-}
-#endif
-
-#if BIND_InAddr_TYPE
-/*
- * Boxing implementation for in_addr
- */
-
-static void free_in_addr(mrb_state* mrb, void* ptr) {
-  /*
-   * TODO:
-   * If you'd like to participate in Ruby's garbage collection,
-   * you'll need to fill in this function body
-   */
-}
-
-static const mrb_data_type in_addr_data_type = {
-   "in_addr", free_in_addr
-};
-
-mrb_value
-mruby_box_in_addr(mrb_state* mrb, in_addr *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* in_addr_class = mrb_define_class_under(mrb, APR_module, "InAddr", mrb->object_class);
-
-  return mrb_obj_value(Data_Wrap_Struct(mrb, in_addr_class, &in_addr_data_type, unboxed));
-}
-
-in_addr *
-mruby_unbox_in_addr(mrb_value boxed) {
-  return (in_addr *)DATA_PTR(boxed);
-}
-#endif
-
-#if BIND_Sockaddr_TYPE
-/*
- * Boxing implementation for sockaddr
- */
-
-static void free_sockaddr(mrb_state* mrb, void* ptr) {
-  /*
-   * TODO:
-   * If you'd like to participate in Ruby's garbage collection,
-   * you'll need to fill in this function body
-   */
-}
-
-static const mrb_data_type sockaddr_data_type = {
-   "sockaddr", free_sockaddr
-};
-
-mrb_value
-mruby_box_sockaddr(mrb_state* mrb, sockaddr *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* sockaddr_class = mrb_define_class_under(mrb, APR_module, "Sockaddr", mrb->object_class);
-
-  return mrb_obj_value(Data_Wrap_Struct(mrb, sockaddr_class, &sockaddr_data_type, unboxed));
-}
-
-sockaddr *
-mruby_unbox_sockaddr(mrb_value boxed) {
-  return (sockaddr *)DATA_PTR(boxed);
-}
-#endif
-
-#if BIND_SockaddrIn_TYPE
-/*
- * Boxing implementation for sockaddr_in
- */
-
-static void free_sockaddr_in(mrb_state* mrb, void* ptr) {
-  /*
-   * TODO:
-   * If you'd like to participate in Ruby's garbage collection,
-   * you'll need to fill in this function body
-   */
-}
-
-static const mrb_data_type sockaddr_in_data_type = {
-   "sockaddr_in", free_sockaddr_in
-};
-
-mrb_value
-mruby_box_sockaddr_in(mrb_state* mrb, sockaddr_in *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* sockaddr_in_class = mrb_define_class_under(mrb, APR_module, "SockaddrIn", mrb->object_class);
-
-  return mrb_obj_value(Data_Wrap_Struct(mrb, sockaddr_in_class, &sockaddr_in_data_type, unboxed));
-}
-
-sockaddr_in *
-mruby_unbox_sockaddr_in(mrb_value boxed) {
-  return (sockaddr_in *)DATA_PTR(boxed);
-}
-#endif
-
-#if BIND_SockaddrIn6_TYPE
-/*
- * Boxing implementation for sockaddr_in6
- */
-
-static void free_sockaddr_in6(mrb_state* mrb, void* ptr) {
-  /*
-   * TODO:
-   * If you'd like to participate in Ruby's garbage collection,
-   * you'll need to fill in this function body
-   */
-}
-
-static const mrb_data_type sockaddr_in6_data_type = {
-   "sockaddr_in6", free_sockaddr_in6
-};
-
-mrb_value
-mruby_box_sockaddr_in6(mrb_state* mrb, sockaddr_in6 *unboxed) {
-  RClass* APR_module = mrb_define_module(mrb, "APR");
-  RClass* sockaddr_in6_class = mrb_define_class_under(mrb, APR_module, "SockaddrIn6", mrb->object_class);
-
-  return mrb_obj_value(Data_Wrap_Struct(mrb, sockaddr_in6_class, &sockaddr_in6_data_type, unboxed));
-}
-
-sockaddr_in6 *
-mruby_unbox_sockaddr_in6(mrb_value boxed) {
-  return (sockaddr_in6 *)DATA_PTR(boxed);
 }
 #endif
 

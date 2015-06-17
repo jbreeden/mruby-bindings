@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprGetoptT_MALLOC
+#if BIND_AprGetoptT_INITIALIZE
 mrb_value
-mrb_APR_AprGetoptT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprGetoptT_initialize(mrb_state* mrb, mrb_value self) {
   apr_getopt_t* native_object = (apr_getopt_t*)malloc(sizeof(apr_getopt_t));
-  return mruby_box_apr_getopt_t(mrb, native_object);
+  mruby_set_apr_getopt_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -106,6 +107,12 @@ mrb_APR_AprGetoptT_set_cont(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprPoolT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@cont_box"), ruby_field);
 
@@ -147,6 +154,9 @@ mrb_APR_AprGetoptT_set_errfn(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_apr_getopt_err_fn_t_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@errfn_box"), ruby_field);
 
@@ -187,6 +197,9 @@ mrb_APR_AprGetoptT_set_errarg(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  TODO_type_check_void_PTR(ruby_field);
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@errarg_box"), ruby_field);
@@ -233,6 +246,12 @@ mrb_APR_AprGetoptT_set_ind(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ind_box"), ruby_field);
 
@@ -277,6 +296,12 @@ mrb_APR_AprGetoptT_set_opt(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@opt_box"), ruby_field);
@@ -323,6 +348,12 @@ mrb_APR_AprGetoptT_set_reset(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@reset_box"), ruby_field);
 
@@ -368,6 +399,12 @@ mrb_APR_AprGetoptT_set_argc(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@argc_box"), ruby_field);
 
@@ -409,6 +446,9 @@ mrb_APR_AprGetoptT_set_argv(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_const_char_PTR_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@argv_box"), ruby_field);
 
@@ -449,6 +489,12 @@ mrb_APR_AprGetoptT_set_place(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@place_box"), ruby_field);
@@ -495,6 +541,12 @@ mrb_APR_AprGetoptT_set_interleave(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@interleave_box"), ruby_field);
 
@@ -539,6 +591,12 @@ mrb_APR_AprGetoptT_set_skip_start(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@skip_start_box"), ruby_field);
@@ -585,6 +643,12 @@ mrb_APR_AprGetoptT_set_skip_end(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@skip_end_box"), ruby_field);
 
@@ -599,9 +663,10 @@ mrb_APR_AprGetoptT_set_skip_end(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprGetoptT_init(mrb_state* mrb) {
   RClass* AprGetoptT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprGetoptT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprGetoptT_class, MRB_TT_DATA);
 
-#if BIND_AprGetoptT_MALLOC
-  mrb_define_class_method(mrb, AprGetoptT_class, "malloc", mrb_APR_AprGetoptT_malloc, MRB_ARGS_NONE());
+#if BIND_AprGetoptT_INITIALIZE
+  mrb_define_method(mrb, AprGetoptT_class, "initialize", mrb_APR_AprGetoptT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprGetoptT_class, "free", mrb_APR_AprGetoptT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprGetoptT_class, "clear_pointer", mrb_APR_AprGetoptT_clear_pointer, MRB_ARGS_ARG(1, 0));

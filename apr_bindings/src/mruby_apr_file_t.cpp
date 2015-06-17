@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprFileT_MALLOC
+#if BIND_AprFileT_INITIALIZE
 mrb_value
-mrb_APR_AprFileT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprFileT_initialize(mrb_state* mrb, mrb_value self) {
   apr_file_t* native_object = (apr_file_t*)malloc(sizeof(apr_file_t));
-  return mruby_box_apr_file_t(mrb, native_object);
+  mruby_set_apr_file_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprFileT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprFileT_init(mrb_state* mrb) {
   RClass* AprFileT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprFileT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprFileT_class, MRB_TT_DATA);
 
-#if BIND_AprFileT_MALLOC
-  mrb_define_class_method(mrb, AprFileT_class, "malloc", mrb_APR_AprFileT_malloc, MRB_ARGS_NONE());
+#if BIND_AprFileT_INITIALIZE
+  mrb_define_method(mrb, AprFileT_class, "initialize", mrb_APR_AprFileT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprFileT_class, "free", mrb_APR_AprFileT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprFileT_class, "clear_pointer", mrb_APR_AprFileT_clear_pointer, MRB_ARGS_ARG(1, 0));

@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprCryptoHashT_MALLOC
+#if BIND_AprCryptoHashT_INITIALIZE
 mrb_value
-mrb_APR_AprCryptoHashT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprCryptoHashT_initialize(mrb_state* mrb, mrb_value self) {
   apr_crypto_hash_t* native_object = (apr_crypto_hash_t*)malloc(sizeof(apr_crypto_hash_t));
-  return mruby_box_apr_crypto_hash_t(mrb, native_object);
+  mruby_set_apr_crypto_hash_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -106,6 +107,9 @@ mrb_APR_AprCryptoHashT_set_init(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_apr_crypto_hash_init_t_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@init_box"), ruby_field);
 
@@ -147,6 +151,9 @@ mrb_APR_AprCryptoHashT_set_add(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_apr_crypto_hash_add_t_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@add_box"), ruby_field);
 
@@ -187,6 +194,9 @@ mrb_APR_AprCryptoHashT_set_finish(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  TODO_type_check_apr_crypto_hash_finish_t_PTR(ruby_field);
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@finish_box"), ruby_field);
@@ -233,6 +243,12 @@ mrb_APR_AprCryptoHashT_set_size(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@size_box"), ruby_field);
 
@@ -274,6 +290,9 @@ mrb_APR_AprCryptoHashT_set_data(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_void_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@data_box"), ruby_field);
 
@@ -288,9 +307,10 @@ mrb_APR_AprCryptoHashT_set_data(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprCryptoHashT_init(mrb_state* mrb) {
   RClass* AprCryptoHashT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprCryptoHashT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprCryptoHashT_class, MRB_TT_DATA);
 
-#if BIND_AprCryptoHashT_MALLOC
-  mrb_define_class_method(mrb, AprCryptoHashT_class, "malloc", mrb_APR_AprCryptoHashT_malloc, MRB_ARGS_NONE());
+#if BIND_AprCryptoHashT_INITIALIZE
+  mrb_define_method(mrb, AprCryptoHashT_class, "initialize", mrb_APR_AprCryptoHashT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprCryptoHashT_class, "free", mrb_APR_AprCryptoHashT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprCryptoHashT_class, "clear_pointer", mrb_APR_AprCryptoHashT_clear_pointer, MRB_ARGS_ARG(1, 0));

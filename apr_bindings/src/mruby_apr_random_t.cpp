@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprRandomT_MALLOC
+#if BIND_AprRandomT_INITIALIZE
 mrb_value
-mrb_APR_AprRandomT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprRandomT_initialize(mrb_state* mrb, mrb_value self) {
   apr_random_t* native_object = (apr_random_t*)malloc(sizeof(apr_random_t));
-  return mruby_box_apr_random_t(mrb, native_object);
+  mruby_set_apr_random_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprRandomT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprRandomT_init(mrb_state* mrb) {
   RClass* AprRandomT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprRandomT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprRandomT_class, MRB_TT_DATA);
 
-#if BIND_AprRandomT_MALLOC
-  mrb_define_class_method(mrb, AprRandomT_class, "malloc", mrb_APR_AprRandomT_malloc, MRB_ARGS_NONE());
+#if BIND_AprRandomT_INITIALIZE
+  mrb_define_method(mrb, AprRandomT_class, "initialize", mrb_APR_AprRandomT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprRandomT_class, "free", mrb_APR_AprRandomT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprRandomT_class, "clear_pointer", mrb_APR_AprRandomT_clear_pointer, MRB_ARGS_ARG(1, 0));

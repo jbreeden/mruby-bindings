@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprProcT_MALLOC
+#if BIND_AprProcT_INITIALIZE
 mrb_value
-mrb_APR_AprProcT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprProcT_initialize(mrb_state* mrb, mrb_value self) {
   apr_proc_t* native_object = (apr_proc_t*)malloc(sizeof(apr_proc_t));
-  return mruby_box_apr_proc_t(mrb, native_object);
+  mruby_set_apr_proc_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -79,19 +80,15 @@ mrb_APR_AprProcT_address_of(mrb_state* mrb, mrb_value self) {
 #if BIND_AprProcT_pid_FIELD
 /* get_pid
  *
- * Return Type: int
+ * Return Type: pid_t
  */
 mrb_value
 mrb_APR_AprProcT_get_pid(mrb_state* mrb, mrb_value self) {
   apr_proc_t * native_self = mruby_unbox_apr_proc_t(self);
 
-  int native_field = native_self->pid;
+  pid_t native_field = native_self->pid;
 
-  if (native_field > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value ruby_field = mrb_fixnum_value(native_field);
+  mrb_value ruby_field = TODO_mruby_box_pid_t(mrb, native_field);
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pid_box"), ruby_field);
 
@@ -101,7 +98,7 @@ mrb_APR_AprProcT_get_pid(mrb_state* mrb, mrb_value self) {
 /* set_pid
  *
  * Parameters:
- * - value: int
+ * - value: pid_t
  */
 mrb_value
 mrb_APR_AprProcT_set_pid(mrb_state* mrb, mrb_value self) {
@@ -110,10 +107,13 @@ mrb_APR_AprProcT_set_pid(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_pid_t(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pid_box"), ruby_field);
 
-  int native_field = mrb_fixnum(ruby_field);
+  pid_t native_field = TODO_mruby_unbox_pid_t(ruby_field);
 
   native_self->pid = native_field;
 
@@ -150,6 +150,12 @@ mrb_APR_AprProcT_set_in(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprFileT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@in_box"), ruby_field);
@@ -192,6 +198,12 @@ mrb_APR_AprProcT_set_out(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprFileT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@out_box"), ruby_field);
 
@@ -232,6 +244,12 @@ mrb_APR_AprProcT_set_err(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprFileT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@err_box"), ruby_field);
@@ -274,6 +292,12 @@ mrb_APR_AprProcT_set_invoked(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@invoked_box"), ruby_field);
 
@@ -293,19 +317,15 @@ mrb_APR_AprProcT_set_invoked(mrb_state* mrb, mrb_value self) {
 #if BIND_AprProcT_hproc_FIELD
 /* get_hproc
  *
- * Return Type: int
+ * Return Type: HANDLE
  */
 mrb_value
 mrb_APR_AprProcT_get_hproc(mrb_state* mrb, mrb_value self) {
   apr_proc_t * native_self = mruby_unbox_apr_proc_t(self);
 
-  int native_field = native_self->hproc;
+  HANDLE native_field = native_self->hproc;
 
-  if (native_field > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value ruby_field = mrb_fixnum_value(native_field);
+  mrb_value ruby_field = TODO_mruby_box_HANDLE(mrb, native_field);
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@hproc_box"), ruby_field);
 
@@ -315,7 +335,7 @@ mrb_APR_AprProcT_get_hproc(mrb_state* mrb, mrb_value self) {
 /* set_hproc
  *
  * Parameters:
- * - value: int
+ * - value: HANDLE
  */
 mrb_value
 mrb_APR_AprProcT_set_hproc(mrb_state* mrb, mrb_value self) {
@@ -324,10 +344,13 @@ mrb_APR_AprProcT_set_hproc(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_HANDLE(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@hproc_box"), ruby_field);
 
-  int native_field = mrb_fixnum(ruby_field);
+  HANDLE native_field = TODO_mruby_unbox_HANDLE(ruby_field);
 
   native_self->hproc = native_field;
 
@@ -338,9 +361,10 @@ mrb_APR_AprProcT_set_hproc(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprProcT_init(mrb_state* mrb) {
   RClass* AprProcT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprProcT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprProcT_class, MRB_TT_DATA);
 
-#if BIND_AprProcT_MALLOC
-  mrb_define_class_method(mrb, AprProcT_class, "malloc", mrb_APR_AprProcT_malloc, MRB_ARGS_NONE());
+#if BIND_AprProcT_INITIALIZE
+  mrb_define_method(mrb, AprProcT_class, "initialize", mrb_APR_AprProcT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprProcT_class, "free", mrb_APR_AprProcT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprProcT_class, "clear_pointer", mrb_APR_AprProcT_clear_pointer, MRB_ARGS_ARG(1, 0));

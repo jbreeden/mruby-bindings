@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprTimeExpT_MALLOC
+#if BIND_AprTimeExpT_INITIALIZE
 mrb_value
-mrb_APR_AprTimeExpT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprTimeExpT_initialize(mrb_state* mrb, mrb_value self) {
   apr_time_exp_t* native_object = (apr_time_exp_t*)malloc(sizeof(apr_time_exp_t));
-  return mruby_box_apr_time_exp_t(mrb, native_object);
+  mruby_set_apr_time_exp_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -110,6 +111,12 @@ mrb_APR_AprTimeExpT_set_tm_usec(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_usec_box"), ruby_field);
 
@@ -154,6 +161,12 @@ mrb_APR_AprTimeExpT_set_tm_sec(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_sec_box"), ruby_field);
@@ -200,6 +213,12 @@ mrb_APR_AprTimeExpT_set_tm_min(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_min_box"), ruby_field);
 
@@ -244,6 +263,12 @@ mrb_APR_AprTimeExpT_set_tm_hour(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_hour_box"), ruby_field);
@@ -290,6 +315,12 @@ mrb_APR_AprTimeExpT_set_tm_mday(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_mday_box"), ruby_field);
 
@@ -334,6 +365,12 @@ mrb_APR_AprTimeExpT_set_tm_mon(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_mon_box"), ruby_field);
@@ -380,6 +417,12 @@ mrb_APR_AprTimeExpT_set_tm_year(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_year_box"), ruby_field);
 
@@ -424,6 +467,12 @@ mrb_APR_AprTimeExpT_set_tm_wday(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_wday_box"), ruby_field);
@@ -470,6 +519,12 @@ mrb_APR_AprTimeExpT_set_tm_yday(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_yday_box"), ruby_field);
 
@@ -514,6 +569,12 @@ mrb_APR_AprTimeExpT_set_tm_isdst(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_isdst_box"), ruby_field);
@@ -560,6 +621,12 @@ mrb_APR_AprTimeExpT_set_tm_gmtoff(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@tm_gmtoff_box"), ruby_field);
 
@@ -574,9 +641,10 @@ mrb_APR_AprTimeExpT_set_tm_gmtoff(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprTimeExpT_init(mrb_state* mrb) {
   RClass* AprTimeExpT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprTimeExpT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprTimeExpT_class, MRB_TT_DATA);
 
-#if BIND_AprTimeExpT_MALLOC
-  mrb_define_class_method(mrb, AprTimeExpT_class, "malloc", mrb_APR_AprTimeExpT_malloc, MRB_ARGS_NONE());
+#if BIND_AprTimeExpT_INITIALIZE
+  mrb_define_method(mrb, AprTimeExpT_class, "initialize", mrb_APR_AprTimeExpT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprTimeExpT_class, "free", mrb_APR_AprTimeExpT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprTimeExpT_class, "clear_pointer", mrb_APR_AprTimeExpT_clear_pointer, MRB_ARGS_ARG(1, 0));

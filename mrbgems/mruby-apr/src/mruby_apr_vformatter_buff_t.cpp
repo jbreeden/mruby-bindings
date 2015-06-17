@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprVformatterBuffT_MALLOC
+#if BIND_AprVformatterBuffT_INITIALIZE
 mrb_value
-mrb_APR_AprVformatterBuffT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprVformatterBuffT_initialize(mrb_state* mrb, mrb_value self) {
   apr_vformatter_buff_t* native_object = (apr_vformatter_buff_t*)malloc(sizeof(apr_vformatter_buff_t));
-  return mruby_box_apr_vformatter_buff_t(mrb, native_object);
+  mruby_set_apr_vformatter_buff_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -106,6 +107,12 @@ mrb_APR_AprVformatterBuffT_set_curpos(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@curpos_box"), ruby_field);
 
@@ -152,6 +159,12 @@ mrb_APR_AprVformatterBuffT_set_endpos(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@endpos_box"), ruby_field);
 
@@ -171,9 +184,10 @@ mrb_APR_AprVformatterBuffT_set_endpos(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprVformatterBuffT_init(mrb_state* mrb) {
   RClass* AprVformatterBuffT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprVformatterBuffT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprVformatterBuffT_class, MRB_TT_DATA);
 
-#if BIND_AprVformatterBuffT_MALLOC
-  mrb_define_class_method(mrb, AprVformatterBuffT_class, "malloc", mrb_APR_AprVformatterBuffT_malloc, MRB_ARGS_NONE());
+#if BIND_AprVformatterBuffT_INITIALIZE
+  mrb_define_method(mrb, AprVformatterBuffT_class, "initialize", mrb_APR_AprVformatterBuffT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprVformatterBuffT_class, "free", mrb_APR_AprVformatterBuffT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprVformatterBuffT_class, "clear_pointer", mrb_APR_AprVformatterBuffT_clear_pointer, MRB_ARGS_ARG(1, 0));

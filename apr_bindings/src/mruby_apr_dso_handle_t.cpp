@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprDsoHandleT_MALLOC
+#if BIND_AprDsoHandleT_INITIALIZE
 mrb_value
-mrb_APR_AprDsoHandleT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprDsoHandleT_initialize(mrb_state* mrb, mrb_value self) {
   apr_dso_handle_t* native_object = (apr_dso_handle_t*)malloc(sizeof(apr_dso_handle_t));
-  return mruby_box_apr_dso_handle_t(mrb, native_object);
+  mruby_set_apr_dso_handle_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprDsoHandleT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprDsoHandleT_init(mrb_state* mrb) {
   RClass* AprDsoHandleT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprDsoHandleT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprDsoHandleT_class, MRB_TT_DATA);
 
-#if BIND_AprDsoHandleT_MALLOC
-  mrb_define_class_method(mrb, AprDsoHandleT_class, "malloc", mrb_APR_AprDsoHandleT_malloc, MRB_ARGS_NONE());
+#if BIND_AprDsoHandleT_INITIALIZE
+  mrb_define_method(mrb, AprDsoHandleT_class, "initialize", mrb_APR_AprDsoHandleT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprDsoHandleT_class, "free", mrb_APR_AprDsoHandleT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprDsoHandleT_class, "clear_pointer", mrb_APR_AprDsoHandleT_clear_pointer, MRB_ARGS_ARG(1, 0));

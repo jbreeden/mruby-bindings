@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprThreadMutexT_MALLOC
+#if BIND_AprThreadMutexT_INITIALIZE
 mrb_value
-mrb_APR_AprThreadMutexT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprThreadMutexT_initialize(mrb_state* mrb, mrb_value self) {
   apr_thread_mutex_t* native_object = (apr_thread_mutex_t*)malloc(sizeof(apr_thread_mutex_t));
-  return mruby_box_apr_thread_mutex_t(mrb, native_object);
+  mruby_set_apr_thread_mutex_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprThreadMutexT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprThreadMutexT_init(mrb_state* mrb) {
   RClass* AprThreadMutexT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprThreadMutexT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprThreadMutexT_class, MRB_TT_DATA);
 
-#if BIND_AprThreadMutexT_MALLOC
-  mrb_define_class_method(mrb, AprThreadMutexT_class, "malloc", mrb_APR_AprThreadMutexT_malloc, MRB_ARGS_NONE());
+#if BIND_AprThreadMutexT_INITIALIZE
+  mrb_define_method(mrb, AprThreadMutexT_class, "initialize", mrb_APR_AprThreadMutexT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprThreadMutexT_class, "free", mrb_APR_AprThreadMutexT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprThreadMutexT_class, "clear_pointer", mrb_APR_AprThreadMutexT_clear_pointer, MRB_ARGS_ARG(1, 0));

@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprSockaddrT_MALLOC
+#if BIND_AprSockaddrT_INITIALIZE
 mrb_value
-mrb_APR_AprSockaddrT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprSockaddrT_initialize(mrb_state* mrb, mrb_value self) {
   apr_sockaddr_t* native_object = (apr_sockaddr_t*)malloc(sizeof(apr_sockaddr_t));
-  return mruby_box_apr_sockaddr_t(mrb, native_object);
+  mruby_set_apr_sockaddr_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -106,6 +107,12 @@ mrb_APR_AprSockaddrT_set_pool(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprPoolT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pool_box"), ruby_field);
 
@@ -146,6 +153,12 @@ mrb_APR_AprSockaddrT_set_hostname(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@hostname_box"), ruby_field);
@@ -193,6 +206,12 @@ mrb_APR_AprSockaddrT_set_servname(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@servname_box"), ruby_field);
 
@@ -239,6 +258,9 @@ mrb_APR_AprSockaddrT_set_port(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_apr_port_t(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@port_box"), ruby_field);
 
@@ -283,6 +305,12 @@ mrb_APR_AprSockaddrT_set_family(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@family_box"), ruby_field);
@@ -329,6 +357,12 @@ mrb_APR_AprSockaddrT_set_salen(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@salen_box"), ruby_field);
 
@@ -373,6 +407,12 @@ mrb_APR_AprSockaddrT_set_ipaddr_len(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ipaddr_len_box"), ruby_field);
@@ -419,6 +459,12 @@ mrb_APR_AprSockaddrT_set_addr_str_len(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@addr_str_len_box"), ruby_field);
 
@@ -459,6 +505,9 @@ mrb_APR_AprSockaddrT_set_ipaddr_ptr(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  TODO_type_check_void_PTR(ruby_field);
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ipaddr_ptr_box"), ruby_field);
@@ -501,6 +550,12 @@ mrb_APR_AprSockaddrT_set_next(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprSockaddrT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprSockaddrT expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@next_box"), ruby_field);
 
@@ -542,6 +597,9 @@ mrb_APR_AprSockaddrT_set_sa(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_union_LPAREN_anonymous_union_at_C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5_RPAREN(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@sa_box"), ruby_field);
 
@@ -556,9 +614,10 @@ mrb_APR_AprSockaddrT_set_sa(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprSockaddrT_init(mrb_state* mrb) {
   RClass* AprSockaddrT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprSockaddrT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprSockaddrT_class, MRB_TT_DATA);
 
-#if BIND_AprSockaddrT_MALLOC
-  mrb_define_class_method(mrb, AprSockaddrT_class, "malloc", mrb_APR_AprSockaddrT_malloc, MRB_ARGS_NONE());
+#if BIND_AprSockaddrT_INITIALIZE
+  mrb_define_method(mrb, AprSockaddrT_class, "initialize", mrb_APR_AprSockaddrT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprSockaddrT_class, "free", mrb_APR_AprSockaddrT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprSockaddrT_class, "clear_pointer", mrb_APR_AprSockaddrT_clear_pointer, MRB_ARGS_ARG(1, 0));

@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprHashIndexT_MALLOC
+#if BIND_AprHashIndexT_INITIALIZE
 mrb_value
-mrb_APR_AprHashIndexT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprHashIndexT_initialize(mrb_state* mrb, mrb_value self) {
   apr_hash_index_t* native_object = (apr_hash_index_t*)malloc(sizeof(apr_hash_index_t));
-  return mruby_box_apr_hash_index_t(mrb, native_object);
+  mruby_set_apr_hash_index_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprHashIndexT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprHashIndexT_init(mrb_state* mrb) {
   RClass* AprHashIndexT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprHashIndexT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprHashIndexT_class, MRB_TT_DATA);
 
-#if BIND_AprHashIndexT_MALLOC
-  mrb_define_class_method(mrb, AprHashIndexT_class, "malloc", mrb_APR_AprHashIndexT_malloc, MRB_ARGS_NONE());
+#if BIND_AprHashIndexT_INITIALIZE
+  mrb_define_method(mrb, AprHashIndexT_class, "initialize", mrb_APR_AprHashIndexT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprHashIndexT_class, "free", mrb_APR_AprHashIndexT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprHashIndexT_class, "clear_pointer", mrb_APR_AprHashIndexT_clear_pointer, MRB_ARGS_ARG(1, 0));

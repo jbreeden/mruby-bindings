@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprOsSockInfoT_MALLOC
+#if BIND_AprOsSockInfoT_INITIALIZE
 mrb_value
-mrb_APR_AprOsSockInfoT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprOsSockInfoT_initialize(mrb_state* mrb, mrb_value self) {
   apr_os_sock_info_t* native_object = (apr_os_sock_info_t*)malloc(sizeof(apr_os_sock_info_t));
-  return mruby_box_apr_os_sock_info_t(mrb, native_object);
+  mruby_set_apr_os_sock_info_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -106,6 +107,9 @@ mrb_APR_AprOsSockInfoT_set_os_sock(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_apr_os_sock_t_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@os_sock_box"), ruby_field);
 
@@ -128,7 +132,7 @@ mrb_APR_AprOsSockInfoT_get_local(mrb_state* mrb, mrb_value self) {
 
   struct sockaddr * native_field = native_self->local;
 
-  mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_sockaddr(mrb, native_field));
+  mrb_value ruby_field = TODO_mruby_box_struct_sockaddr_PTR(mrb, native_field);
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@local_box"), ruby_field);
 
@@ -147,10 +151,13 @@ mrb_APR_AprOsSockInfoT_set_local(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_struct_sockaddr_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@local_box"), ruby_field);
 
-  struct sockaddr * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_sockaddr(ruby_field));
+  struct sockaddr * native_field = TODO_mruby_unbox_struct_sockaddr_PTR(ruby_field);
 
   native_self->local = native_field;
 
@@ -169,7 +176,7 @@ mrb_APR_AprOsSockInfoT_get_remote(mrb_state* mrb, mrb_value self) {
 
   struct sockaddr * native_field = native_self->remote;
 
-  mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_sockaddr(mrb, native_field));
+  mrb_value ruby_field = TODO_mruby_box_struct_sockaddr_PTR(mrb, native_field);
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@remote_box"), ruby_field);
 
@@ -188,10 +195,13 @@ mrb_APR_AprOsSockInfoT_set_remote(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  TODO_type_check_struct_sockaddr_PTR(ruby_field);
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@remote_box"), ruby_field);
 
-  struct sockaddr * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_sockaddr(ruby_field));
+  struct sockaddr * native_field = TODO_mruby_unbox_struct_sockaddr_PTR(ruby_field);
 
   native_self->remote = native_field;
 
@@ -232,6 +242,12 @@ mrb_APR_AprOsSockInfoT_set_family(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@family_box"), ruby_field);
@@ -278,6 +294,12 @@ mrb_APR_AprOsSockInfoT_set_type(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@type_box"), ruby_field);
 
@@ -323,6 +345,12 @@ mrb_APR_AprOsSockInfoT_set_protocol(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@protocol_box"), ruby_field);
 
@@ -337,9 +365,10 @@ mrb_APR_AprOsSockInfoT_set_protocol(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprOsSockInfoT_init(mrb_state* mrb) {
   RClass* AprOsSockInfoT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprOsSockInfoT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprOsSockInfoT_class, MRB_TT_DATA);
 
-#if BIND_AprOsSockInfoT_MALLOC
-  mrb_define_class_method(mrb, AprOsSockInfoT_class, "malloc", mrb_APR_AprOsSockInfoT_malloc, MRB_ARGS_NONE());
+#if BIND_AprOsSockInfoT_INITIALIZE
+  mrb_define_method(mrb, AprOsSockInfoT_class, "initialize", mrb_APR_AprOsSockInfoT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprOsSockInfoT_class, "free", mrb_APR_AprOsSockInfoT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprOsSockInfoT_class, "clear_pointer", mrb_APR_AprOsSockInfoT_clear_pointer, MRB_ARGS_ARG(1, 0));

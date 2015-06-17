@@ -842,11 +842,7 @@ mrb_APR_apr_atoi64(mrb_state* mrb, mrb_value self) {
   apr_int64_t result = apr_atoi64(native_buf);
 
   /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
+  mrb_value return_value = TODO_mruby_box_long_long(mrb, result);
 
   return return_value;
 }
@@ -1482,7 +1478,7 @@ mrb_APR_apr_crypto_sha256_new(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - date_str: char *
- * - t: int
+ * - t: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -1499,10 +1495,7 @@ mrb_APR_apr_ctime(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, t, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(t);
 
 
   /* Unbox parameters */
@@ -1513,7 +1506,7 @@ mrb_APR_apr_ctime(mrb_state* mrb, mrb_value self) {
    */
   char * native_date_str = strdup(mrb_string_value_cstr(mrb, &date_str));
 
-  int native_t = mrb_fixnum(t);
+  long long native_t = TODO_mruby_unbox_long_long(t);
 
   /* Invocation */
   apr_status_t result = apr_ctime(native_date_str, native_t);
@@ -3931,7 +3924,7 @@ mrb_APR_apr_file_mktemp(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - fname: const char *
- * - mtime: int
+ * - mtime: long long
  * - pool: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -3950,10 +3943,7 @@ mrb_APR_apr_file_mtime_set(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, mtime, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(mtime);
   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -3963,7 +3953,7 @@ mrb_APR_apr_file_mtime_set(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   const char * native_fname = mrb_string_value_cstr(mrb, &fname);
 
-  int native_mtime = mrb_fixnum(mtime);
+  long long native_mtime = TODO_mruby_unbox_long_long(mtime);
 
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
@@ -4620,7 +4610,7 @@ mrb_APR_apr_file_pipe_create_ex(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - thepipe: apr_file_t *
- * - timeout: int *
+ * - timeout: long long *
  * Return Type: apr_status_t
  */
 mrb_value
@@ -4637,13 +4627,13 @@ mrb_APR_apr_file_pipe_timeout_get(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(timeout);
+  TODO_type_check_long_long_PTR(timeout);
 
 
   /* Unbox parameters */
   apr_file_t * native_thepipe = (mrb_nil_p(thepipe) ? NULL : mruby_unbox_apr_file_t(thepipe));
 
-  int * native_timeout = TODO_mruby_unbox_int_PTR(timeout);
+  long long * native_timeout = TODO_mruby_unbox_long_long_PTR(timeout);
 
   /* Invocation */
   apr_status_t result = apr_file_pipe_timeout_get(native_thepipe, native_timeout);
@@ -4666,7 +4656,7 @@ mrb_APR_apr_file_pipe_timeout_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - thepipe: apr_file_t *
- * - timeout: int
+ * - timeout: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -4683,16 +4673,13 @@ mrb_APR_apr_file_pipe_timeout_set(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, timeout, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(timeout);
 
 
   /* Unbox parameters */
   apr_file_t * native_thepipe = (mrb_nil_p(thepipe) ? NULL : mruby_unbox_apr_file_t(thepipe));
 
-  int native_timeout = mrb_fixnum(timeout);
+  long long native_timeout = TODO_mruby_unbox_long_long(timeout);
 
   /* Invocation */
   apr_status_t result = apr_file_pipe_timeout_set(native_thepipe, native_timeout);
@@ -5076,7 +5063,7 @@ mrb_APR_apr_file_rename(mrb_state* mrb, mrb_value self) {
  * Parameters:
  * - thefile: apr_file_t *
  * - where: int
- * - offset: unsigned int *
+ * - offset: long long *
  * Return Type: apr_status_t
  */
 mrb_value
@@ -5098,7 +5085,7 @@ mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-  TODO_type_check_unsigned_int_PTR(offset);
+  TODO_type_check_long_long_PTR(offset);
 
 
   /* Unbox parameters */
@@ -5106,7 +5093,7 @@ mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
 
   int native_where = mrb_fixnum(where);
 
-  unsigned int * native_offset = TODO_mruby_unbox_unsigned_int_PTR(offset);
+  long long * native_offset = TODO_mruby_unbox_long_long_PTR(offset);
 
   /* Invocation */
   apr_status_t result = apr_file_seek(native_thefile, native_where, native_offset);
@@ -5224,7 +5211,7 @@ mrb_APR_apr_file_sync(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - fp: apr_file_t *
- * - offset: unsigned int
+ * - offset: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -5241,16 +5228,13 @@ mrb_APR_apr_file_trunc(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, offset, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(offset);
 
 
   /* Unbox parameters */
   apr_file_t * native_fp = (mrb_nil_p(fp) ? NULL : mruby_unbox_apr_file_t(fp));
 
-  unsigned int native_offset = mrb_fixnum(offset);
+  long long native_offset = TODO_mruby_unbox_long_long(offset);
 
   /* Invocation */
   apr_status_t result = apr_file_trunc(native_fp, native_offset);
@@ -6546,8 +6530,8 @@ mrb_APR_apr_getservbyname(mrb_state* mrb, mrb_value self) {
 /* apr_gid_compare
  *
  * Parameters:
- * - left: int
- * - right: int
+ * - left: void *
+ * - right: void *
  * Return Type: apr_status_t
  */
 mrb_value
@@ -6560,20 +6544,14 @@ mrb_APR_apr_gid_compare(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, left, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-  if (!mrb_obj_is_kind_of(mrb, right, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_void_PTR(left);
+  TODO_type_check_void_PTR(right);
 
 
   /* Unbox parameters */
-  int native_left = mrb_fixnum(left);
+  void * native_left = TODO_mruby_unbox_void_PTR(left);
 
-  int native_right = mrb_fixnum(right);
+  void * native_right = TODO_mruby_unbox_void_PTR(right);
 
   /* Invocation */
   apr_status_t result = apr_gid_compare(native_left, native_right);
@@ -6595,7 +6573,7 @@ mrb_APR_apr_gid_compare(mrb_state* mrb, mrb_value self) {
 /* apr_gid_get
  *
  * Parameters:
- * - groupid: int *
+ * - groupid: void **
  * - groupname: const char *
  * - p: apr_pool_t *
  * Return Type: apr_status_t
@@ -6611,7 +6589,7 @@ mrb_APR_apr_gid_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(groupid);
+  TODO_type_check_void_PTR_PTR(groupid);
   if (!mrb_obj_is_kind_of(mrb, groupname, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -6623,7 +6601,7 @@ mrb_APR_apr_gid_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_groupid = TODO_mruby_unbox_int_PTR(groupid);
+  void ** native_groupid = TODO_mruby_unbox_void_PTR_PTR(groupid);
 
   const char * native_groupname = mrb_string_value_cstr(mrb, &groupname);
 
@@ -6650,7 +6628,7 @@ mrb_APR_apr_gid_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - groupname: char **
- * - groupid: int
+ * - groupid: void *
  * - p: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -6666,10 +6644,7 @@ mrb_APR_apr_gid_name_get(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_char_PTR_PTR(groupname);
-  if (!mrb_obj_is_kind_of(mrb, groupid, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_void_PTR(groupid);
   if (!mrb_obj_is_kind_of(mrb, p, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -6679,7 +6654,7 @@ mrb_APR_apr_gid_name_get(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   char ** native_groupname = TODO_mruby_unbox_char_PTR_PTR(groupname);
 
-  int native_groupid = mrb_fixnum(groupid);
+  void * native_groupid = TODO_mruby_unbox_void_PTR(groupid);
 
   apr_pool_t * native_p = (mrb_nil_p(p) ? NULL : mruby_unbox_apr_pool_t(p));
 
@@ -8153,7 +8128,7 @@ mrb_APR_apr_mcast_loopback(mrb_state* mrb, mrb_value self) {
  * Parameters:
  * - newmmap: apr_mmap_t **
  * - file: apr_file_t *
- * - offset: unsigned int
+ * - offset: long long
  * - size: int
  * - flag: int
  * - cntxt: apr_pool_t *
@@ -8178,10 +8153,7 @@ mrb_APR_apr_mmap_create(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, offset, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(offset);
   if (!mrb_obj_is_kind_of(mrb, size, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -8201,7 +8173,7 @@ mrb_APR_apr_mmap_create(mrb_state* mrb, mrb_value self) {
 
   apr_file_t * native_file = (mrb_nil_p(file) ? NULL : mruby_unbox_apr_file_t(file));
 
-  unsigned int native_offset = mrb_fixnum(offset);
+  long long native_offset = TODO_mruby_unbox_long_long(offset);
 
   int native_size = mrb_fixnum(size);
 
@@ -8326,7 +8298,7 @@ mrb_APR_apr_mmap_dup(mrb_state* mrb, mrb_value self) {
  * Parameters:
  * - addr: void **
  * - mm: apr_mmap_t *
- * - offset: unsigned int
+ * - offset: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -8345,10 +8317,7 @@ mrb_APR_apr_mmap_offset(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprMmapT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, offset, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(offset);
 
 
   /* Unbox parameters */
@@ -8356,7 +8325,7 @@ mrb_APR_apr_mmap_offset(mrb_state* mrb, mrb_value self) {
 
   apr_mmap_t * native_mm = (mrb_nil_p(mm) ? NULL : mruby_unbox_apr_mmap_t(mm));
 
-  unsigned int native_offset = mrb_fixnum(offset);
+  long long native_offset = TODO_mruby_unbox_long_long(offset);
 
   /* Invocation */
   apr_status_t result = apr_mmap_offset(native_addr, native_mm, native_offset);
@@ -8379,7 +8348,7 @@ mrb_APR_apr_mmap_offset(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - p: apr_pool_t *
- * - n: unsigned int
+ * - n: long long
  * Return Type: char *
  */
 mrb_value
@@ -8396,16 +8365,13 @@ mrb_APR_apr_off_t_toa(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, n, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(n);
 
 
   /* Unbox parameters */
   apr_pool_t * native_p = (mrb_nil_p(p) ? NULL : mruby_unbox_apr_pool_t(p));
 
-  unsigned int native_n = mrb_fixnum(n);
+  long long native_n = TODO_mruby_unbox_long_long(n);
 
   /* Invocation */
   char * result = apr_off_t_toa(native_p, native_n);
@@ -8460,7 +8426,7 @@ mrb_APR_apr_os_default_encoding(mrb_state* mrb, mrb_value self) {
 /* apr_os_dir_get
  *
  * Parameters:
- * - thedir: int **
+ * - thedir: void ***
  * - dir: apr_dir_t *
  * Return Type: apr_status_t
  */
@@ -8474,7 +8440,7 @@ mrb_APR_apr_os_dir_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR_PTR(thedir);
+  TODO_type_check_void_PTR_PTR_PTR(thedir);
   if (!mrb_obj_is_kind_of(mrb, dir, AprDirT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprDirT expected");
     return mrb_nil_value();
@@ -8482,7 +8448,7 @@ mrb_APR_apr_os_dir_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int ** native_thedir = TODO_mruby_unbox_int_PTR_PTR(thedir);
+  void *** native_thedir = TODO_mruby_unbox_void_PTR_PTR_PTR(thedir);
 
   apr_dir_t * native_dir = (mrb_nil_p(dir) ? NULL : mruby_unbox_apr_dir_t(dir));
 
@@ -8507,7 +8473,7 @@ mrb_APR_apr_os_dir_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - dir: apr_dir_t **
- * - thedir: int *
+ * - thedir: void **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -8523,7 +8489,7 @@ mrb_APR_apr_os_dir_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_dir_t_PTR_PTR(dir);
-  TODO_type_check_int_PTR(thedir);
+  TODO_type_check_void_PTR_PTR(thedir);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -8533,7 +8499,7 @@ mrb_APR_apr_os_dir_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_dir_t ** native_dir = TODO_mruby_unbox_apr_dir_t_PTR_PTR(dir);
 
-  int * native_thedir = TODO_mruby_unbox_int_PTR(thedir);
+  void ** native_thedir = TODO_mruby_unbox_void_PTR_PTR(thedir);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -8557,7 +8523,7 @@ mrb_APR_apr_os_dir_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_dso_handle_get
  *
  * Parameters:
- * - dso: int *
+ * - dso: void **
  * - aprdso: apr_dso_handle_t *
  * Return Type: apr_status_t
  */
@@ -8571,7 +8537,7 @@ mrb_APR_apr_os_dso_handle_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(dso);
+  TODO_type_check_void_PTR_PTR(dso);
   if (!mrb_obj_is_kind_of(mrb, aprdso, AprDsoHandleT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprDsoHandleT expected");
     return mrb_nil_value();
@@ -8579,7 +8545,7 @@ mrb_APR_apr_os_dso_handle_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_dso = TODO_mruby_unbox_int_PTR(dso);
+  void ** native_dso = TODO_mruby_unbox_void_PTR_PTR(dso);
 
   apr_dso_handle_t * native_aprdso = (mrb_nil_p(aprdso) ? NULL : mruby_unbox_apr_dso_handle_t(aprdso));
 
@@ -8604,7 +8570,7 @@ mrb_APR_apr_os_dso_handle_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - dso: apr_dso_handle_t **
- * - thedso: int
+ * - thedso: void *
  * - pool: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -8620,10 +8586,7 @@ mrb_APR_apr_os_dso_handle_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_dso_handle_t_PTR_PTR(dso);
-  if (!mrb_obj_is_kind_of(mrb, thedso, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_void_PTR(thedso);
   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -8633,7 +8596,7 @@ mrb_APR_apr_os_dso_handle_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_dso_handle_t ** native_dso = TODO_mruby_unbox_apr_dso_handle_t_PTR_PTR(dso);
 
-  int native_thedso = mrb_fixnum(thedso);
+  void * native_thedso = TODO_mruby_unbox_void_PTR(thedso);
 
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
@@ -8657,7 +8620,7 @@ mrb_APR_apr_os_dso_handle_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_exp_time_get
  *
  * Parameters:
- * - ostime: int **
+ * - ostime: _SYSTEMTIME **
  * - aprtime: apr_time_exp_t *
  * Return Type: apr_status_t
  */
@@ -8671,7 +8634,7 @@ mrb_APR_apr_os_exp_time_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR_PTR(ostime);
+  TODO_type_check__SYSTEMTIME_PTR_PTR(ostime);
   if (!mrb_obj_is_kind_of(mrb, aprtime, AprTimeExpT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
@@ -8679,7 +8642,7 @@ mrb_APR_apr_os_exp_time_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int ** native_ostime = TODO_mruby_unbox_int_PTR_PTR(ostime);
+  _SYSTEMTIME ** native_ostime = TODO_mruby_unbox__SYSTEMTIME_PTR_PTR(ostime);
 
   apr_time_exp_t * native_aprtime = (mrb_nil_p(aprtime) ? NULL : mruby_unbox_apr_time_exp_t(aprtime));
 
@@ -8704,7 +8667,7 @@ mrb_APR_apr_os_exp_time_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - aprtime: apr_time_exp_t *
- * - ostime: int **
+ * - ostime: _SYSTEMTIME **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -8723,7 +8686,7 @@ mrb_APR_apr_os_exp_time_put(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR_PTR(ostime);
+  TODO_type_check__SYSTEMTIME_PTR_PTR(ostime);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -8733,7 +8696,7 @@ mrb_APR_apr_os_exp_time_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_time_exp_t * native_aprtime = (mrb_nil_p(aprtime) ? NULL : mruby_unbox_apr_time_exp_t(aprtime));
 
-  int ** native_ostime = TODO_mruby_unbox_int_PTR_PTR(ostime);
+  _SYSTEMTIME ** native_ostime = TODO_mruby_unbox__SYSTEMTIME_PTR_PTR(ostime);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -8757,7 +8720,7 @@ mrb_APR_apr_os_exp_time_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_file_get
  *
  * Parameters:
- * - thefile: int *
+ * - thefile: void **
  * - file: apr_file_t *
  * Return Type: apr_status_t
  */
@@ -8771,7 +8734,7 @@ mrb_APR_apr_os_file_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(thefile);
+  TODO_type_check_void_PTR_PTR(thefile);
   if (!mrb_obj_is_kind_of(mrb, file, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
@@ -8779,7 +8742,7 @@ mrb_APR_apr_os_file_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_thefile = TODO_mruby_unbox_int_PTR(thefile);
+  void ** native_thefile = TODO_mruby_unbox_void_PTR_PTR(thefile);
 
   apr_file_t * native_file = (mrb_nil_p(file) ? NULL : mruby_unbox_apr_file_t(file));
 
@@ -8804,7 +8767,7 @@ mrb_APR_apr_os_file_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - file: apr_file_t **
- * - thefile: int *
+ * - thefile: void **
  * - flags: int
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
@@ -8822,7 +8785,7 @@ mrb_APR_apr_os_file_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_file_t_PTR_PTR(file);
-  TODO_type_check_int_PTR(thefile);
+  TODO_type_check_void_PTR_PTR(thefile);
   if (!mrb_obj_is_kind_of(mrb, flags, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -8836,7 +8799,7 @@ mrb_APR_apr_os_file_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_file_t ** native_file = TODO_mruby_unbox_apr_file_t_PTR_PTR(file);
 
-  int * native_thefile = TODO_mruby_unbox_int_PTR(thefile);
+  void ** native_thefile = TODO_mruby_unbox_void_PTR_PTR(thefile);
 
   int native_flags = mrb_fixnum(flags);
 
@@ -8862,8 +8825,8 @@ mrb_APR_apr_os_file_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_imp_time_get
  *
  * Parameters:
- * - ostime: int **
- * - aprtime: int *
+ * - ostime: _FILETIME **
+ * - aprtime: long long *
  * Return Type: apr_status_t
  */
 mrb_value
@@ -8876,14 +8839,14 @@ mrb_APR_apr_os_imp_time_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR_PTR(ostime);
-  TODO_type_check_int_PTR(aprtime);
+  TODO_type_check__FILETIME_PTR_PTR(ostime);
+  TODO_type_check_long_long_PTR(aprtime);
 
 
   /* Unbox parameters */
-  int ** native_ostime = TODO_mruby_unbox_int_PTR_PTR(ostime);
+  _FILETIME ** native_ostime = TODO_mruby_unbox__FILETIME_PTR_PTR(ostime);
 
-  int * native_aprtime = TODO_mruby_unbox_int_PTR(aprtime);
+  long long * native_aprtime = TODO_mruby_unbox_long_long_PTR(aprtime);
 
   /* Invocation */
   apr_status_t result = apr_os_imp_time_get(native_ostime, native_aprtime);
@@ -8905,8 +8868,8 @@ mrb_APR_apr_os_imp_time_get(mrb_state* mrb, mrb_value self) {
 /* apr_os_imp_time_put
  *
  * Parameters:
- * - aprtime: int *
- * - ostime: int **
+ * - aprtime: long long *
+ * - ostime: _FILETIME **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -8921,8 +8884,8 @@ mrb_APR_apr_os_imp_time_put(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(aprtime);
-  TODO_type_check_int_PTR_PTR(ostime);
+  TODO_type_check_long_long_PTR(aprtime);
+  TODO_type_check__FILETIME_PTR_PTR(ostime);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -8930,9 +8893,9 @@ mrb_APR_apr_os_imp_time_put(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_aprtime = TODO_mruby_unbox_int_PTR(aprtime);
+  long long * native_aprtime = TODO_mruby_unbox_long_long_PTR(aprtime);
 
-  int ** native_ostime = TODO_mruby_unbox_int_PTR_PTR(ostime);
+  _FILETIME ** native_ostime = TODO_mruby_unbox__FILETIME_PTR_PTR(ostime);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -8994,7 +8957,7 @@ mrb_APR_apr_os_locale_encoding(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - file: apr_file_t **
- * - thefile: int *
+ * - thefile: void **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -9010,7 +8973,7 @@ mrb_APR_apr_os_pipe_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_file_t_PTR_PTR(file);
-  TODO_type_check_int_PTR(thefile);
+  TODO_type_check_void_PTR_PTR(thefile);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -9020,7 +8983,7 @@ mrb_APR_apr_os_pipe_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_file_t ** native_file = TODO_mruby_unbox_apr_file_t_PTR_PTR(file);
 
-  int * native_thefile = TODO_mruby_unbox_int_PTR(thefile);
+  void ** native_thefile = TODO_mruby_unbox_void_PTR_PTR(thefile);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -9045,7 +9008,7 @@ mrb_APR_apr_os_pipe_put(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - file: apr_file_t **
- * - thefile: int *
+ * - thefile: void **
  * - register_cleanup: int
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
@@ -9063,7 +9026,7 @@ mrb_APR_apr_os_pipe_put_ex(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_file_t_PTR_PTR(file);
-  TODO_type_check_int_PTR(thefile);
+  TODO_type_check_void_PTR_PTR(thefile);
   if (!mrb_obj_is_kind_of(mrb, register_cleanup, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -9077,7 +9040,7 @@ mrb_APR_apr_os_pipe_put_ex(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_file_t ** native_file = TODO_mruby_unbox_apr_file_t_PTR_PTR(file);
 
-  int * native_thefile = TODO_mruby_unbox_int_PTR(thefile);
+  void ** native_thefile = TODO_mruby_unbox_void_PTR_PTR(thefile);
 
   int native_register_cleanup = mrb_fixnum(register_cleanup);
 
@@ -9103,7 +9066,7 @@ mrb_APR_apr_os_pipe_put_ex(mrb_state* mrb, mrb_value self) {
 /* apr_os_proc_mutex_get
  *
  * Parameters:
- * - ospmutex: int *
+ * - ospmutex: void **
  * - pmutex: apr_proc_mutex_t *
  * Return Type: apr_status_t
  */
@@ -9117,7 +9080,7 @@ mrb_APR_apr_os_proc_mutex_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(ospmutex);
+  TODO_type_check_void_PTR_PTR(ospmutex);
   if (!mrb_obj_is_kind_of(mrb, pmutex, AprProcMutexT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcMutexT expected");
     return mrb_nil_value();
@@ -9125,7 +9088,7 @@ mrb_APR_apr_os_proc_mutex_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_ospmutex = TODO_mruby_unbox_int_PTR(ospmutex);
+  void ** native_ospmutex = TODO_mruby_unbox_void_PTR_PTR(ospmutex);
 
   apr_proc_mutex_t * native_pmutex = (mrb_nil_p(pmutex) ? NULL : mruby_unbox_apr_proc_mutex_t(pmutex));
 
@@ -9150,7 +9113,7 @@ mrb_APR_apr_os_proc_mutex_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - pmutex: apr_proc_mutex_t **
- * - ospmutex: int *
+ * - ospmutex: void **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -9166,7 +9129,7 @@ mrb_APR_apr_os_proc_mutex_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_proc_mutex_t_PTR_PTR(pmutex);
-  TODO_type_check_int_PTR(ospmutex);
+  TODO_type_check_void_PTR_PTR(ospmutex);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -9176,7 +9139,7 @@ mrb_APR_apr_os_proc_mutex_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_proc_mutex_t ** native_pmutex = TODO_mruby_unbox_apr_proc_mutex_t_PTR_PTR(pmutex);
 
-  int * native_ospmutex = TODO_mruby_unbox_int_PTR(ospmutex);
+  void ** native_ospmutex = TODO_mruby_unbox_void_PTR_PTR(ospmutex);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -9200,7 +9163,7 @@ mrb_APR_apr_os_proc_mutex_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_shm_get
  *
  * Parameters:
- * - osshm: int *
+ * - osshm: void **
  * - shm: apr_shm_t *
  * Return Type: apr_status_t
  */
@@ -9214,7 +9177,7 @@ mrb_APR_apr_os_shm_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(osshm);
+  TODO_type_check_void_PTR_PTR(osshm);
   if (!mrb_obj_is_kind_of(mrb, shm, AprShmT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprShmT expected");
     return mrb_nil_value();
@@ -9222,7 +9185,7 @@ mrb_APR_apr_os_shm_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_osshm = TODO_mruby_unbox_int_PTR(osshm);
+  void ** native_osshm = TODO_mruby_unbox_void_PTR_PTR(osshm);
 
   apr_shm_t * native_shm = (mrb_nil_p(shm) ? NULL : mruby_unbox_apr_shm_t(shm));
 
@@ -9247,7 +9210,7 @@ mrb_APR_apr_os_shm_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - shm: apr_shm_t **
- * - osshm: int *
+ * - osshm: void **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -9263,7 +9226,7 @@ mrb_APR_apr_os_shm_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_shm_t_PTR_PTR(shm);
-  TODO_type_check_int_PTR(osshm);
+  TODO_type_check_void_PTR_PTR(osshm);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -9273,7 +9236,7 @@ mrb_APR_apr_os_shm_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_shm_t ** native_shm = TODO_mruby_unbox_apr_shm_t_PTR_PTR(shm);
 
-  int * native_osshm = TODO_mruby_unbox_int_PTR(osshm);
+  void ** native_osshm = TODO_mruby_unbox_void_PTR_PTR(osshm);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -9297,7 +9260,7 @@ mrb_APR_apr_os_shm_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_sock_get
  *
  * Parameters:
- * - thesock: int *
+ * - thesock: unsigned int *
  * - sock: apr_socket_t *
  * Return Type: apr_status_t
  */
@@ -9311,7 +9274,7 @@ mrb_APR_apr_os_sock_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(thesock);
+  TODO_type_check_unsigned_int_PTR(thesock);
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
@@ -9319,7 +9282,7 @@ mrb_APR_apr_os_sock_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_thesock = TODO_mruby_unbox_int_PTR(thesock);
+  unsigned int * native_thesock = TODO_mruby_unbox_unsigned_int_PTR(thesock);
 
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
 
@@ -9398,7 +9361,7 @@ mrb_APR_apr_os_sock_make(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - sock: apr_socket_t **
- * - thesock: int *
+ * - thesock: unsigned int *
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -9414,7 +9377,7 @@ mrb_APR_apr_os_sock_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_socket_t_PTR_PTR(sock);
-  TODO_type_check_int_PTR(thesock);
+  TODO_type_check_unsigned_int_PTR(thesock);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -9424,7 +9387,7 @@ mrb_APR_apr_os_sock_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_socket_t ** native_sock = TODO_mruby_unbox_apr_socket_t_PTR_PTR(sock);
 
-  int * native_thesock = TODO_mruby_unbox_int_PTR(thesock);
+  unsigned int * native_thesock = TODO_mruby_unbox_unsigned_int_PTR(thesock);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -9456,11 +9419,7 @@ mrb_APR_apr_os_thread_current(mrb_state* mrb, mrb_value self) {
   apr_os_thread_t result = apr_os_thread_current();
 
   /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
+  mrb_value return_value = TODO_mruby_box_HANDLE(mrb, result);
 
   return return_value;
 }
@@ -9472,8 +9431,8 @@ mrb_APR_apr_os_thread_current(mrb_state* mrb, mrb_value self) {
 /* apr_os_thread_equal
  *
  * Parameters:
- * - tid1: int
- * - tid2: int
+ * - tid1: void *
+ * - tid2: void *
  * Return Type: int
  */
 mrb_value
@@ -9486,20 +9445,14 @@ mrb_APR_apr_os_thread_equal(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, tid1, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-  if (!mrb_obj_is_kind_of(mrb, tid2, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_void_PTR(tid1);
+  TODO_type_check_void_PTR(tid2);
 
 
   /* Unbox parameters */
-  int native_tid1 = mrb_fixnum(tid1);
+  void * native_tid1 = TODO_mruby_unbox_void_PTR(tid1);
 
-  int native_tid2 = mrb_fixnum(tid2);
+  void * native_tid2 = TODO_mruby_unbox_void_PTR(tid2);
 
   /* Invocation */
   int result = apr_os_thread_equal(native_tid1, native_tid2);
@@ -9521,7 +9474,7 @@ mrb_APR_apr_os_thread_equal(mrb_state* mrb, mrb_value self) {
 /* apr_os_thread_get
  *
  * Parameters:
- * - thethd: int **
+ * - thethd: void ***
  * - thd: apr_thread_t *
  * Return Type: apr_status_t
  */
@@ -9535,7 +9488,7 @@ mrb_APR_apr_os_thread_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR_PTR(thethd);
+  TODO_type_check_void_PTR_PTR_PTR(thethd);
   if (!mrb_obj_is_kind_of(mrb, thd, AprThreadT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprThreadT expected");
     return mrb_nil_value();
@@ -9543,7 +9496,7 @@ mrb_APR_apr_os_thread_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int ** native_thethd = TODO_mruby_unbox_int_PTR_PTR(thethd);
+  void *** native_thethd = TODO_mruby_unbox_void_PTR_PTR_PTR(thethd);
 
   apr_thread_t * native_thd = (mrb_nil_p(thd) ? NULL : mruby_unbox_apr_thread_t(thd));
 
@@ -9568,7 +9521,7 @@ mrb_APR_apr_os_thread_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - thd: apr_thread_t **
- * - thethd: int *
+ * - thethd: void **
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -9584,7 +9537,7 @@ mrb_APR_apr_os_thread_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_thread_t_PTR_PTR(thd);
-  TODO_type_check_int_PTR(thethd);
+  TODO_type_check_void_PTR_PTR(thethd);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -9594,7 +9547,7 @@ mrb_APR_apr_os_thread_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_thread_t ** native_thd = TODO_mruby_unbox_apr_thread_t_PTR_PTR(thd);
 
-  int * native_thethd = TODO_mruby_unbox_int_PTR(thethd);
+  void ** native_thethd = TODO_mruby_unbox_void_PTR_PTR(thethd);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -9618,7 +9571,7 @@ mrb_APR_apr_os_thread_put(mrb_state* mrb, mrb_value self) {
 /* apr_os_threadkey_get
  *
  * Parameters:
- * - thekey: int *
+ * - thekey: unsigned long *
  * - key: apr_threadkey_t *
  * Return Type: apr_status_t
  */
@@ -9632,7 +9585,7 @@ mrb_APR_apr_os_threadkey_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(thekey);
+  TODO_type_check_unsigned_long_PTR(thekey);
   if (!mrb_obj_is_kind_of(mrb, key, AprThreadkeyT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprThreadkeyT expected");
     return mrb_nil_value();
@@ -9640,7 +9593,7 @@ mrb_APR_apr_os_threadkey_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_thekey = TODO_mruby_unbox_int_PTR(thekey);
+  unsigned long * native_thekey = TODO_mruby_unbox_unsigned_long_PTR(thekey);
 
   apr_threadkey_t * native_key = (mrb_nil_p(key) ? NULL : mruby_unbox_apr_threadkey_t(key));
 
@@ -9665,7 +9618,7 @@ mrb_APR_apr_os_threadkey_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - key: apr_threadkey_t **
- * - thekey: int *
+ * - thekey: unsigned long *
  * - cont: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -9681,7 +9634,7 @@ mrb_APR_apr_os_threadkey_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_apr_threadkey_t_PTR_PTR(key);
-  TODO_type_check_int_PTR(thekey);
+  TODO_type_check_unsigned_long_PTR(thekey);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -9691,7 +9644,7 @@ mrb_APR_apr_os_threadkey_put(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_threadkey_t ** native_key = TODO_mruby_unbox_apr_threadkey_t_PTR_PTR(key);
 
-  int * native_thekey = TODO_mruby_unbox_int_PTR(thekey);
+  unsigned long * native_thekey = TODO_mruby_unbox_unsigned_long_PTR(thekey);
 
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
@@ -10440,7 +10393,7 @@ mrb_APR_apr_pmemdup(mrb_state* mrb, mrb_value self) {
  * - aprset: apr_pollfd_t *
  * - numsock: int
  * - nsds: int *
- * - timeout: int
+ * - timeout: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -10464,10 +10417,7 @@ mrb_APR_apr_poll(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   TODO_type_check_int_PTR(nsds);
-  if (!mrb_obj_is_kind_of(mrb, timeout, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(timeout);
 
 
   /* Unbox parameters */
@@ -10477,7 +10427,7 @@ mrb_APR_apr_poll(mrb_state* mrb, mrb_value self) {
 
   int * native_nsds = TODO_mruby_unbox_int_PTR(nsds);
 
-  int native_timeout = mrb_fixnum(timeout);
+  long long native_timeout = TODO_mruby_unbox_long_long(timeout);
 
   /* Invocation */
   apr_status_t result = apr_poll(native_aprset, native_numsock, native_nsds, native_timeout);
@@ -10698,7 +10648,7 @@ mrb_APR_apr_pollcb_create_ex(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - pollcb: apr_pollcb_t *
- * - timeout: int
+ * - timeout: long long
  * - func: int (*)(void *, apr_pollfd_t *)
  * - baton: void *
  * - retcode: int
@@ -10721,10 +10671,7 @@ mrb_APR_apr_pollcb_poll(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPollcbT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, timeout, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(timeout);
   TODO_type_check_int_LPAREN_PTR_RPAREN_LPAREN_void_PTR_COMMA_apr_pollfd_t_PTR_RPAREN(func);
   TODO_type_check_void_PTR(baton);
   if (!mrb_obj_is_kind_of(mrb, retcode, mrb->fixnum_class)) {
@@ -10736,7 +10683,7 @@ mrb_APR_apr_pollcb_poll(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_pollcb_t * native_pollcb = (mrb_nil_p(pollcb) ? NULL : mruby_unbox_apr_pollcb_t(pollcb));
 
-  int native_timeout = mrb_fixnum(timeout);
+  long long native_timeout = TODO_mruby_unbox_long_long(timeout);
 
   int (*native_func)(void *, apr_pollfd_t *) = TODO_mruby_unbox_int_LPAREN_PTR_RPAREN_LPAREN_void_PTR_COMMA_apr_pollfd_t_PTR_RPAREN(func);
 
@@ -11083,7 +11030,7 @@ mrb_APR_apr_pollset_method_name(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - pollset: apr_pollset_t *
- * - timeout: int
+ * - timeout: long long
  * - num: int *
  * - descriptors: const apr_pollfd_t **
  * Return Type: apr_status_t
@@ -11104,10 +11051,7 @@ mrb_APR_apr_pollset_poll(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPollsetT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, timeout, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(timeout);
   TODO_type_check_int_PTR(num);
   TODO_type_check_const_apr_pollfd_t_PTR_PTR(descriptors);
 
@@ -11115,7 +11059,7 @@ mrb_APR_apr_pollset_poll(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_pollset_t * native_pollset = (mrb_nil_p(pollset) ? NULL : mruby_unbox_apr_pollset_t(pollset));
 
-  int native_timeout = mrb_fixnum(timeout);
+  long long native_timeout = TODO_mruby_unbox_long_long(timeout);
 
   int * native_num = TODO_mruby_unbox_int_PTR(num);
 
@@ -15155,7 +15099,7 @@ mrb_APR_apr_random_standard_new(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - date_str: char *
- * - t: int
+ * - t: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -15172,10 +15116,7 @@ mrb_APR_apr_rfc822_date(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, t, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(t);
 
 
   /* Unbox parameters */
@@ -15186,7 +15127,7 @@ mrb_APR_apr_rfc822_date(mrb_state* mrb, mrb_value self) {
    */
   char * native_date_str = strdup(mrb_string_value_cstr(mrb, &date_str));
 
-  int native_t = mrb_fixnum(t);
+  long long native_t = TODO_mruby_unbox_long_long(t);
 
   /* Invocation */
   apr_status_t result = apr_rfc822_date(native_date_str, native_t);
@@ -16677,7 +16618,7 @@ mrb_APR_apr_skiplist_set_compare(mrb_state* mrb, mrb_value self) {
 /* apr_sleep
  *
  * Parameters:
- * - t: int
+ * - t: long long
  * Return Type: void
  */
 mrb_value
@@ -16689,14 +16630,11 @@ mrb_APR_apr_sleep(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, t, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(t);
 
 
   /* Unbox parameters */
-  int native_t = mrb_fixnum(t);
+  long long native_t = TODO_mruby_unbox_long_long(t);
 
   /* Invocation */
   apr_sleep(native_t);
@@ -17999,7 +17937,7 @@ mrb_APR_apr_socket_send(mrb_state* mrb, mrb_value self) {
  * - sock: apr_socket_t *
  * - file: apr_file_t *
  * - hdtr: apr_hdtr_t *
- * - offset: unsigned int *
+ * - offset: long long *
  * - len: int *
  * - flags: int
  * Return Type: apr_status_t
@@ -18030,7 +17968,7 @@ mrb_APR_apr_socket_sendfile(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprHdtrT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_unsigned_int_PTR(offset);
+  TODO_type_check_long_long_PTR(offset);
   TODO_type_check_int_PTR(len);
   if (!mrb_obj_is_kind_of(mrb, flags, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
@@ -18045,7 +17983,7 @@ mrb_APR_apr_socket_sendfile(mrb_state* mrb, mrb_value self) {
 
   apr_hdtr_t * native_hdtr = (mrb_nil_p(hdtr) ? NULL : mruby_unbox_apr_hdtr_t(hdtr));
 
-  unsigned int * native_offset = TODO_mruby_unbox_unsigned_int_PTR(offset);
+  long long * native_offset = TODO_mruby_unbox_long_long_PTR(offset);
 
   int * native_len = TODO_mruby_unbox_int_PTR(len);
 
@@ -18247,7 +18185,7 @@ mrb_APR_apr_socket_shutdown(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - sock: apr_socket_t *
- * - t: int *
+ * - t: long long *
  * Return Type: apr_status_t
  */
 mrb_value
@@ -18264,13 +18202,13 @@ mrb_APR_apr_socket_timeout_get(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(t);
+  TODO_type_check_long_long_PTR(t);
 
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
 
-  int * native_t = TODO_mruby_unbox_int_PTR(t);
+  long long * native_t = TODO_mruby_unbox_long_long_PTR(t);
 
   /* Invocation */
   apr_status_t result = apr_socket_timeout_get(native_sock, native_t);
@@ -18293,7 +18231,7 @@ mrb_APR_apr_socket_timeout_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - sock: apr_socket_t *
- * - t: int
+ * - t: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -18310,16 +18248,13 @@ mrb_APR_apr_socket_timeout_set(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, t, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(t);
 
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
 
-  int native_t = mrb_fixnum(t);
+  long long native_t = TODO_mruby_unbox_long_long(t);
 
   /* Invocation */
   apr_status_t result = apr_socket_timeout_set(native_sock, native_t);
@@ -18518,7 +18453,7 @@ mrb_APR_apr_strerror(mrb_state* mrb, mrb_value self) {
 /* apr_strfsize
  *
  * Parameters:
- * - size: unsigned int
+ * - size: long long
  * - buf: char *
  * Return Type: char *
  */
@@ -18532,10 +18467,7 @@ mrb_APR_apr_strfsize(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, size, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(size);
   if (!mrb_obj_is_kind_of(mrb, buf, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -18543,7 +18475,7 @@ mrb_APR_apr_strfsize(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  unsigned int native_size = mrb_fixnum(size);
+  long long native_size = TODO_mruby_unbox_long_long(size);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.
@@ -18757,7 +18689,7 @@ mrb_APR_apr_strnatcmp(mrb_state* mrb, mrb_value self) {
 /* apr_strtoff
  *
  * Parameters:
- * - offset: unsigned int *
+ * - offset: long long *
  * - buf: const char *
  * - end: char **
  * - base: int
@@ -18775,7 +18707,7 @@ mrb_APR_apr_strtoff(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_unsigned_int_PTR(offset);
+  TODO_type_check_long_long_PTR(offset);
   if (!mrb_obj_is_kind_of(mrb, buf, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -18788,7 +18720,7 @@ mrb_APR_apr_strtoff(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  unsigned int * native_offset = TODO_mruby_unbox_unsigned_int_PTR(offset);
+  long long * native_offset = TODO_mruby_unbox_long_long_PTR(offset);
 
   const char * native_buf = mrb_string_value_cstr(mrb, &buf);
 
@@ -18854,11 +18786,7 @@ mrb_APR_apr_strtoi64(mrb_state* mrb, mrb_value self) {
   apr_int64_t result = apr_strtoi64(native_buf, native_end, native_base);
 
   /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
+  mrb_value return_value = TODO_mruby_box_long_long(mrb, result);
 
   return return_value;
 }
@@ -20106,7 +20034,7 @@ mrb_APR_apr_thread_cond_signal(mrb_state* mrb, mrb_value self) {
  * Parameters:
  * - cond: apr_thread_cond_t *
  * - mutex: apr_thread_mutex_t *
- * - timeout: int
+ * - timeout: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -20128,10 +20056,7 @@ mrb_APR_apr_thread_cond_timedwait(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprThreadMutexT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, timeout, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(timeout);
 
 
   /* Unbox parameters */
@@ -20139,7 +20064,7 @@ mrb_APR_apr_thread_cond_timedwait(mrb_state* mrb, mrb_value self) {
 
   apr_thread_mutex_t * native_mutex = (mrb_nil_p(mutex) ? NULL : mruby_unbox_apr_thread_mutex_t(mutex));
 
-  int native_timeout = mrb_fixnum(timeout);
+  long long native_timeout = TODO_mruby_unbox_long_long(timeout);
 
   /* Invocation */
   apr_status_t result = apr_thread_cond_timedwait(native_cond, native_mutex, native_timeout);
@@ -21725,8 +21650,8 @@ mrb_APR_apr_threadkey_private_set(mrb_state* mrb, mrb_value self) {
 /* apr_time_ansi_put
  *
  * Parameters:
- * - result: int *
- * - input: int
+ * - result: long long *
+ * - input: long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -21739,17 +21664,14 @@ mrb_APR_apr_time_ansi_put(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(result);
-  if (!mrb_obj_is_kind_of(mrb, input, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long_PTR(result);
+  TODO_type_check_long(input);
 
 
   /* Unbox parameters */
-  int * native_result = TODO_mruby_unbox_int_PTR(result);
+  long long * native_result = TODO_mruby_unbox_long_long_PTR(result);
 
-  int native_input = mrb_fixnum(input);
+  long native_input = TODO_mruby_unbox_long(input);
 
   /* Invocation */
   apr_status_t result = apr_time_ansi_put(native_result, native_input);
@@ -21805,7 +21727,7 @@ mrb_APR_apr_time_clock_hires(mrb_state* mrb, mrb_value self) {
 /* apr_time_exp_get
  *
  * Parameters:
- * - result: int *
+ * - result: long long *
  * - input: apr_time_exp_t *
  * Return Type: apr_status_t
  */
@@ -21819,7 +21741,7 @@ mrb_APR_apr_time_exp_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(result);
+  TODO_type_check_long_long_PTR(result);
   if (!mrb_obj_is_kind_of(mrb, input, AprTimeExpT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
@@ -21827,7 +21749,7 @@ mrb_APR_apr_time_exp_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_result = TODO_mruby_unbox_int_PTR(result);
+  long long * native_result = TODO_mruby_unbox_long_long_PTR(result);
 
   apr_time_exp_t * native_input = (mrb_nil_p(input) ? NULL : mruby_unbox_apr_time_exp_t(input));
 
@@ -21852,7 +21774,7 @@ mrb_APR_apr_time_exp_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - result: apr_time_exp_t *
- * - input: int
+ * - input: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -21869,16 +21791,13 @@ mrb_APR_apr_time_exp_gmt(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, input, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(input);
 
 
   /* Unbox parameters */
   apr_time_exp_t * native_result = (mrb_nil_p(result) ? NULL : mruby_unbox_apr_time_exp_t(result));
 
-  int native_input = mrb_fixnum(input);
+  long long native_input = TODO_mruby_unbox_long_long(input);
 
   /* Invocation */
   apr_status_t result = apr_time_exp_gmt(native_result, native_input);
@@ -21900,7 +21819,7 @@ mrb_APR_apr_time_exp_gmt(mrb_state* mrb, mrb_value self) {
 /* apr_time_exp_gmt_get
  *
  * Parameters:
- * - result: int *
+ * - result: long long *
  * - input: apr_time_exp_t *
  * Return Type: apr_status_t
  */
@@ -21914,7 +21833,7 @@ mrb_APR_apr_time_exp_gmt_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(result);
+  TODO_type_check_long_long_PTR(result);
   if (!mrb_obj_is_kind_of(mrb, input, AprTimeExpT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
@@ -21922,7 +21841,7 @@ mrb_APR_apr_time_exp_gmt_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_result = TODO_mruby_unbox_int_PTR(result);
+  long long * native_result = TODO_mruby_unbox_long_long_PTR(result);
 
   apr_time_exp_t * native_input = (mrb_nil_p(input) ? NULL : mruby_unbox_apr_time_exp_t(input));
 
@@ -21947,7 +21866,7 @@ mrb_APR_apr_time_exp_gmt_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - result: apr_time_exp_t *
- * - input: int
+ * - input: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -21964,16 +21883,13 @@ mrb_APR_apr_time_exp_lt(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, input, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(input);
 
 
   /* Unbox parameters */
   apr_time_exp_t * native_result = (mrb_nil_p(result) ? NULL : mruby_unbox_apr_time_exp_t(result));
 
-  int native_input = mrb_fixnum(input);
+  long long native_input = TODO_mruby_unbox_long_long(input);
 
   /* Invocation */
   apr_status_t result = apr_time_exp_lt(native_result, native_input);
@@ -21996,7 +21912,7 @@ mrb_APR_apr_time_exp_lt(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - result: apr_time_exp_t *
- * - input: int
+ * - input: long long
  * - offs: int
  * Return Type: apr_status_t
  */
@@ -22015,10 +21931,7 @@ mrb_APR_apr_time_exp_tz(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprTimeExpT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, input, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_long_long(input);
   if (!mrb_obj_is_kind_of(mrb, offs, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -22028,7 +21941,7 @@ mrb_APR_apr_time_exp_tz(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   apr_time_exp_t * native_result = (mrb_nil_p(result) ? NULL : mruby_unbox_apr_time_exp_t(result));
 
-  int native_input = mrb_fixnum(input);
+  long long native_input = TODO_mruby_unbox_long_long(input);
 
   int native_offs = mrb_fixnum(offs);
 
@@ -22126,8 +22039,8 @@ mrb_APR_apr_tokenize_to_argv(mrb_state* mrb, mrb_value self) {
 /* apr_uid_compare
  *
  * Parameters:
- * - left: int
- * - right: int
+ * - left: void *
+ * - right: void *
  * Return Type: apr_status_t
  */
 mrb_value
@@ -22140,20 +22053,14 @@ mrb_APR_apr_uid_compare(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, left, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-  if (!mrb_obj_is_kind_of(mrb, right, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_void_PTR(left);
+  TODO_type_check_void_PTR(right);
 
 
   /* Unbox parameters */
-  int native_left = mrb_fixnum(left);
+  void * native_left = TODO_mruby_unbox_void_PTR(left);
 
-  int native_right = mrb_fixnum(right);
+  void * native_right = TODO_mruby_unbox_void_PTR(right);
 
   /* Invocation */
   apr_status_t result = apr_uid_compare(native_left, native_right);
@@ -22175,8 +22082,8 @@ mrb_APR_apr_uid_compare(mrb_state* mrb, mrb_value self) {
 /* apr_uid_current
  *
  * Parameters:
- * - userid: int *
- * - groupid: int *
+ * - userid: void **
+ * - groupid: void **
  * - p: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -22191,8 +22098,8 @@ mrb_APR_apr_uid_current(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(userid);
-  TODO_type_check_int_PTR(groupid);
+  TODO_type_check_void_PTR_PTR(userid);
+  TODO_type_check_void_PTR_PTR(groupid);
   if (!mrb_obj_is_kind_of(mrb, p, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -22200,9 +22107,9 @@ mrb_APR_apr_uid_current(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_userid = TODO_mruby_unbox_int_PTR(userid);
+  void ** native_userid = TODO_mruby_unbox_void_PTR_PTR(userid);
 
-  int * native_groupid = TODO_mruby_unbox_int_PTR(groupid);
+  void ** native_groupid = TODO_mruby_unbox_void_PTR_PTR(groupid);
 
   apr_pool_t * native_p = (mrb_nil_p(p) ? NULL : mruby_unbox_apr_pool_t(p));
 
@@ -22226,8 +22133,8 @@ mrb_APR_apr_uid_current(mrb_state* mrb, mrb_value self) {
 /* apr_uid_get
  *
  * Parameters:
- * - userid: int *
- * - groupid: int *
+ * - userid: void **
+ * - groupid: void **
  * - username: const char *
  * - p: apr_pool_t *
  * Return Type: apr_status_t
@@ -22244,8 +22151,8 @@ mrb_APR_apr_uid_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Type checking */
-  TODO_type_check_int_PTR(userid);
-  TODO_type_check_int_PTR(groupid);
+  TODO_type_check_void_PTR_PTR(userid);
+  TODO_type_check_void_PTR_PTR(groupid);
   if (!mrb_obj_is_kind_of(mrb, username, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -22257,9 +22164,9 @@ mrb_APR_apr_uid_get(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  int * native_userid = TODO_mruby_unbox_int_PTR(userid);
+  void ** native_userid = TODO_mruby_unbox_void_PTR_PTR(userid);
 
-  int * native_groupid = TODO_mruby_unbox_int_PTR(groupid);
+  void ** native_groupid = TODO_mruby_unbox_void_PTR_PTR(groupid);
 
   const char * native_username = mrb_string_value_cstr(mrb, &username);
 
@@ -22340,7 +22247,7 @@ mrb_APR_apr_uid_homepath_get(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - username: char **
- * - userid: int
+ * - userid: void *
  * - p: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -22356,10 +22263,7 @@ mrb_APR_apr_uid_name_get(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_char_PTR_PTR(username);
-  if (!mrb_obj_is_kind_of(mrb, userid, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_void_PTR(userid);
   if (!mrb_obj_is_kind_of(mrb, p, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
@@ -22369,7 +22273,7 @@ mrb_APR_apr_uid_name_get(mrb_state* mrb, mrb_value self) {
   /* Unbox parameters */
   char ** native_username = TODO_mruby_unbox_char_PTR_PTR(username);
 
-  int native_userid = mrb_fixnum(userid);
+  void * native_userid = TODO_mruby_unbox_void_PTR(userid);
 
   apr_pool_t * native_p = (mrb_nil_p(p) ? NULL : mruby_unbox_apr_pool_t(p));
 
@@ -23019,18 +22923,6 @@ void mrb_mruby_apr_gem_init(mrb_state* mrb) {
 #endif
 #if BIND_AprVformatterBuffT_TYPE
   mrb_APR_AprVformatterBuffT_init(mrb);
-#endif
-#if BIND_InAddr_TYPE
-  mrb_APR_InAddr_init(mrb);
-#endif
-#if BIND_Sockaddr_TYPE
-  mrb_APR_Sockaddr_init(mrb);
-#endif
-#if BIND_SockaddrIn_TYPE
-  mrb_APR_SockaddrIn_init(mrb);
-#endif
-#if BIND_SockaddrIn6_TYPE
-  mrb_APR_SockaddrIn6_init(mrb);
 #endif
 
   /*

@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprAllocatorT_MALLOC
+#if BIND_AprAllocatorT_INITIALIZE
 mrb_value
-mrb_APR_AprAllocatorT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprAllocatorT_initialize(mrb_state* mrb, mrb_value self) {
   apr_allocator_t* native_object = (apr_allocator_t*)malloc(sizeof(apr_allocator_t));
-  return mruby_box_apr_allocator_t(mrb, native_object);
+  mruby_set_apr_allocator_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprAllocatorT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprAllocatorT_init(mrb_state* mrb) {
   RClass* AprAllocatorT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprAllocatorT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprAllocatorT_class, MRB_TT_DATA);
 
-#if BIND_AprAllocatorT_MALLOC
-  mrb_define_class_method(mrb, AprAllocatorT_class, "malloc", mrb_APR_AprAllocatorT_malloc, MRB_ARGS_NONE());
+#if BIND_AprAllocatorT_INITIALIZE
+  mrb_define_method(mrb, AprAllocatorT_class, "initialize", mrb_APR_AprAllocatorT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprAllocatorT_class, "free", mrb_APR_AprAllocatorT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprAllocatorT_class, "clear_pointer", mrb_APR_AprAllocatorT_clear_pointer, MRB_ARGS_ARG(1, 0));

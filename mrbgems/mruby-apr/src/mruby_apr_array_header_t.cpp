@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprArrayHeaderT_MALLOC
+#if BIND_AprArrayHeaderT_INITIALIZE
 mrb_value
-mrb_APR_AprArrayHeaderT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprArrayHeaderT_initialize(mrb_state* mrb, mrb_value self) {
   apr_array_header_t* native_object = (apr_array_header_t*)malloc(sizeof(apr_array_header_t));
-  return mruby_box_apr_array_header_t(mrb, native_object);
+  mruby_set_apr_array_header_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -106,6 +107,12 @@ mrb_APR_AprArrayHeaderT_set_pool(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprPoolT_class(mrb))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pool_box"), ruby_field);
 
@@ -150,6 +157,12 @@ mrb_APR_AprArrayHeaderT_set_elt_size(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@elt_size_box"), ruby_field);
@@ -196,6 +209,12 @@ mrb_APR_AprArrayHeaderT_set_nelts(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nelts_box"), ruby_field);
 
@@ -241,6 +260,12 @@ mrb_APR_AprArrayHeaderT_set_nalloc(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nalloc_box"), ruby_field);
 
@@ -282,6 +307,12 @@ mrb_APR_AprArrayHeaderT_set_elts(mrb_state* mrb, mrb_value self) {
 
   mrb_get_args(mrb, "o", &ruby_field);
 
+  /* type checking */
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
+
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@elts_box"), ruby_field);
 
@@ -301,9 +332,10 @@ mrb_APR_AprArrayHeaderT_set_elts(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprArrayHeaderT_init(mrb_state* mrb) {
   RClass* AprArrayHeaderT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprArrayHeaderT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprArrayHeaderT_class, MRB_TT_DATA);
 
-#if BIND_AprArrayHeaderT_MALLOC
-  mrb_define_class_method(mrb, AprArrayHeaderT_class, "malloc", mrb_APR_AprArrayHeaderT_malloc, MRB_ARGS_NONE());
+#if BIND_AprArrayHeaderT_INITIALIZE
+  mrb_define_method(mrb, AprArrayHeaderT_class, "initialize", mrb_APR_AprArrayHeaderT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprArrayHeaderT_class, "free", mrb_APR_AprArrayHeaderT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprArrayHeaderT_class, "clear_pointer", mrb_APR_AprArrayHeaderT_clear_pointer, MRB_ARGS_ARG(1, 0));

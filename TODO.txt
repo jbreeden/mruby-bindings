@@ -1,6 +1,4 @@
-- (Maybe?) Throw exception, not StandardError, when int->mrb_int conversions fails (due to bounds check). The user shouldn't be catching these
-- How the hell does ruby-ffi generate c functions & funtion pointers?
-- Is `mrb_class_ptr(self)` the right way to convert mrb_value -> RClass* for a class object? (pretty damn sure it is)
+- Need to be more conservative with typedef resolution
 - Once freed, set a "freed" variable to true on the ruby object.
   + Seriously need all duplicated references to a native type (in ruby land) to point to the same *ruby* object.
     This is an issue when...
@@ -13,3 +11,14 @@
 - Add type validations to all function invocations and field sets
 - instead of unboxing, just use mrb_get_args specifiers for simple types like int & bool
 - boxing functions should use class retrieving macros
+- With apr all objects are retrieved from the library. For next time, need to change `malloc` function to be the `initialize` instance method on classes.
+  Then use `MRB_SET_INSTANCE_TT({the_rclass_ptr}, MRB_TT_DATA);` to tell mruby it has a c pointer (to participate in gc, etc)
+- Use something like struct { int ruby_owned, void* actual_data } for wrapped objects to allow client to specify/release ownership
+
+Just Tips & Reminders
+---------------------
+
+- Not really a todo... but don't use any string_value_cstr like functions when dealing with buffers (they like to throw when there is a null character)
+  + Prefer RSTRING_PTR, or mrb_string_value_ptr which performs to_s or to_str first
+  + In fact, just don't use them at all. Functions like mrb_str_new(mrb, buf, len) always work (adding nulls in ruby-land if needed)
+    and are more obvious. If you want cstring behavior, just ust strlen(buf) to pass in the length.

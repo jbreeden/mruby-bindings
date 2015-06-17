@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprPollsetT_MALLOC
+#if BIND_AprPollsetT_INITIALIZE
 mrb_value
-mrb_APR_AprPollsetT_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprPollsetT_initialize(mrb_state* mrb, mrb_value self) {
   apr_pollset_t* native_object = (apr_pollset_t*)malloc(sizeof(apr_pollset_t));
-  return mruby_box_apr_pollset_t(mrb, native_object);
+  mruby_set_apr_pollset_t_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprPollsetT_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprPollsetT_init(mrb_state* mrb) {
   RClass* AprPollsetT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprPollsetT", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprPollsetT_class, MRB_TT_DATA);
 
-#if BIND_AprPollsetT_MALLOC
-  mrb_define_class_method(mrb, AprPollsetT_class, "malloc", mrb_APR_AprPollsetT_malloc, MRB_ARGS_NONE());
+#if BIND_AprPollsetT_INITIALIZE
+  mrb_define_method(mrb, AprPollsetT_class, "initialize", mrb_APR_AprPollsetT_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprPollsetT_class, "free", mrb_APR_AprPollsetT_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprPollsetT_class, "clear_pointer", mrb_APR_AprPollsetT_clear_pointer, MRB_ARGS_ARG(1, 0));

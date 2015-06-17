@@ -1,14 +1,175 @@
-﻿Build started 6/15/2015 6:57:18 PM.
+﻿Build started 6/17/2015 10:27:54 AM.
      1>Project "C:\projects\mruby-bindings\MrubyProject\MrubyProject\MrubyProject.vcxproj" on node 2 (Build target(s)).
      1>Build:
          rake mruby:build
          (in C:/projects/mruby-bindings)
          ruby minirake
-         mruby.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_finfo_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_getopt_option_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_getopt_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_hash_index_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_hash_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_hdtr_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_ipsubnet_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_memnode_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_mmap_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_os_sock_info_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_other_child_rec_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_pollcb_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_pollfd_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_pollset_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_pool_t.cpp
          (in C:/projects/mruby-bindings/mruby-1.1.0)
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_finfo_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_finfo_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_getopt_option_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_getopt_option_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_getopt_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_getopt_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_hash_index_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_hash_index_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_hash_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_hash_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_hdtr_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_hdtr_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_ipsubnet_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_ipsubnet_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_memnode_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_memnode_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_mmap_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_mmap_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_os_sock_info_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_os_sock_info_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_other_child_rec_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_other_child_rec_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_pollcb_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_pollcb_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_pollfd_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_pollfd_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_pollset_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_pollset_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_pool_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_pool_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_procattr_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_procattr_t.obj
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"mruby_apr_procattr_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_proc_mutex_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_proc_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_random_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_shm_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_skiplist.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_skiplistnode.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_sockaddr_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_socket_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_table_entry_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_table_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_threadattr_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_threadkey_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_thread_cond_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_thread_mutex_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_thread_once_t.cpp
+         
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_proc_mutex_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_proc_mutex_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_proc_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_proc_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_random_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_random_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_shm_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_shm_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_skiplist.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_skiplist.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_skiplistnode.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_skiplistnode.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_sockaddr_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_sockaddr_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_socket_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_socket_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_table_entry_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_table_entry_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_table_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_table_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_threadattr_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_threadattr_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_threadkey_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_threadkey_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_thread_cond_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_thread_cond_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_thread_mutex_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_thread_mutex_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_thread_once_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_thread_once_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_thread_rwlock_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_thread_rwlock_t.obj
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"mruby_apr_thread_rwlock_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_thread_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_time_exp_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_version_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
+         mruby_apr_vformatter_buff_t.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-std=c11'
+         gem_init.c
+         gem_init.c
+         mirb.c
+         mruby.cpp
+         mruby-strip.c
+         
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_thread_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_thread_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_time_exp_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_time_exp_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_version_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_version_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    ../mrbgems/mruby-apr/src/mruby_apr_vformatter_buff_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_vformatter_buff_t.obj
+         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+               MRBC ../mrbgems/mruby-apr/mrblib/APR.rb 
+         CC    build/host/mrbgems/mruby-apr/gem_init.c -> build/host/mrbgems/mruby-apr/gem_init.obj
+         /c /nologo /W3 /we4013 /Zi /MD /O2 /D_CRT_SECURE_NO_WARNINGS -std=c11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+         CC    build/host/mrbgems/gem_init.c -> build/host/mrbgems/gem_init.obj
+         /c /nologo /W3 /we4013 /Zi /MD /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win"
+         AR    build/host/lib/libmruby.lib 
+         CC    mrbgems/mruby-bin-mirb/tools/mirb/mirb.c -> build/host/mrbgems/mruby-bin-mirb/tools/mirb/mirb.obj
+         /c /nologo /W3 /we4013 /Zi /MD /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_BIN_MIRB_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win"
+         LD    build/host/bin/mirb 
          CC    mrbgems/mruby-bin-mruby/tools/mruby/mruby.cpp -> build/host/mrbgems/mruby-bin-mruby/tools/mruby/mruby.obj
          /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_BIN_MRUBY_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win"
          LD    build/host/bin/mruby 
+         CC    mrbgems/mruby-bin-strip/tools/mruby-strip/mruby-strip.c -> build/host/mrbgems/mruby-bin-strip/tools/mruby-strip/mruby-strip.obj
+         /c /nologo /W3 /we4013 /Zi /MD /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_BIN_STRIP_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win"
+         LD    build/host/bin/mruby-strip 
          
          Build summary:
          
@@ -58,4 +219,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:07.01
+Time Elapsed 00:00:14.04

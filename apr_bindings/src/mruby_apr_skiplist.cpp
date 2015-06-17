@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_AprSkiplist_MALLOC
+#if BIND_AprSkiplist_INITIALIZE
 mrb_value
-mrb_APR_AprSkiplist_malloc(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprSkiplist_initialize(mrb_state* mrb, mrb_value self) {
   apr_skiplist* native_object = (apr_skiplist*)malloc(sizeof(apr_skiplist));
-  return mruby_box_apr_skiplist(mrb, native_object);
+  mruby_set_apr_skiplist_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -75,9 +76,10 @@ mrb_APR_AprSkiplist_address_of(mrb_state* mrb, mrb_value self) {
 
 void mrb_APR_AprSkiplist_init(mrb_state* mrb) {
   RClass* AprSkiplist_class = mrb_define_class_under(mrb, APR_module(mrb), "AprSkiplist", mrb->object_class);
+  MRB_SET_INSTANCE_TT(AprSkiplist_class, MRB_TT_DATA);
 
-#if BIND_AprSkiplist_MALLOC
-  mrb_define_class_method(mrb, AprSkiplist_class, "malloc", mrb_APR_AprSkiplist_malloc, MRB_ARGS_NONE());
+#if BIND_AprSkiplist_INITIALIZE
+  mrb_define_method(mrb, AprSkiplist_class, "initialize", mrb_APR_AprSkiplist_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, AprSkiplist_class, "free", mrb_APR_AprSkiplist_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, AprSkiplist_class, "clear_pointer", mrb_APR_AprSkiplist_clear_pointer, MRB_ARGS_ARG(1, 0));

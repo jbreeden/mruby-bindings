@@ -15,11 +15,12 @@
  * Class Methods
  */
 
-#if BIND_<%= self['ruby_name'] %>_MALLOC
+#if BIND_<%= self['ruby_name'] %>_INITIALIZE
 mrb_value
-mrb_<%= module_name %>_<%= self['ruby_name'] %>_malloc(mrb_state* mrb, mrb_value self) {
+mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_value self) {
   <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)malloc(sizeof(<%= self['type']['type_name'] %>));
-  return mruby_box_<%= self['type']['type_name'] %>(mrb, native_object);
+  mruby_set_<%= self['name'] %>_data_ptr(self, native_object));
+  return self;
 }
 #endif
 
@@ -109,6 +110,11 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
   mrb_value ruby_field;
 
   mrb_get_args(mrb, "o", &ruby_field);
+
+  /* type checking */
+<%  (CTypes[field['type']['type_name']].type_check % ({:value => 'ruby_field'})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%  end -%>
 
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@<%= field['name'] %>_box"), ruby_field);
@@ -206,9 +212,10 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <% end -%>
 void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
   RClass* <%= self['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= self['ruby_name'] %>", mrb->object_class);
+  MRB_SET_INSTANCE_TT(<%= self['ruby_name'] %>_class, MRB_TT_DATA);
 
-#if BIND_<%= self['ruby_name'] %>_MALLOC
-  mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "malloc", mrb_<%= module_name %>_<%= self['ruby_name'] %>_malloc, MRB_ARGS_NONE());
+#if BIND_<%= self['ruby_name'] %>_INITIALIZE
+  mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "initialize", mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "free", mrb_<%= module_name %>_<%= self['ruby_name'] %>_free, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "clear_pointer", mrb_<%= module_name %>_<%= self['ruby_name'] %>_clear_pointer, MRB_ARGS_ARG(1, 0));
