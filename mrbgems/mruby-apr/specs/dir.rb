@@ -1,8 +1,4 @@
-# Note:
-# I know, it's evil, but these tests are very much order dependent.
-
 TestFixture.new('Directories') do
-  APR::apr_initialize
   err, @pool = APR::apr_pool_create nil
 
   def check_errno(errno)

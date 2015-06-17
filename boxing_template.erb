@@ -17,11 +17,16 @@
  */
 
 static void free_<%= klass['name'] %>(mrb_state* mrb, void* ptr) {
-  /*
-   * TODO:
-   * If you'd like to participate in Ruby's garbage collection,
-   * you'll need to fill in this function body
-   */
+  mruby_to_native_ref* box = (mruby_to_native_ref*)ptr;
+  if (box->belongs_to_ruby) {
+    /* TODO: free is the default. Should be changed if a type-specific
+     *       destructor is provided for this type.
+     */
+    if (box->obj != NULL) {
+      free(box->obj);
+      box->obj == NULL;
+    }
+  }
 }
 
 static const mrb_data_type <%= klass['name'] %>_data_type = {
@@ -30,17 +35,39 @@ static const mrb_data_type <%= klass['name'] %>_data_type = {
 
 mrb_value
 mruby_box_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
-  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= klass['ruby_name'] %>_class(mrb), &<%= klass['name'] %>_data_type, unboxed));
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= klass['ruby_name'] %>_class(mrb), &<%= klass['name'] %>_data_type, box));
+}
+
+mrb_value
+mruby_giftwrap_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
+   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+   box->belongs_to_ruby = TRUE;
+   box->obj = unboxed;
+   return mrb_obj_value(Data_Wrap_Struct(mrb, <%= klass['ruby_name'] %>_class(mrb), &<%= klass['name'] %>_data_type, box));
 }
 
 void
 mruby_set_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed) {
-  mrb_data_init(obj, unboxed, &<%= klass['name'] %>_data_type);
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &<%= klass['name'] %>_data_type);
+}
+
+void
+mruby_gift_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = TRUE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &<%= klass['name'] %>_data_type);
 }
 
 <%= klass['name'] %> *
 mruby_unbox_<%= klass['name'] %>(mrb_value boxed) {
-  return (<%= klass['name'] %> *)DATA_PTR(boxed);
+  return (<%= klass['name'] %> *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
 }
 #endif
 

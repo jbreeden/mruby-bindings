@@ -1,3 +1,12 @@
+desc "Print the supported functions"
+task "tell_functions" do
+  File.open('include/mruby_APR.h', 'r') do |f|
+    regex = /BIND_(.*)_FUNCTION TRUE/
+    f.each_line do |l|
+      puts l[regex, 1] if l =~ regex
+    end
+  end
+end
 
 namespace :test do
 

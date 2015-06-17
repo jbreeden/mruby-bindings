@@ -969,21 +969,45 @@ void mrb_APR_AprVformatterBuffT_init(mrb_state* mrb);
  * "Class Bindings Options" section above.
  */
 
-mrb_value
-mruby_box_apr_time_t(mrb_state* mrb, apr_time_t *unboxed);
+/*
+* Extra wrapper over native pointer to indicate who owns this memory.
+* (Either mruby, and it should be garage collected, or C, and it shouldn't be)
+* Considered using the LSB of the pointer itself, but I don't think I can
+* be assured that all memory is word-aligned (especially when C libraries
+* implement their own memory management techniques like memory pools)
+*/
+typedef struct mruby_to_native_ref_ {
+  /* If true, indicates that the object should be freed when
+   * mruby GC's the ruby object containing this pointer. This
+   * is set to true when an object is boxed via the `giftwrap`
+   * or `gift_{type}_ptr_set` functions.
+   */
+  unsigned char belongs_to_ruby;
 
-void
-mruby_set_apr_time_t_data_ptr(mrb_value obj, apr_time_t *unboxed);
+  /* A pointer to the native object */
+  void* obj;
 
-apr_time_t *
-mruby_unbox_apr_time_t(mrb_value boxed);
+  /* For the convenience of the binding writer,
+   * the data pointer can be used to associate arbitrary
+   * data with a reference to a C object. This could
+   * be a function pointer to invoke instead of `free` on GC,
+   * a pointer back to the RObject, etc. You get the idea.
+   */
+  void* data;
+} mruby_to_native_ref;
 
 #if BIND_AprAllocatorT_TYPE
 mrb_value
 mruby_box_apr_allocator_t(mrb_state* mrb, apr_allocator_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_allocator_t(mrb_state* mrb, apr_allocator_t *unboxed);
+
 void
 mruby_set_apr_allocator_t_data_ptr(mrb_value obj, apr_allocator_t *unboxed);
+
+void
+mruby_gift_apr_allocator_t_data_ptr(mrb_value obj, apr_allocator_t *unboxed);
 
 apr_allocator_t *
 mruby_unbox_apr_allocator_t(mrb_value boxed);
@@ -993,8 +1017,14 @@ mruby_unbox_apr_allocator_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_array_header_t(mrb_state* mrb, apr_array_header_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_array_header_t(mrb_state* mrb, apr_array_header_t *unboxed);
+
 void
 mruby_set_apr_array_header_t_data_ptr(mrb_value obj, apr_array_header_t *unboxed);
+
+void
+mruby_gift_apr_array_header_t_data_ptr(mrb_value obj, apr_array_header_t *unboxed);
 
 apr_array_header_t *
 mruby_unbox_apr_array_header_t(mrb_value boxed);
@@ -1004,8 +1034,14 @@ mruby_unbox_apr_array_header_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_crypto_hash_t(mrb_state* mrb, apr_crypto_hash_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_crypto_hash_t(mrb_state* mrb, apr_crypto_hash_t *unboxed);
+
 void
 mruby_set_apr_crypto_hash_t_data_ptr(mrb_value obj, apr_crypto_hash_t *unboxed);
+
+void
+mruby_gift_apr_crypto_hash_t_data_ptr(mrb_value obj, apr_crypto_hash_t *unboxed);
 
 apr_crypto_hash_t *
 mruby_unbox_apr_crypto_hash_t(mrb_value boxed);
@@ -1015,8 +1051,14 @@ mruby_unbox_apr_crypto_hash_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_dir_t(mrb_state* mrb, apr_dir_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_dir_t(mrb_state* mrb, apr_dir_t *unboxed);
+
 void
 mruby_set_apr_dir_t_data_ptr(mrb_value obj, apr_dir_t *unboxed);
+
+void
+mruby_gift_apr_dir_t_data_ptr(mrb_value obj, apr_dir_t *unboxed);
 
 apr_dir_t *
 mruby_unbox_apr_dir_t(mrb_value boxed);
@@ -1026,8 +1068,14 @@ mruby_unbox_apr_dir_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_dso_handle_t(mrb_state* mrb, apr_dso_handle_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_dso_handle_t(mrb_state* mrb, apr_dso_handle_t *unboxed);
+
 void
 mruby_set_apr_dso_handle_t_data_ptr(mrb_value obj, apr_dso_handle_t *unboxed);
+
+void
+mruby_gift_apr_dso_handle_t_data_ptr(mrb_value obj, apr_dso_handle_t *unboxed);
 
 apr_dso_handle_t *
 mruby_unbox_apr_dso_handle_t(mrb_value boxed);
@@ -1037,8 +1085,14 @@ mruby_unbox_apr_dso_handle_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_file_t(mrb_state* mrb, apr_file_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_file_t(mrb_state* mrb, apr_file_t *unboxed);
+
 void
 mruby_set_apr_file_t_data_ptr(mrb_value obj, apr_file_t *unboxed);
+
+void
+mruby_gift_apr_file_t_data_ptr(mrb_value obj, apr_file_t *unboxed);
 
 apr_file_t *
 mruby_unbox_apr_file_t(mrb_value boxed);
@@ -1048,8 +1102,14 @@ mruby_unbox_apr_file_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_finfo_t(mrb_state* mrb, apr_finfo_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_finfo_t(mrb_state* mrb, apr_finfo_t *unboxed);
+
 void
 mruby_set_apr_finfo_t_data_ptr(mrb_value obj, apr_finfo_t *unboxed);
+
+void
+mruby_gift_apr_finfo_t_data_ptr(mrb_value obj, apr_finfo_t *unboxed);
 
 apr_finfo_t *
 mruby_unbox_apr_finfo_t(mrb_value boxed);
@@ -1059,8 +1119,14 @@ mruby_unbox_apr_finfo_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_getopt_option_t(mrb_state* mrb, apr_getopt_option_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_getopt_option_t(mrb_state* mrb, apr_getopt_option_t *unboxed);
+
 void
 mruby_set_apr_getopt_option_t_data_ptr(mrb_value obj, apr_getopt_option_t *unboxed);
+
+void
+mruby_gift_apr_getopt_option_t_data_ptr(mrb_value obj, apr_getopt_option_t *unboxed);
 
 apr_getopt_option_t *
 mruby_unbox_apr_getopt_option_t(mrb_value boxed);
@@ -1070,8 +1136,14 @@ mruby_unbox_apr_getopt_option_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_getopt_t(mrb_state* mrb, apr_getopt_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_getopt_t(mrb_state* mrb, apr_getopt_t *unboxed);
+
 void
 mruby_set_apr_getopt_t_data_ptr(mrb_value obj, apr_getopt_t *unboxed);
+
+void
+mruby_gift_apr_getopt_t_data_ptr(mrb_value obj, apr_getopt_t *unboxed);
 
 apr_getopt_t *
 mruby_unbox_apr_getopt_t(mrb_value boxed);
@@ -1081,8 +1153,14 @@ mruby_unbox_apr_getopt_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_hash_index_t(mrb_state* mrb, apr_hash_index_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_hash_index_t(mrb_state* mrb, apr_hash_index_t *unboxed);
+
 void
 mruby_set_apr_hash_index_t_data_ptr(mrb_value obj, apr_hash_index_t *unboxed);
+
+void
+mruby_gift_apr_hash_index_t_data_ptr(mrb_value obj, apr_hash_index_t *unboxed);
 
 apr_hash_index_t *
 mruby_unbox_apr_hash_index_t(mrb_value boxed);
@@ -1092,8 +1170,14 @@ mruby_unbox_apr_hash_index_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_hash_t(mrb_state* mrb, apr_hash_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_hash_t(mrb_state* mrb, apr_hash_t *unboxed);
+
 void
 mruby_set_apr_hash_t_data_ptr(mrb_value obj, apr_hash_t *unboxed);
+
+void
+mruby_gift_apr_hash_t_data_ptr(mrb_value obj, apr_hash_t *unboxed);
 
 apr_hash_t *
 mruby_unbox_apr_hash_t(mrb_value boxed);
@@ -1103,8 +1187,14 @@ mruby_unbox_apr_hash_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_hdtr_t(mrb_state* mrb, apr_hdtr_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_hdtr_t(mrb_state* mrb, apr_hdtr_t *unboxed);
+
 void
 mruby_set_apr_hdtr_t_data_ptr(mrb_value obj, apr_hdtr_t *unboxed);
+
+void
+mruby_gift_apr_hdtr_t_data_ptr(mrb_value obj, apr_hdtr_t *unboxed);
 
 apr_hdtr_t *
 mruby_unbox_apr_hdtr_t(mrb_value boxed);
@@ -1114,8 +1204,14 @@ mruby_unbox_apr_hdtr_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_ipsubnet_t(mrb_state* mrb, apr_ipsubnet_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_ipsubnet_t(mrb_state* mrb, apr_ipsubnet_t *unboxed);
+
 void
 mruby_set_apr_ipsubnet_t_data_ptr(mrb_value obj, apr_ipsubnet_t *unboxed);
+
+void
+mruby_gift_apr_ipsubnet_t_data_ptr(mrb_value obj, apr_ipsubnet_t *unboxed);
 
 apr_ipsubnet_t *
 mruby_unbox_apr_ipsubnet_t(mrb_value boxed);
@@ -1125,8 +1221,14 @@ mruby_unbox_apr_ipsubnet_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_memnode_t(mrb_state* mrb, apr_memnode_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_memnode_t(mrb_state* mrb, apr_memnode_t *unboxed);
+
 void
 mruby_set_apr_memnode_t_data_ptr(mrb_value obj, apr_memnode_t *unboxed);
+
+void
+mruby_gift_apr_memnode_t_data_ptr(mrb_value obj, apr_memnode_t *unboxed);
 
 apr_memnode_t *
 mruby_unbox_apr_memnode_t(mrb_value boxed);
@@ -1136,8 +1238,14 @@ mruby_unbox_apr_memnode_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_mmap_t(mrb_state* mrb, apr_mmap_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_mmap_t(mrb_state* mrb, apr_mmap_t *unboxed);
+
 void
 mruby_set_apr_mmap_t_data_ptr(mrb_value obj, apr_mmap_t *unboxed);
+
+void
+mruby_gift_apr_mmap_t_data_ptr(mrb_value obj, apr_mmap_t *unboxed);
 
 apr_mmap_t *
 mruby_unbox_apr_mmap_t(mrb_value boxed);
@@ -1147,8 +1255,14 @@ mruby_unbox_apr_mmap_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_os_sock_info_t(mrb_state* mrb, apr_os_sock_info_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_os_sock_info_t(mrb_state* mrb, apr_os_sock_info_t *unboxed);
+
 void
 mruby_set_apr_os_sock_info_t_data_ptr(mrb_value obj, apr_os_sock_info_t *unboxed);
+
+void
+mruby_gift_apr_os_sock_info_t_data_ptr(mrb_value obj, apr_os_sock_info_t *unboxed);
 
 apr_os_sock_info_t *
 mruby_unbox_apr_os_sock_info_t(mrb_value boxed);
@@ -1158,8 +1272,14 @@ mruby_unbox_apr_os_sock_info_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_other_child_rec_t(mrb_state* mrb, apr_other_child_rec_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_other_child_rec_t(mrb_state* mrb, apr_other_child_rec_t *unboxed);
+
 void
 mruby_set_apr_other_child_rec_t_data_ptr(mrb_value obj, apr_other_child_rec_t *unboxed);
+
+void
+mruby_gift_apr_other_child_rec_t_data_ptr(mrb_value obj, apr_other_child_rec_t *unboxed);
 
 apr_other_child_rec_t *
 mruby_unbox_apr_other_child_rec_t(mrb_value boxed);
@@ -1169,8 +1289,14 @@ mruby_unbox_apr_other_child_rec_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_pollcb_t(mrb_state* mrb, apr_pollcb_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_pollcb_t(mrb_state* mrb, apr_pollcb_t *unboxed);
+
 void
 mruby_set_apr_pollcb_t_data_ptr(mrb_value obj, apr_pollcb_t *unboxed);
+
+void
+mruby_gift_apr_pollcb_t_data_ptr(mrb_value obj, apr_pollcb_t *unboxed);
 
 apr_pollcb_t *
 mruby_unbox_apr_pollcb_t(mrb_value boxed);
@@ -1180,8 +1306,14 @@ mruby_unbox_apr_pollcb_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_pollfd_t(mrb_state* mrb, apr_pollfd_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_pollfd_t(mrb_state* mrb, apr_pollfd_t *unboxed);
+
 void
 mruby_set_apr_pollfd_t_data_ptr(mrb_value obj, apr_pollfd_t *unboxed);
+
+void
+mruby_gift_apr_pollfd_t_data_ptr(mrb_value obj, apr_pollfd_t *unboxed);
 
 apr_pollfd_t *
 mruby_unbox_apr_pollfd_t(mrb_value boxed);
@@ -1191,8 +1323,14 @@ mruby_unbox_apr_pollfd_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_pollset_t(mrb_state* mrb, apr_pollset_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_pollset_t(mrb_state* mrb, apr_pollset_t *unboxed);
+
 void
 mruby_set_apr_pollset_t_data_ptr(mrb_value obj, apr_pollset_t *unboxed);
+
+void
+mruby_gift_apr_pollset_t_data_ptr(mrb_value obj, apr_pollset_t *unboxed);
 
 apr_pollset_t *
 mruby_unbox_apr_pollset_t(mrb_value boxed);
@@ -1202,8 +1340,14 @@ mruby_unbox_apr_pollset_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_pool_t(mrb_state* mrb, apr_pool_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_pool_t(mrb_state* mrb, apr_pool_t *unboxed);
+
 void
 mruby_set_apr_pool_t_data_ptr(mrb_value obj, apr_pool_t *unboxed);
+
+void
+mruby_gift_apr_pool_t_data_ptr(mrb_value obj, apr_pool_t *unboxed);
 
 apr_pool_t *
 mruby_unbox_apr_pool_t(mrb_value boxed);
@@ -1213,8 +1357,14 @@ mruby_unbox_apr_pool_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_proc_mutex_t(mrb_state* mrb, apr_proc_mutex_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_proc_mutex_t(mrb_state* mrb, apr_proc_mutex_t *unboxed);
+
 void
 mruby_set_apr_proc_mutex_t_data_ptr(mrb_value obj, apr_proc_mutex_t *unboxed);
+
+void
+mruby_gift_apr_proc_mutex_t_data_ptr(mrb_value obj, apr_proc_mutex_t *unboxed);
 
 apr_proc_mutex_t *
 mruby_unbox_apr_proc_mutex_t(mrb_value boxed);
@@ -1224,8 +1374,14 @@ mruby_unbox_apr_proc_mutex_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_proc_t(mrb_state* mrb, apr_proc_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_proc_t(mrb_state* mrb, apr_proc_t *unboxed);
+
 void
 mruby_set_apr_proc_t_data_ptr(mrb_value obj, apr_proc_t *unboxed);
+
+void
+mruby_gift_apr_proc_t_data_ptr(mrb_value obj, apr_proc_t *unboxed);
 
 apr_proc_t *
 mruby_unbox_apr_proc_t(mrb_value boxed);
@@ -1235,8 +1391,14 @@ mruby_unbox_apr_proc_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_procattr_t(mrb_state* mrb, apr_procattr_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_procattr_t(mrb_state* mrb, apr_procattr_t *unboxed);
+
 void
 mruby_set_apr_procattr_t_data_ptr(mrb_value obj, apr_procattr_t *unboxed);
+
+void
+mruby_gift_apr_procattr_t_data_ptr(mrb_value obj, apr_procattr_t *unboxed);
 
 apr_procattr_t *
 mruby_unbox_apr_procattr_t(mrb_value boxed);
@@ -1246,8 +1408,14 @@ mruby_unbox_apr_procattr_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_random_t(mrb_state* mrb, apr_random_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_random_t(mrb_state* mrb, apr_random_t *unboxed);
+
 void
 mruby_set_apr_random_t_data_ptr(mrb_value obj, apr_random_t *unboxed);
+
+void
+mruby_gift_apr_random_t_data_ptr(mrb_value obj, apr_random_t *unboxed);
 
 apr_random_t *
 mruby_unbox_apr_random_t(mrb_value boxed);
@@ -1257,8 +1425,14 @@ mruby_unbox_apr_random_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_shm_t(mrb_state* mrb, apr_shm_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_shm_t(mrb_state* mrb, apr_shm_t *unboxed);
+
 void
 mruby_set_apr_shm_t_data_ptr(mrb_value obj, apr_shm_t *unboxed);
+
+void
+mruby_gift_apr_shm_t_data_ptr(mrb_value obj, apr_shm_t *unboxed);
 
 apr_shm_t *
 mruby_unbox_apr_shm_t(mrb_value boxed);
@@ -1268,8 +1442,14 @@ mruby_unbox_apr_shm_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_skiplist(mrb_state* mrb, apr_skiplist *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_skiplist(mrb_state* mrb, apr_skiplist *unboxed);
+
 void
 mruby_set_apr_skiplist_data_ptr(mrb_value obj, apr_skiplist *unboxed);
+
+void
+mruby_gift_apr_skiplist_data_ptr(mrb_value obj, apr_skiplist *unboxed);
 
 apr_skiplist *
 mruby_unbox_apr_skiplist(mrb_value boxed);
@@ -1279,8 +1459,14 @@ mruby_unbox_apr_skiplist(mrb_value boxed);
 mrb_value
 mruby_box_apr_skiplistnode(mrb_state* mrb, apr_skiplistnode *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_skiplistnode(mrb_state* mrb, apr_skiplistnode *unboxed);
+
 void
 mruby_set_apr_skiplistnode_data_ptr(mrb_value obj, apr_skiplistnode *unboxed);
+
+void
+mruby_gift_apr_skiplistnode_data_ptr(mrb_value obj, apr_skiplistnode *unboxed);
 
 apr_skiplistnode *
 mruby_unbox_apr_skiplistnode(mrb_value boxed);
@@ -1290,8 +1476,14 @@ mruby_unbox_apr_skiplistnode(mrb_value boxed);
 mrb_value
 mruby_box_apr_sockaddr_t(mrb_state* mrb, apr_sockaddr_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_sockaddr_t(mrb_state* mrb, apr_sockaddr_t *unboxed);
+
 void
 mruby_set_apr_sockaddr_t_data_ptr(mrb_value obj, apr_sockaddr_t *unboxed);
+
+void
+mruby_gift_apr_sockaddr_t_data_ptr(mrb_value obj, apr_sockaddr_t *unboxed);
 
 apr_sockaddr_t *
 mruby_unbox_apr_sockaddr_t(mrb_value boxed);
@@ -1301,8 +1493,14 @@ mruby_unbox_apr_sockaddr_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_socket_t(mrb_state* mrb, apr_socket_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_socket_t(mrb_state* mrb, apr_socket_t *unboxed);
+
 void
 mruby_set_apr_socket_t_data_ptr(mrb_value obj, apr_socket_t *unboxed);
+
+void
+mruby_gift_apr_socket_t_data_ptr(mrb_value obj, apr_socket_t *unboxed);
 
 apr_socket_t *
 mruby_unbox_apr_socket_t(mrb_value boxed);
@@ -1312,8 +1510,14 @@ mruby_unbox_apr_socket_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_table_entry_t(mrb_state* mrb, apr_table_entry_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_table_entry_t(mrb_state* mrb, apr_table_entry_t *unboxed);
+
 void
 mruby_set_apr_table_entry_t_data_ptr(mrb_value obj, apr_table_entry_t *unboxed);
+
+void
+mruby_gift_apr_table_entry_t_data_ptr(mrb_value obj, apr_table_entry_t *unboxed);
 
 apr_table_entry_t *
 mruby_unbox_apr_table_entry_t(mrb_value boxed);
@@ -1323,8 +1527,14 @@ mruby_unbox_apr_table_entry_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_table_t(mrb_state* mrb, apr_table_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_table_t(mrb_state* mrb, apr_table_t *unboxed);
+
 void
 mruby_set_apr_table_t_data_ptr(mrb_value obj, apr_table_t *unboxed);
+
+void
+mruby_gift_apr_table_t_data_ptr(mrb_value obj, apr_table_t *unboxed);
 
 apr_table_t *
 mruby_unbox_apr_table_t(mrb_value boxed);
@@ -1334,8 +1544,14 @@ mruby_unbox_apr_table_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_cond_t(mrb_state* mrb, apr_thread_cond_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_thread_cond_t(mrb_state* mrb, apr_thread_cond_t *unboxed);
+
 void
 mruby_set_apr_thread_cond_t_data_ptr(mrb_value obj, apr_thread_cond_t *unboxed);
+
+void
+mruby_gift_apr_thread_cond_t_data_ptr(mrb_value obj, apr_thread_cond_t *unboxed);
 
 apr_thread_cond_t *
 mruby_unbox_apr_thread_cond_t(mrb_value boxed);
@@ -1345,8 +1561,14 @@ mruby_unbox_apr_thread_cond_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_mutex_t(mrb_state* mrb, apr_thread_mutex_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_thread_mutex_t(mrb_state* mrb, apr_thread_mutex_t *unboxed);
+
 void
 mruby_set_apr_thread_mutex_t_data_ptr(mrb_value obj, apr_thread_mutex_t *unboxed);
+
+void
+mruby_gift_apr_thread_mutex_t_data_ptr(mrb_value obj, apr_thread_mutex_t *unboxed);
 
 apr_thread_mutex_t *
 mruby_unbox_apr_thread_mutex_t(mrb_value boxed);
@@ -1356,8 +1578,14 @@ mruby_unbox_apr_thread_mutex_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_once_t(mrb_state* mrb, apr_thread_once_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_thread_once_t(mrb_state* mrb, apr_thread_once_t *unboxed);
+
 void
 mruby_set_apr_thread_once_t_data_ptr(mrb_value obj, apr_thread_once_t *unboxed);
+
+void
+mruby_gift_apr_thread_once_t_data_ptr(mrb_value obj, apr_thread_once_t *unboxed);
 
 apr_thread_once_t *
 mruby_unbox_apr_thread_once_t(mrb_value boxed);
@@ -1367,8 +1595,14 @@ mruby_unbox_apr_thread_once_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_rwlock_t(mrb_state* mrb, apr_thread_rwlock_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_thread_rwlock_t(mrb_state* mrb, apr_thread_rwlock_t *unboxed);
+
 void
 mruby_set_apr_thread_rwlock_t_data_ptr(mrb_value obj, apr_thread_rwlock_t *unboxed);
+
+void
+mruby_gift_apr_thread_rwlock_t_data_ptr(mrb_value obj, apr_thread_rwlock_t *unboxed);
 
 apr_thread_rwlock_t *
 mruby_unbox_apr_thread_rwlock_t(mrb_value boxed);
@@ -1378,8 +1612,14 @@ mruby_unbox_apr_thread_rwlock_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_thread_t(mrb_state* mrb, apr_thread_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_thread_t(mrb_state* mrb, apr_thread_t *unboxed);
+
 void
 mruby_set_apr_thread_t_data_ptr(mrb_value obj, apr_thread_t *unboxed);
+
+void
+mruby_gift_apr_thread_t_data_ptr(mrb_value obj, apr_thread_t *unboxed);
 
 apr_thread_t *
 mruby_unbox_apr_thread_t(mrb_value boxed);
@@ -1389,8 +1629,14 @@ mruby_unbox_apr_thread_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_threadattr_t(mrb_state* mrb, apr_threadattr_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_threadattr_t(mrb_state* mrb, apr_threadattr_t *unboxed);
+
 void
 mruby_set_apr_threadattr_t_data_ptr(mrb_value obj, apr_threadattr_t *unboxed);
+
+void
+mruby_gift_apr_threadattr_t_data_ptr(mrb_value obj, apr_threadattr_t *unboxed);
 
 apr_threadattr_t *
 mruby_unbox_apr_threadattr_t(mrb_value boxed);
@@ -1400,8 +1646,14 @@ mruby_unbox_apr_threadattr_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_threadkey_t(mrb_state* mrb, apr_threadkey_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_threadkey_t(mrb_state* mrb, apr_threadkey_t *unboxed);
+
 void
 mruby_set_apr_threadkey_t_data_ptr(mrb_value obj, apr_threadkey_t *unboxed);
+
+void
+mruby_gift_apr_threadkey_t_data_ptr(mrb_value obj, apr_threadkey_t *unboxed);
 
 apr_threadkey_t *
 mruby_unbox_apr_threadkey_t(mrb_value boxed);
@@ -1411,8 +1663,14 @@ mruby_unbox_apr_threadkey_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_time_exp_t(mrb_state* mrb, apr_time_exp_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_time_exp_t(mrb_state* mrb, apr_time_exp_t *unboxed);
+
 void
 mruby_set_apr_time_exp_t_data_ptr(mrb_value obj, apr_time_exp_t *unboxed);
+
+void
+mruby_gift_apr_time_exp_t_data_ptr(mrb_value obj, apr_time_exp_t *unboxed);
 
 apr_time_exp_t *
 mruby_unbox_apr_time_exp_t(mrb_value boxed);
@@ -1422,8 +1680,14 @@ mruby_unbox_apr_time_exp_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_version_t(mrb_state* mrb, apr_version_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_version_t(mrb_state* mrb, apr_version_t *unboxed);
+
 void
 mruby_set_apr_version_t_data_ptr(mrb_value obj, apr_version_t *unboxed);
+
+void
+mruby_gift_apr_version_t_data_ptr(mrb_value obj, apr_version_t *unboxed);
 
 apr_version_t *
 mruby_unbox_apr_version_t(mrb_value boxed);
@@ -1433,8 +1697,14 @@ mruby_unbox_apr_version_t(mrb_value boxed);
 mrb_value
 mruby_box_apr_vformatter_buff_t(mrb_state* mrb, apr_vformatter_buff_t *unboxed);
 
+mrb_value
+mruby_giftwrap_apr_vformatter_buff_t(mrb_state* mrb, apr_vformatter_buff_t *unboxed);
+
 void
 mruby_set_apr_vformatter_buff_t_data_ptr(mrb_value obj, apr_vformatter_buff_t *unboxed);
+
+void
+mruby_gift_apr_vformatter_buff_t_data_ptr(mrb_value obj, apr_vformatter_buff_t *unboxed);
 
 apr_vformatter_buff_t *
 mruby_unbox_apr_vformatter_buff_t(mrb_value boxed);

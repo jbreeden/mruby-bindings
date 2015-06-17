@@ -19,58 +19,41 @@
 mrb_value
 mrb_APR_AprFinfoT_initialize(mrb_state* mrb, mrb_value self) {
   apr_finfo_t* native_object = (apr_finfo_t*)malloc(sizeof(apr_finfo_t));
-  mruby_set_apr_finfo_t_data_ptr(self, native_object));
+  mruby_gift_apr_finfo_t_data_ptr(self, native_object);
   return self;
 }
 #endif
 
 mrb_value
-mrb_APR_AprFinfoT_free(mrb_state* mrb, mrb_value self) {
-  mrb_value to_free;
-  mrb_get_args(mrb, "o", &to_free);
+mrb_APR_AprFinfoT_disown(mrb_state* mrb, mrb_value self) {
+  mrb_value ruby_object;
+  mrb_get_args(mrb, "o", &ruby_object);
 
-  if (!mrb_obj_is_kind_of(mrb, to_free, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.free can only free objects of type APR::AprFinfoT");
+  if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.disown only accepts objects of type APR::AprFinfoT");
     return mrb_nil_value();
   }
 
-  apr_finfo_t * native_to_free = mruby_unbox_apr_finfo_t(to_free);
-  if (native_to_free != NULL) {
-    free(native_to_free);
-  }
-  DATA_PTR(to_free) = NULL;
+  ((mruby_to_native_ref*)(DATA_PTR(ruby_object)))->belongs_to_ruby = FALSE;
 
   return mrb_nil_value();
 }
 
 mrb_value
-mrb_APR_AprFinfoT_clear_pointer(mrb_state* mrb, mrb_value self) {
+mrb_APR_AprFinfoT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_object;
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.clear_pointer can only clear objects of type APR::AprFinfoT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.disown only accepts objects of type APR::AprFinfoT");
     return mrb_nil_value();
   }
 
-  DATA_PTR(ruby_object) = NULL;
-
-  return mrb_nil_value();
-}
-
-mrb_value
-mrb_APR_AprFinfoT_address_of(mrb_state* mrb, mrb_value self) {
-  mrb_value ruby_object;
-  mrb_get_args(mrb, "o", &ruby_object);
-
-  if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.address_of can only get the address for objects of type APR::AprFinfoT");
-    return mrb_nil_value();
+  if ( ((mruby_to_native_ref*)(DATA_PTR(ruby_object)))->belongs_to_ruby ) {
+    return mrb_true_value();
+  } else {
+    return mrb_false_value();
   }
-
-  apr_finfo_t * native_object = mruby_unbox_apr_finfo_t(ruby_object);
-
-  return mrb_fixnum_value((mrb_int) native_object);
 }
 
 /*
@@ -589,7 +572,7 @@ mrb_APR_AprFinfoT_get_atime(mrb_state* mrb, mrb_value self) {
 
   apr_time_t native_field = native_self->atime;
 
-  mrb_value ruby_field = TODO_mruby_box_apr_time_t(mrb, native_field);
+  mrb_value ruby_field = mruby_box_apr_time_t(mrb, &native_field);
   /* Store the ruby object to prevent garage collection of the underlying native object */
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@atime_box"), ruby_field);
 
@@ -601,25 +584,22 @@ mrb_APR_AprFinfoT_get_atime(mrb_state* mrb, mrb_value self) {
  * Parameters:
  * - value: apr_time_t
  */
-mrb_value
-mrb_APR_AprFinfoT_set_atime(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_time_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@atime_box"), ruby_field);
-
-  apr_time_t native_field = TODO_mruby_unbox_apr_time_t(ruby_field);
-
-  native_self->atime = native_field;
-
-  return ruby_field;
-}
+//mrb_value
+//mrb_APR_AprFinfoT_set_atime(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@atime_box"), ruby_field);
+//
+//  apr_time_t native_field = TODO_mruby_unbox_apr_time_t(ruby_field);
+//
+//  native_self->atime = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_mtime_FIELD
@@ -859,80 +839,79 @@ void mrb_APR_AprFinfoT_init(mrb_state* mrb) {
 #if BIND_AprFinfoT_INITIALIZE
   mrb_define_method(mrb, AprFinfoT_class, "initialize", mrb_APR_AprFinfoT_initialize, MRB_ARGS_NONE());
 #endif
-  mrb_define_class_method(mrb, AprFinfoT_class, "free", mrb_APR_AprFinfoT_free, MRB_ARGS_ARG(1, 0));
-  mrb_define_class_method(mrb, AprFinfoT_class, "clear_pointer", mrb_APR_AprFinfoT_clear_pointer, MRB_ARGS_ARG(1, 0));
-  mrb_define_class_method(mrb, AprFinfoT_class, "address_of", mrb_APR_AprFinfoT_address_of, MRB_ARGS_ARG(1, 0));
+  mrb_define_class_method(mrb, AprFinfoT_class, "disown", mrb_APR_AprFinfoT_disown, MRB_ARGS_ARG(1, 0));
+  mrb_define_class_method(mrb, AprFinfoT_class, "belongs_to_ruby?", mrb_APR_AprFinfoT_belongs_to_ruby, MRB_ARGS_ARG(1, 0));
 
   /*
    * Fields
    */
 #if BIND_AprFinfoT_pool_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "pool", mrb_APR_AprFinfoT_get_pool, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "pool=", mrb_APR_AprFinfoT_set_pool, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "pool=", mrb_APR_AprFinfoT_set_pool, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_valid_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "valid", mrb_APR_AprFinfoT_get_valid, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "valid=", mrb_APR_AprFinfoT_set_valid, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "valid=", mrb_APR_AprFinfoT_set_valid, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_protection_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "protection", mrb_APR_AprFinfoT_get_protection, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "protection=", mrb_APR_AprFinfoT_set_protection, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "protection=", mrb_APR_AprFinfoT_set_protection, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_filetype_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "filetype", mrb_APR_AprFinfoT_get_filetype, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "filetype=", mrb_APR_AprFinfoT_set_filetype, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "filetype=", mrb_APR_AprFinfoT_set_filetype, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_user_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "user", mrb_APR_AprFinfoT_get_user, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "user=", mrb_APR_AprFinfoT_set_user, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "user=", mrb_APR_AprFinfoT_set_user, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_group_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "group", mrb_APR_AprFinfoT_get_group, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "group=", mrb_APR_AprFinfoT_set_group, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "group=", mrb_APR_AprFinfoT_set_group, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_inode_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "inode", mrb_APR_AprFinfoT_get_inode, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "inode=", mrb_APR_AprFinfoT_set_inode, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "inode=", mrb_APR_AprFinfoT_set_inode, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_device_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "device", mrb_APR_AprFinfoT_get_device, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "device=", mrb_APR_AprFinfoT_set_device, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "device=", mrb_APR_AprFinfoT_set_device, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_nlink_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "nlink", mrb_APR_AprFinfoT_get_nlink, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "nlink=", mrb_APR_AprFinfoT_set_nlink, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "nlink=", mrb_APR_AprFinfoT_set_nlink, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_size_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "size", mrb_APR_AprFinfoT_get_size, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "size=", mrb_APR_AprFinfoT_set_size, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "size=", mrb_APR_AprFinfoT_set_size, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_csize_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "csize", mrb_APR_AprFinfoT_get_csize, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "csize=", mrb_APR_AprFinfoT_set_csize, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "csize=", mrb_APR_AprFinfoT_set_csize, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_atime_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "atime", mrb_APR_AprFinfoT_get_atime, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "atime=", mrb_APR_AprFinfoT_set_atime, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "atime=", mrb_APR_AprFinfoT_set_atime, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_mtime_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "mtime", mrb_APR_AprFinfoT_get_mtime, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "mtime=", mrb_APR_AprFinfoT_set_mtime, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "mtime=", mrb_APR_AprFinfoT_set_mtime, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_ctime_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "ctime", mrb_APR_AprFinfoT_get_ctime, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "ctime=", mrb_APR_AprFinfoT_set_ctime, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "ctime=", mrb_APR_AprFinfoT_set_ctime, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_fname_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "fname", mrb_APR_AprFinfoT_get_fname, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "fname=", mrb_APR_AprFinfoT_set_fname, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "fname=", mrb_APR_AprFinfoT_set_fname, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_name_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "name", mrb_APR_AprFinfoT_get_name, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "name=", mrb_APR_AprFinfoT_set_name, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "name=", mrb_APR_AprFinfoT_set_name, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprFinfoT_filehand_FIELD
   mrb_define_method(mrb, AprFinfoT_class, "filehand", mrb_APR_AprFinfoT_get_filehand, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprFinfoT_class, "filehand=", mrb_APR_AprFinfoT_set_filehand, MRB_ARGS_ARG(1, 0));
+  //mrb_define_method(mrb, AprFinfoT_class, "filehand=", mrb_APR_AprFinfoT_set_filehand, MRB_ARGS_ARG(1, 0));
 #endif
 
 }

@@ -1770,7 +1770,18 @@ mrb_APR_apr_dir_read(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     apr_finfo_t* new_finfo = (apr_finfo_t*)malloc(sizeof(apr_finfo_t));
+     memcpy(new_finfo, &native_finfo, sizeof(apr_finfo_t));
+     mrb_ary_push(mrb, results, mruby_giftwrap_apr_finfo_t(mrb, new_finfo));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -11609,6 +11620,10 @@ mrb_APR_apr_pool_create(mrb_state* mrb, mrb_value self) {
    mrb_value results = mrb_ary_new(mrb);
    mrb_ary_push(mrb, results, return_value);
    if (result == 0) {
+      /* Not 'giftwrappng' because we don't want the pool to be garbage collected,
+       * and end up taking a bunch of other objects with it. Instead, the client
+       * must explicitly call apr_pool_destroy
+       */
       mrb_ary_push(mrb, results, mruby_box_apr_pool_t(mrb, *native_newpool));
    }
    else {
@@ -21932,7 +21947,9 @@ mrb_APR_apr_time_now(mrb_state* mrb, mrb_value self) {
   apr_time_t result = apr_time_now();
 
   /* Box the return value */
-  mrb_value return_value = mruby_box_apr_time_t(mrb, &result);
+  apr_time_t* new_time = (apr_time_t*)malloc(sizeof(apr_time_t));
+  memcpy(new_time, &result, sizeof(apr_time_t));
+  mrb_value return_value = mruby_giftwrap_apr_time_t(mrb, new_time);
 
   return return_value;
 }

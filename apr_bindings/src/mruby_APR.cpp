@@ -1472,43 +1472,32 @@ mrb_APR_apr_crypto_sha256_new(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_ctime_FUNCTION
-#define apr_ctime_REQUIRED_ARGC 2
+#define apr_ctime_REQUIRED_ARGC 1
 #define apr_ctime_OPTIONAL_ARGC 0
 /* apr_ctime
  *
  * Parameters:
- * - date_str: char *
- * - t: long long
+ * - t: AprTimeT
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_ctime(mrb_state* mrb, mrb_value self) {
-  mrb_value date_str;
   mrb_value t;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &date_str, &t);
-
+  mrb_get_args(mrb, "o", &t);
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, date_str, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+  if (!mrb_obj_is_kind_of(mrb, t, AprTimeT_class(mrb))) {
+    mrb_raise(mrb, AprTimeT_class(mrb), "AprTimeT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_long_long(t);
 
-
-  /* Unbox parameters */
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
-  char * native_date_str = strdup(mrb_string_value_cstr(mrb, &date_str));
-
-  long long native_t = TODO_mruby_unbox_long_long(t);
+  /* unboxing parameters */
+  apr_time_t native_t = *mruby_unbox_apr_time_t(t);
 
   /* Invocation */
+  char * native_date_str = (char*)malloc(APR_CTIME_LEN);
   apr_status_t result = apr_ctime(native_date_str, native_t);
 
   /* Box the return value */
@@ -1518,15 +1507,19 @@ mrb_APR_apr_ctime(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  /* WARNING: Assuming that the new string can be deallocated after the function call.
-   *          Please verify that this is correct (the function does not save this parameter).
-   *
-   *          Has this been verified? [No]
-   */
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mrb_str_new_cstr(mrb, native_date_str));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
   free(native_date_str);
   native_date_str = NULL;
 
-  return return_value;
+  return results;
 }
 #endif
 
@@ -1546,13 +1539,11 @@ mrb_APR_apr_dir_close(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thedir);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thedir, AprDirT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprDirT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_dir_t * native_thedir = (mrb_nil_p(thedir) ? NULL : mruby_unbox_apr_dir_t(thedir));
@@ -1591,7 +1582,6 @@ mrb_APR_apr_dir_make(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &path, &perm, &pool);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, path, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -1606,12 +1596,9 @@ mrb_APR_apr_dir_make(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_path = mrb_string_value_cstr(mrb, &path);
-
   int native_perm = mrb_fixnum(perm);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -1648,7 +1635,6 @@ mrb_APR_apr_dir_make_recursive(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &path, &perm, &pool);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, path, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -1662,7 +1648,6 @@ mrb_APR_apr_dir_make_recursive(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   const char * native_path = mrb_string_value_cstr(mrb, &path);
@@ -1686,28 +1671,24 @@ mrb_APR_apr_dir_make_recursive(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_dir_open_FUNCTION
-#define apr_dir_open_REQUIRED_ARGC 3
+#define apr_dir_open_REQUIRED_ARGC 2
 #define apr_dir_open_OPTIONAL_ARGC 0
 /* apr_dir_open
  *
  * Parameters:
- * - new_dir: apr_dir_t **
  * - dirname: const char *
  * - pool: apr_pool_t *
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_dir_open(mrb_state* mrb, mrb_value self) {
-  mrb_value new_dir;
   mrb_value dirname;
   mrb_value pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &new_dir, &dirname, &pool);
-
+  mrb_get_args(mrb, "oo", &dirname, &pool);
 
   /* Type checking */
-  TODO_type_check_apr_dir_t_PTR_PTR(new_dir);
   if (!mrb_obj_is_kind_of(mrb, dirname, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -1719,14 +1700,12 @@ mrb_APR_apr_dir_open(mrb_state* mrb, mrb_value self) {
 
 
   /* Unbox parameters */
-  apr_dir_t ** native_new_dir = TODO_mruby_unbox_apr_dir_t_PTR_PTR(new_dir);
-
   const char * native_dirname = mrb_string_value_cstr(mrb, &dirname);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_status_t result = apr_dir_open(native_new_dir, native_dirname, native_pool);
+  apr_dir_t * native_new_dir;
+  apr_status_t result = apr_dir_open(&native_new_dir, native_dirname, native_pool);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -1735,36 +1714,38 @@ mrb_APR_apr_dir_open(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_dir_t(mrb, native_new_dir));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
 #if BIND_apr_dir_read_FUNCTION
-#define apr_dir_read_REQUIRED_ARGC 3
+#define apr_dir_read_REQUIRED_ARGC 2
 #define apr_dir_read_OPTIONAL_ARGC 0
 /* apr_dir_read
  *
  * Parameters:
- * - finfo: apr_finfo_t *
  * - wanted: int
  * - thedir: apr_dir_t *
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_dir_read(mrb_state* mrb, mrb_value self) {
-  mrb_value finfo;
   mrb_value wanted;
   mrb_value thedir;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &finfo, &wanted, &thedir);
-
+  mrb_get_args(mrb, "oo", &wanted, &thedir);
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, finfo, AprFinfoT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprFinfoT expected");
-    return mrb_nil_value();
-  }
   if (!mrb_obj_is_kind_of(mrb, wanted, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -1774,16 +1755,13 @@ mrb_APR_apr_dir_read(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_finfo_t * native_finfo = (mrb_nil_p(finfo) ? NULL : mruby_unbox_apr_finfo_t(finfo));
-
   int native_wanted = mrb_fixnum(wanted);
-
   apr_dir_t * native_thedir = (mrb_nil_p(thedir) ? NULL : mruby_unbox_apr_dir_t(thedir));
 
   /* Invocation */
-  apr_status_t result = apr_dir_read(native_finfo, native_wanted, native_thedir);
+  apr_finfo_t native_finfo;
+  apr_status_t result = apr_dir_read(&native_finfo, native_wanted, native_thedir);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -1792,7 +1770,16 @@ mrb_APR_apr_dir_read(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_finfo_t(mrb, &native_finfo));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -2151,7 +2138,7 @@ mrb_APR_apr_env_delete(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_env_get_FUNCTION
-#define apr_env_get_REQUIRED_ARGC 3
+#define apr_env_get_REQUIRED_ARGC 2
 #define apr_env_get_OPTIONAL_ARGC 0
 /* apr_env_get
  *
@@ -2159,20 +2146,17 @@ mrb_APR_apr_env_delete(mrb_state* mrb, mrb_value self) {
  * - value: char **
  * - envvar: const char *
  * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * Return Type: [apr_status_t, string]
  */
 mrb_value
 mrb_APR_apr_env_get(mrb_state* mrb, mrb_value self) {
-  mrb_value value;
   mrb_value envvar;
   mrb_value pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &value, &envvar, &pool);
-
+  mrb_get_args(mrb, "oo", &envvar, &pool);
 
   /* Type checking */
-  TODO_type_check_char_PTR_PTR(value);
   if (!mrb_obj_is_kind_of(mrb, envvar, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -2182,16 +2166,14 @@ mrb_APR_apr_env_get(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  char ** native_value = TODO_mruby_unbox_char_PTR_PTR(value);
-
   const char * native_envvar = mrb_string_value_cstr(mrb, &envvar);
 
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_status_t result = apr_env_get(native_value, native_envvar, native_pool);
+  char * native_value;
+  apr_status_t result = apr_env_get(&native_value, native_envvar, native_pool);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -2200,7 +2182,16 @@ mrb_APR_apr_env_get(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0){
+     mrb_ary_push(mrb, results, mrb_str_new_cstr(mrb, native_value));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -2837,7 +2828,6 @@ mrb_APR_apr_file_append(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oooo", &from_path, &to_path, &perms, &pool);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, from_path, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -2856,14 +2846,10 @@ mrb_APR_apr_file_append(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_from_path = mrb_string_value_cstr(mrb, &from_path);
-
   const char * native_to_path = mrb_string_value_cstr(mrb, &to_path);
-
   int native_perms = mrb_fixnum(perms);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -2886,11 +2872,11 @@ mrb_APR_apr_file_append(mrb_state* mrb, mrb_value self) {
 /* apr_file_attrs_set
  *
  * Parameters:
- * - fname: const char *
- * - attributes: unsigned int
- * - attr_mask: unsigned int
- * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * - fname: String
+ * - attributes: Fixnum
+ * - attr_mask: Fixnum
+ * - pool: AprPoolT
+ * Return Type: Fixnum (errno)
  */
 mrb_value
 mrb_APR_apr_file_attrs_set(mrb_state* mrb, mrb_value self) {
@@ -2921,14 +2907,10 @@ mrb_APR_apr_file_attrs_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_fname = mrb_string_value_cstr(mrb, &fname);
-
   unsigned int native_attributes = mrb_fixnum(attributes);
-
   unsigned int native_attr_mask = mrb_fixnum(attr_mask);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -3031,13 +3013,11 @@ mrb_APR_apr_file_buffer_size_get(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thefile);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
@@ -3072,13 +3052,11 @@ mrb_APR_apr_file_close(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &file);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, file, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_file = (mrb_nil_p(file) ? NULL : mruby_unbox_apr_file_t(file));
@@ -3103,11 +3081,11 @@ mrb_APR_apr_file_close(mrb_state* mrb, mrb_value self) {
 /* apr_file_copy
  *
  * Parameters:
- * - from_path: const char *
- * - to_path: const char *
+ * - from_path: String
+ * - to_path: String
  * - perms: int
- * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * - pool: AprPoolType
+ * Return Type: AprStatusT
  */
 mrb_value
 mrb_APR_apr_file_copy(mrb_state* mrb, mrb_value self) {
@@ -3118,7 +3096,6 @@ mrb_APR_apr_file_copy(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "oooo", &from_path, &to_path, &perms, &pool);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, from_path, mrb->string_class)) {
@@ -3138,14 +3115,10 @@ mrb_APR_apr_file_copy(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_from_path = mrb_string_value_cstr(mrb, &from_path);
-
   const char * native_to_path = mrb_string_value_cstr(mrb, &to_path);
-
-  int native_perms = mrb_fixnum(perms);
-
+  apr_fileperms_t native_perms = mrb_fixnum(perms);
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -3296,13 +3269,11 @@ mrb_APR_apr_file_datasync(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thefile);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
@@ -3448,13 +3419,11 @@ mrb_APR_apr_file_eof(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &fptr);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, fptr, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_fptr = (mrb_nil_p(fptr) ? NULL : mruby_unbox_apr_file_t(fptr));
@@ -3489,13 +3458,11 @@ mrb_APR_apr_file_flags_get(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &f);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, f, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_f = (mrb_nil_p(f) ? NULL : mruby_unbox_apr_file_t(f));
@@ -3530,13 +3497,11 @@ mrb_APR_apr_file_flush(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thefile);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
@@ -3572,7 +3537,6 @@ mrb_APR_apr_file_getc(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &ch, &thefile);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, ch, mrb->string_class)) {
@@ -3618,31 +3582,23 @@ mrb_APR_apr_file_getc(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_file_gets_FUNCTION
-#define apr_file_gets_REQUIRED_ARGC 3
+#define apr_file_gets_REQUIRED_ARGC 2
 #define apr_file_gets_OPTIONAL_ARGC 0
 /* apr_file_gets
  *
  * Parameters:
- * - str: char *
  * - len: int
  * - thefile: apr_file_t *
- * Return Type: apr_status_t
+ * Return Type: [int, String]
  */
 mrb_value
 mrb_APR_apr_file_gets(mrb_state* mrb, mrb_value self) {
-  mrb_value str;
   mrb_value len;
   mrb_value thefile;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &str, &len, &thefile);
+  mrb_get_args(mrb, "oo", &len, &thefile);
 
-
-  /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, str, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
   if (!mrb_obj_is_kind_of(mrb, len, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -3652,21 +3608,13 @@ mrb_APR_apr_file_gets(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
-  char * native_str = strdup(mrb_string_value_cstr(mrb, &str));
-
   int native_len = mrb_fixnum(len);
-
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
 
   /* Invocation */
-  apr_status_t result = apr_file_gets(native_str, native_len, native_thefile);
+  char * native_str = (char*)malloc(sizeof(char) * (native_len + 1)); /* gets adds a null terminter */
+  apr_status_t result = apr_file_gets(native_str, native_len + 1, native_thefile); /* len argument is length of buffer, NOT the string, so add one for null */
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -3675,15 +3623,21 @@ mrb_APR_apr_file_gets(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  /* WARNING: Assuming that the new string can be deallocated after the function call.
-   *          Please verify that this is correct (the function does not save this parameter).
-   *
-   *          Has this been verified? [No]
-   */
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_value ruby_str = mrb_str_new(mrb, native_str, strlen(native_str));
+     mrb_ary_push(mrb, results, ruby_str);
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  /* Clean up memory */
   free(native_str);
   native_str = NULL;
 
-  return return_value;
+  return results;
 }
 #endif
 
@@ -3762,7 +3716,6 @@ mrb_APR_apr_file_link(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &from_path, &to_path);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, from_path, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -3773,10 +3726,8 @@ mrb_APR_apr_file_link(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_from_path = mrb_string_value_cstr(mrb, &from_path);
-
   const char * native_to_path = mrb_string_value_cstr(mrb, &to_path);
 
   /* Invocation */
@@ -3799,9 +3750,9 @@ mrb_APR_apr_file_link(mrb_state* mrb, mrb_value self) {
 /* apr_file_lock
  *
  * Parameters:
- * - thefile: apr_file_t *
- * - type: int
- * Return Type: apr_status_t
+ * - thefile: AprFileT
+ * - type: Fixnum
+ * Return Type: Fixnum (errno)
  */
 mrb_value
 mrb_APR_apr_file_lock(mrb_state* mrb, mrb_value self) {
@@ -3810,7 +3761,6 @@ mrb_APR_apr_file_lock(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &thefile, &type);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
@@ -3821,7 +3771,6 @@ mrb_APR_apr_file_lock(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
@@ -4023,10 +3972,10 @@ mrb_APR_apr_file_name_get(mrb_state* mrb, mrb_value self) {
 /* apr_file_namedpipe_create
  *
  * Parameters:
- * - filename: const char *
- * - perm: int
- * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * - filename: String
+ * - perm: Fixnum
+ * - pool: AprPoolT
+ * Return Type: Fixnum (errno)
  */
 mrb_value
 mrb_APR_apr_file_namedpipe_create(mrb_state* mrb, mrb_value self) {
@@ -4036,7 +3985,6 @@ mrb_APR_apr_file_namedpipe_create(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &filename, &perm, &pool);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, filename, mrb->string_class)) {
@@ -4052,12 +4000,9 @@ mrb_APR_apr_file_namedpipe_create(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_filename = mrb_string_value_cstr(mrb, &filename);
-
   int native_perm = mrb_fixnum(perm);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -4075,36 +4020,28 @@ mrb_APR_apr_file_namedpipe_create(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_file_open_FUNCTION
-#define apr_file_open_REQUIRED_ARGC 5
+#define apr_file_open_REQUIRED_ARGC 4
 #define apr_file_open_OPTIONAL_ARGC 0
 /* apr_file_open
  *
  * Parameters:
- * - newf: apr_file_t **
  * - fname: const char *
  * - flag: int
  * - perm: int
  * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * Return Type: [apr_status_t, apr_file_t]
  */
 mrb_value
 mrb_APR_apr_file_open(mrb_state* mrb, mrb_value self) {
-  mrb_value newf;
   mrb_value fname;
   mrb_value flag;
   mrb_value perm;
   mrb_value pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooooo", &newf, &fname, &flag, &perm, &pool);
-
+  mrb_get_args(mrb, "oooo", &fname, &flag, &perm, &pool);
 
   /* Type checking */
-  TODO_type_check_apr_file_t_PTR_PTR(newf);
-  if (!mrb_obj_is_kind_of(mrb, fname, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
   if (!mrb_obj_is_kind_of(mrb, flag, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -4118,20 +4055,15 @@ mrb_APR_apr_file_open(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_file_t ** native_newf = TODO_mruby_unbox_apr_file_t_PTR_PTR(newf);
-
   const char * native_fname = mrb_string_value_cstr(mrb, &fname);
-
   int native_flag = mrb_fixnum(flag);
-
   int native_perm = mrb_fixnum(perm);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_status_t result = apr_file_open(native_newf, native_fname, native_flag, native_perm, native_pool);
+  apr_file_t * native_newf;
+  apr_status_t result = apr_file_open(&native_newf, native_fname, native_flag, native_perm, native_pool);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -4140,7 +4072,16 @@ mrb_APR_apr_file_open(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_file_t(mrb, native_newf));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -4307,39 +4248,33 @@ mrb_APR_apr_file_open_flags_stdout(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_file_open_stderr_FUNCTION
-#define apr_file_open_stderr_REQUIRED_ARGC 2
+#define apr_file_open_stderr_REQUIRED_ARGC 1
 #define apr_file_open_stderr_OPTIONAL_ARGC 0
 /* apr_file_open_stderr
  *
  * Parameters:
- * - thefile: apr_file_t **
  * - pool: apr_pool_t *
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_file_open_stderr(mrb_state* mrb, mrb_value self) {
-  mrb_value thefile;
   mrb_value pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &thefile, &pool);
-
+  mrb_get_args(mrb, "o", &pool);
 
   /* Type checking */
-  TODO_type_check_apr_file_t_PTR_PTR(thefile);
   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_file_t ** native_thefile = TODO_mruby_unbox_apr_file_t_PTR_PTR(thefile);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_status_t result = apr_file_open_stderr(native_thefile, native_pool);
+  apr_file_t * native_thefile;
+  apr_status_t result = apr_file_open_stderr(&native_thefile, native_pool);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -4348,12 +4283,21 @@ mrb_APR_apr_file_open_stderr(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_file_t(mrb, native_thefile));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
 #if BIND_apr_file_open_stdin_FUNCTION
-#define apr_file_open_stdin_REQUIRED_ARGC 2
+#define apr_file_open_stdin_REQUIRED_ARGC 1
 #define apr_file_open_stdin_OPTIONAL_ARGC 0
 /* apr_file_open_stdin
  *
@@ -4364,42 +4308,46 @@ mrb_APR_apr_file_open_stderr(mrb_state* mrb, mrb_value self) {
  */
 mrb_value
 mrb_APR_apr_file_open_stdin(mrb_state* mrb, mrb_value self) {
-  mrb_value thefile;
   mrb_value pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &thefile, &pool);
-
+  mrb_get_args(mrb, "o", &pool);
 
   /* Type checking */
-  TODO_type_check_apr_file_t_PTR_PTR(thefile);
   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_file_t ** native_thefile = TODO_mruby_unbox_apr_file_t_PTR_PTR(thefile);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_status_t result = apr_file_open_stdin(native_thefile, native_pool);
+  apr_file_t * native_thefile;
+  apr_status_t result = apr_file_open_stdin(&native_thefile, native_pool);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
+     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+     return mrb_nil_value();
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_file_t(mrb, native_thefile));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
 #if BIND_apr_file_open_stdout_FUNCTION
-#define apr_file_open_stdout_REQUIRED_ARGC 2
+#define apr_file_open_stdout_REQUIRED_ARGC 1
 #define apr_file_open_stdout_OPTIONAL_ARGC 0
 /* apr_file_open_stdout
  *
@@ -4410,37 +4358,41 @@ mrb_APR_apr_file_open_stdin(mrb_state* mrb, mrb_value self) {
  */
 mrb_value
 mrb_APR_apr_file_open_stdout(mrb_state* mrb, mrb_value self) {
-  mrb_value thefile;
-  mrb_value pool;
+   mrb_value pool;
 
-  /* Fetch the args */
-  mrb_get_args(mrb, "oo", &thefile, &pool);
+   /* Fetch the args */
+   mrb_get_args(mrb, "o", &pool);
 
+   /* Type checking */
+   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
+      mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+      return mrb_nil_value();
+   }
 
-  /* Type checking */
-  TODO_type_check_apr_file_t_PTR_PTR(thefile);
-  if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
-    return mrb_nil_value();
-  }
+   /* Unbox parameters */
+   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
+   /* Invocation */
+   apr_file_t * native_thefile;
+   apr_status_t result = apr_file_open_stdout(&native_thefile, native_pool);
 
-  /* Unbox parameters */
-  apr_file_t ** native_thefile = TODO_mruby_unbox_apr_file_t_PTR_PTR(thefile);
+   /* Box the return value */
+   if (result > MRB_INT_MAX) {
+      mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+      return mrb_nil_value();
+   }
+   mrb_value return_value = mrb_fixnum_value(result);
 
-  apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
+   mrb_value results = mrb_ary_new(mrb);
+   mrb_ary_push(mrb, results, return_value);
+   if (result == 0) {
+      mrb_ary_push(mrb, results, mruby_box_apr_file_t(mrb, native_thefile));
+   }
+   else {
+      mrb_ary_push(mrb, results, mrb_nil_value());
+   }
 
-  /* Invocation */
-  apr_status_t result = apr_file_open_stdout(native_thefile, native_pool);
-
-  /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+   return results;
 }
 #endif
 
@@ -4462,7 +4414,6 @@ mrb_APR_apr_file_perms_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &fname, &perms);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, fname, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -4473,10 +4424,8 @@ mrb_APR_apr_file_perms_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_fname = mrb_string_value_cstr(mrb, &fname);
-
   int native_perms = mrb_fixnum(perms);
 
   /* Invocation */
@@ -4667,7 +4616,6 @@ mrb_APR_apr_file_pipe_timeout_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &thepipe, &timeout);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thepipe, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
@@ -4808,7 +4756,6 @@ mrb_APR_apr_file_puts(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &str, &thefile);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, str, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -4818,7 +4765,6 @@ mrb_APR_apr_file_puts(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   const char * native_str = mrb_string_value_cstr(mrb, &str);
@@ -4840,44 +4786,40 @@ mrb_APR_apr_file_puts(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_file_read_FUNCTION
-#define apr_file_read_REQUIRED_ARGC 3
+#define apr_file_read_REQUIRED_ARGC 2
 #define apr_file_read_OPTIONAL_ARGC 0
 /* apr_file_read
  *
  * Parameters:
- * - thefile: apr_file_t *
- * - buf: void *
- * - nbytes: int *
- * Return Type: apr_status_t
+ * - thefile: AprFileT
+ * - nbytes: Fixnum
+ * Return Type: [int, String] (error & string of bytes read)
  */
 mrb_value
 mrb_APR_apr_file_read(mrb_state* mrb, mrb_value self) {
   mrb_value thefile;
-  mrb_value buf;
   mrb_value nbytes;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &thefile, &buf, &nbytes);
-
+  mrb_get_args(mrb, "oo", &thefile, &nbytes);
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_void_PTR(buf);
-  TODO_type_check_int_PTR(nbytes);
-
+  if (!mrb_obj_is_kind_of(mrb, nbytes, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
-
-  void * native_buf = TODO_mruby_unbox_void_PTR(buf);
-
-  int * native_nbytes = TODO_mruby_unbox_int_PTR(nbytes);
+  apr_size_t native_nbytes = mrb_fixnum(nbytes);
 
   /* Invocation */
-  apr_status_t result = apr_file_read(native_thefile, native_buf, native_nbytes);
+  char * native_buf = (char*)malloc(native_nbytes); /* No null terminator will be appended */
+  apr_status_t result = apr_file_read(native_thefile, native_buf, &native_nbytes);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -4886,7 +4828,15 @@ mrb_APR_apr_file_read(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value ruby_buf = mrb_str_new(mrb, native_buf, native_nbytes);
+  free(native_buf);
+  native_buf = NULL;
+
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  mrb_ary_push(mrb, results, ruby_buf);
+
+  return results;
 }
 #endif
 
@@ -4955,9 +4905,9 @@ mrb_APR_apr_file_read_full(mrb_state* mrb, mrb_value self) {
 /* apr_file_remove
  *
  * Parameters:
- * - path: const char *
- * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * - path: String
+ * - pool: AprPoolT
+ * Return Type: Fixnum (errno)
  */
 mrb_value
 mrb_APR_apr_file_remove(mrb_state* mrb, mrb_value self) {
@@ -4966,7 +4916,6 @@ mrb_APR_apr_file_remove(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &path, &pool);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, path, mrb->string_class)) {
@@ -4978,10 +4927,8 @@ mrb_APR_apr_file_remove(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_path = mrb_string_value_cstr(mrb, &path);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -5004,10 +4951,10 @@ mrb_APR_apr_file_remove(mrb_state* mrb, mrb_value self) {
 /* apr_file_rename
  *
  * Parameters:
- * - from_path: const char *
- * - to_path: const char *
- * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * - from_path: String
+ * - to_path: String
+ * - pool: AprPoolT
+ * Return Type: Fixnum (errno)
  */
 mrb_value
 mrb_APR_apr_file_rename(mrb_state* mrb, mrb_value self) {
@@ -5017,7 +4964,6 @@ mrb_APR_apr_file_rename(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &from_path, &to_path, &pool);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, from_path, mrb->string_class)) {
@@ -5033,12 +4979,9 @@ mrb_APR_apr_file_rename(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_from_path = mrb_string_value_cstr(mrb, &from_path);
-
   const char * native_to_path = mrb_string_value_cstr(mrb, &to_path);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -5061,10 +5004,10 @@ mrb_APR_apr_file_rename(mrb_state* mrb, mrb_value self) {
 /* apr_file_seek
  *
  * Parameters:
- * - thefile: apr_file_t *
- * - where: int
- * - offset: long long *
- * Return Type: apr_status_t
+ * - thefile: AprFileT
+ * - where: Fixnum
+ * - offset: Fixnum
+ * Return Type: [int, int] (errno & the actuall offset that resulted)
  */
 mrb_value
 mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
@@ -5075,7 +5018,6 @@ mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &thefile, &where, &offset);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
@@ -5085,18 +5027,18 @@ mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-  TODO_type_check_long_long_PTR(offset);
-
+  if (!mrb_obj_is_kind_of(mrb, offset, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
-
-  int native_where = mrb_fixnum(where);
-
-  long long * native_offset = TODO_mruby_unbox_long_long_PTR(offset);
-
+  apr_seek_where_t native_where = mrb_fixnum(where);
+  apr_off_t native_offset = mrb_fixnum(offset);
+  
   /* Invocation */
-  apr_status_t result = apr_file_seek(native_thefile, native_where, native_offset);
+  apr_status_t result = apr_file_seek(native_thefile, native_where, &native_offset);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -5105,7 +5047,11 @@ mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  mrb_ary_push(mrb, results, mrb_fixnum_value(native_offset));
+
+  return results;
 }
 #endif
 
@@ -5179,13 +5125,11 @@ mrb_APR_apr_file_sync(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thefile);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
@@ -5222,19 +5166,20 @@ mrb_APR_apr_file_trunc(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &fp, &offset);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, fp, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_long_long(offset);
-
+  if (!mrb_obj_is_kind_of(mrb, offset, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_file_t * native_fp = (mrb_nil_p(fp) ? NULL : mruby_unbox_apr_file_t(fp));
 
-  long long native_offset = TODO_mruby_unbox_long_long(offset);
+  apr_off_t native_offset = mrb_fixnum(offset);
 
   /* Invocation */
   apr_status_t result = apr_file_trunc(native_fp, native_offset);
@@ -5302,8 +5247,8 @@ mrb_APR_apr_file_ungetc(mrb_state* mrb, mrb_value self) {
 /* apr_file_unlock
  *
  * Parameters:
- * - thefile: apr_file_t *
- * Return Type: apr_status_t
+ * - thefile: AprFileT
+ * Return Type: Fixnum (errno)
  */
 mrb_value
 mrb_APR_apr_file_unlock(mrb_state* mrb, mrb_value self) {
@@ -5312,13 +5257,11 @@ mrb_APR_apr_file_unlock(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thefile);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
@@ -5343,10 +5286,10 @@ mrb_APR_apr_file_unlock(mrb_state* mrb, mrb_value self) {
 /* apr_file_write
  *
  * Parameters:
- * - thefile: apr_file_t *
- * - buf: const void *
- * - nbytes: int *
- * Return Type: apr_status_t
+ * - thefile: AprFileT
+ * - buf: String
+ * - nbytes: Fixnum
+ * Return Type: [err, int] (error code & bytes written)
  */
 mrb_value
 mrb_APR_apr_file_write(mrb_state* mrb, mrb_value self) {
@@ -5363,19 +5306,25 @@ mrb_APR_apr_file_write(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_const_void_PTR(buf);
-  TODO_type_check_int_PTR(nbytes);
 
+  if (!mrb_obj_is_kind_of(mrb, buf, mrb->string_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+     return mrb_nil_value();
+  }
+
+  if (!mrb_obj_is_kind_of(mrb, nbytes, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
-
-  const void * native_buf = TODO_mruby_unbox_const_void_PTR(buf);
-
-  int * native_nbytes = TODO_mruby_unbox_int_PTR(nbytes);
+  /* Just writing, no need to copy */
+  char * native_buf = RSTRING_PTR(buf);
+  apr_size_t native_nbytes = mrb_fixnum(nbytes);
 
   /* Invocation */
-  apr_status_t result = apr_file_write(native_thefile, native_buf, native_nbytes);
+  apr_status_t result = apr_file_write(native_thefile, native_buf, &native_nbytes);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -5384,7 +5333,11 @@ mrb_APR_apr_file_write(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  mrb_ary_push(mrb, results, mrb_fixnum_value(native_nbytes));
+
+  return results;
 }
 #endif
 
@@ -5859,13 +5812,11 @@ mrb_APR_apr_filepath_name_get(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &pathname);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, pathname, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   const char * native_pathname = mrb_string_value_cstr(mrb, &pathname);
@@ -6008,7 +5959,6 @@ mrb_APR_apr_fnmatch(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &pattern, &strings, &flags);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, pattern, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -6023,12 +5973,9 @@ mrb_APR_apr_fnmatch(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_pattern = mrb_string_value_cstr(mrb, &pattern);
-
   const char * native_strings = mrb_string_value_cstr(mrb, &strings);
-
   int native_flags = mrb_fixnum(flags);
 
   /* Invocation */
@@ -6061,13 +6008,11 @@ mrb_APR_apr_fnmatch_test(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &pattern);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, pattern, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   const char * native_pattern = mrb_string_value_cstr(mrb, &pattern);
@@ -8929,13 +8874,11 @@ mrb_APR_apr_os_locale_encoding(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &pool);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
@@ -11633,6 +11576,55 @@ mrb_APR_apr_pool_clear_debug(mrb_state* mrb, mrb_value self) {
   apr_pool_clear_debug(native_p, native_file_line);
 
   return mrb_nil_value();
+}
+#endif
+
+#if BIND_apr_pool_create_FUNCTION
+#define apr_pool_create_REQUIRED_ARGC 1
+#define apr_pool_create_OPTIONAL_ARGC 0
+/* apr_pool_create_core_ex
+*
+* Parameters:
+* - parent: apr_pool_t
+* Return Type: [apr_status_t, apr_pool_t]
+*/
+mrb_value
+mrb_APR_apr_pool_create(mrb_state* mrb, mrb_value self) {
+   mrb_value parent;
+
+   /* Fetch the args */
+   mrb_get_args(mrb, "o", &parent);
+
+   /* Type checking */
+   if (!mrb_nil_p(parent) && !mrb_obj_is_kind_of(mrb, parent, AprPoolT_class(mrb))) {
+      mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+      return mrb_nil_value();
+   }
+
+   /* Unbox parameters */
+   apr_pool_t * native_parent = (mrb_nil_p(parent) ? NULL : mruby_unbox_apr_pool_t(parent));
+
+   /* Invocation */
+   apr_pool_t ** native_newpool;
+   apr_status_t result = apr_pool_create_ex(native_newpool, native_parent, NULL, NULL);
+
+   /* Box the return value */
+   if (result > MRB_INT_MAX) {
+      mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+      return mrb_nil_value();
+   }
+   mrb_value return_value = mrb_fixnum_value(result);
+
+   mrb_value results = mrb_ary_new(mrb);
+   mrb_ary_push(mrb, results, return_value);
+   if (result == 0) {
+      mrb_ary_push(mrb, results, mruby_box_apr_pool_t(mrb, *native_newpool));
+   }
+   else {
+      mrb_ary_push(mrb, results, mrb_nil_value());
+   }
+
+   return results;
 }
 #endif
 
@@ -18382,64 +18374,37 @@ mrb_APR_apr_stat(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_strerror_FUNCTION
-#define apr_strerror_REQUIRED_ARGC 3
+#define apr_strerror_REQUIRED_ARGC 1
 #define apr_strerror_OPTIONAL_ARGC 0
 /* apr_strerror
  *
  * Parameters:
- * - statcode: int
- * - buf: char *
- * - bufsize: int
- * Return Type: char *
+ * - statcode: Fixnum
+ * Return Type: String
  */
 mrb_value
 mrb_APR_apr_strerror(mrb_state* mrb, mrb_value self) {
   mrb_value statcode;
-  mrb_value buf;
-  mrb_value bufsize;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &statcode, &buf, &bufsize);
-
+  mrb_get_args(mrb, "o", &statcode);
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, statcode, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, buf, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
-  if (!mrb_obj_is_kind_of(mrb, bufsize, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-
 
   /* Unbox parameters */
   int native_statcode = mrb_fixnum(statcode);
 
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
-  char * native_buf = strdup(mrb_string_value_cstr(mrb, &buf));
-
-  int native_bufsize = mrb_fixnum(bufsize);
-
   /* Invocation */
-  char * result = apr_strerror(native_statcode, native_buf, native_bufsize);
+  char*  native_buf = (char*)malloc(100);
+  char * result = apr_strerror(native_statcode, native_buf, 100);
 
   /* Box the return value */
   mrb_value return_value = mrb_str_new_cstr(mrb, result);
 
-  /* WARNING: Assuming that the new string can be deallocated after the function call.
-   *          Please verify that this is correct (the function does not save this parameter).
-   *
-   *          Has this been verified? [No]
-   */
   free(native_buf);
   native_buf = NULL;
 
@@ -19778,39 +19743,33 @@ mrb_APR_apr_table_vdo(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_temp_dir_get_FUNCTION
-#define apr_temp_dir_get_REQUIRED_ARGC 2
+#define apr_temp_dir_get_REQUIRED_ARGC 1
 #define apr_temp_dir_get_OPTIONAL_ARGC 0
 /* apr_temp_dir_get
  *
  * Parameters:
- * - temp_dir: const char **
  * - p: apr_pool_t *
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_temp_dir_get(mrb_state* mrb, mrb_value self) {
-  mrb_value temp_dir;
   mrb_value p;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &temp_dir, &p);
-
+  mrb_get_args(mrb, "o", &p);
 
   /* Type checking */
-  TODO_type_check_const_char_PTR_PTR(temp_dir);
   if (!mrb_obj_is_kind_of(mrb, p, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  const char ** native_temp_dir = TODO_mruby_unbox_const_char_PTR_PTR(temp_dir);
-
   apr_pool_t * native_p = (mrb_nil_p(p) ? NULL : mruby_unbox_apr_pool_t(p));
 
   /* Invocation */
-  apr_status_t result = apr_temp_dir_get(native_temp_dir, native_p);
+  const char* native_temp_dir;
+  apr_status_t result = apr_temp_dir_get(&native_temp_dir, native_p);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -19819,7 +19778,16 @@ mrb_APR_apr_temp_dir_get(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mrb_str_new_cstr(mrb, native_temp_dir));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -21973,20 +21941,19 @@ mrb_APR_apr_time_now(mrb_state* mrb, mrb_value self) {
   apr_time_t result = apr_time_now();
 
   /* Box the return value */
-  mrb_value return_value = TODO_mruby_box_apr_time_t(mrb, result);
+  mrb_value return_value = mruby_box_apr_time_t(mrb, &result);
 
   return return_value;
 }
 #endif
 
 #if BIND_apr_tokenize_to_argv_FUNCTION
-#define apr_tokenize_to_argv_REQUIRED_ARGC 3
+#define apr_tokenize_to_argv_REQUIRED_ARGC 2
 #define apr_tokenize_to_argv_OPTIONAL_ARGC 0
 /* apr_tokenize_to_argv
  *
  * Parameters:
  * - arg_str: const char *
- * - argv_out: char ***
  * - token_context: apr_pool_t *
  * Return Type: apr_status_t
  */
@@ -21997,30 +21964,25 @@ mrb_APR_apr_tokenize_to_argv(mrb_state* mrb, mrb_value self) {
   mrb_value token_context;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &arg_str, &argv_out, &token_context);
-
+  mrb_get_args(mrb, "oo", &arg_str, &token_context);
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, arg_str, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  TODO_type_check_char_PTR_PTR_PTR(argv_out);
   if (!mrb_obj_is_kind_of(mrb, token_context, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_arg_str = mrb_string_value_cstr(mrb, &arg_str);
-
-  char *** native_argv_out = TODO_mruby_unbox_char_PTR_PTR_PTR(argv_out);
-
   apr_pool_t * native_token_context = (mrb_nil_p(token_context) ? NULL : mruby_unbox_apr_pool_t(token_context));
 
   /* Invocation */
-  apr_status_t result = apr_tokenize_to_argv(native_arg_str, native_argv_out, native_token_context);
+  char ** native_argv_out;
+  apr_status_t result = apr_tokenize_to_argv(native_arg_str, &native_argv_out, native_token_context);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -22029,7 +21991,22 @@ mrb_APR_apr_tokenize_to_argv(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_value argv = mrb_ary_new(mrb);
+     char** current_string_ptr = native_argv_out;
+     while (*current_string_ptr != NULL) {
+        mrb_ary_push(mrb, argv, mrb_str_new_cstr(mrb, *current_string_ptr));
+        current_string_ptr++;
+     }
+     mrb_ary_push(mrb, results, argv);
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -22791,9 +22768,237 @@ mrb_APR_apr_wait_for_io_or_timeout(mrb_state* mrb, mrb_value self) {
 }
 #endif
 
+void mrb_APR_define_constants(mrb_state* mrb) {
+   /* apr_file_io.h */
+   /*mrb_define_const(mrb, APR_module(mrb), "APR_WANT_STDIO", mrb_fixnum_value(APR_WANT_STDIO));
+   mrb_define_const(mrb, APR_module(mrb), "APR_WANT_IOVEC", mrb_fixnum_value(APR_WANT_IOVEC));*/
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_READ", mrb_fixnum_value(APR_FOPEN_READ));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_WRITE", mrb_fixnum_value(APR_FOPEN_WRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_CREATE", mrb_fixnum_value(APR_FOPEN_CREATE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_APPEND", mrb_fixnum_value(APR_FOPEN_APPEND));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_TRUNCATE", mrb_fixnum_value(APR_FOPEN_TRUNCATE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_BINARY", mrb_fixnum_value(APR_FOPEN_BINARY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_EXCL", mrb_fixnum_value(APR_FOPEN_EXCL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_BUFFERED", mrb_fixnum_value(APR_FOPEN_BUFFERED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_DELONCLOSE", mrb_fixnum_value(APR_FOPEN_DELONCLOSE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_XTHREAD", mrb_fixnum_value(APR_FOPEN_XTHREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_SHARELOCK", mrb_fixnum_value(APR_FOPEN_SHARELOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_NOCLEANUP", mrb_fixnum_value(APR_FOPEN_NOCLEANUP));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_SENDFILE_ENABLED", mrb_fixnum_value(APR_FOPEN_SENDFILE_ENABLED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_LARGEFILE", mrb_fixnum_value(APR_FOPEN_LARGEFILE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_SPARSE", mrb_fixnum_value(APR_FOPEN_SPARSE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_NONBLOCK", mrb_fixnum_value(APR_FOPEN_NONBLOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_READ", mrb_fixnum_value(APR_READ));
+   mrb_define_const(mrb, APR_module(mrb), "APR_WRITE", mrb_fixnum_value(APR_WRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_CREATE", mrb_fixnum_value(APR_CREATE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_APPEND", mrb_fixnum_value(APR_APPEND));
+   mrb_define_const(mrb, APR_module(mrb), "APR_TRUNCATE", mrb_fixnum_value(APR_TRUNCATE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_BINARY", mrb_fixnum_value(APR_BINARY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EXCL", mrb_fixnum_value(APR_EXCL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_BUFFERED", mrb_fixnum_value(APR_BUFFERED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_DELONCLOSE", mrb_fixnum_value(APR_DELONCLOSE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_XTHREAD", mrb_fixnum_value(APR_XTHREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_SHARELOCK", mrb_fixnum_value(APR_SHARELOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_NOCLEANUP", mrb_fixnum_value(APR_FILE_NOCLEANUP));
+   mrb_define_const(mrb, APR_module(mrb), "APR_SENDFILE_ENABLED", mrb_fixnum_value(APR_SENDFILE_ENABLED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_LARGEFILE", mrb_fixnum_value(APR_LARGEFILE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_SET", mrb_fixnum_value(APR_SET));
+   mrb_define_const(mrb, APR_module(mrb), "APR_CUR", mrb_fixnum_value(APR_CUR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_END", mrb_fixnum_value(APR_END));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_ATTR_READONLY", mrb_fixnum_value(APR_FILE_ATTR_READONLY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_ATTR_EXECUTABLE", mrb_fixnum_value(APR_FILE_ATTR_EXECUTABLE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_ATTR_HIDDEN", mrb_fixnum_value(APR_FILE_ATTR_HIDDEN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_SHARED", mrb_fixnum_value(APR_FLOCK_SHARED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_EXCLUSIVE", mrb_fixnum_value(APR_FLOCK_EXCLUSIVE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_TYPEMASK", mrb_fixnum_value(APR_FLOCK_TYPEMASK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_NONBLOCK", mrb_fixnum_value(APR_FLOCK_NONBLOCK));
+
+   /* apr_file_info.h */
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_USETID", mrb_fixnum_value(APR_FPROT_USETID));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_UREAD", mrb_fixnum_value(APR_FPROT_UREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_UWRITE", mrb_fixnum_value(APR_FPROT_UWRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_UEXECUTE", mrb_fixnum_value(APR_FPROT_UEXECUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GSETID", mrb_fixnum_value(APR_FPROT_GSETID));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GREAD", mrb_fixnum_value(APR_FPROT_GREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GWRITE", mrb_fixnum_value(APR_FPROT_GWRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GEXECUTE", mrb_fixnum_value(APR_FPROT_GEXECUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WSTICKY", mrb_fixnum_value(APR_FPROT_WSTICKY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WREAD", mrb_fixnum_value(APR_FPROT_WREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WWRITE", mrb_fixnum_value(APR_FPROT_WWRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WEXECUTE", mrb_fixnum_value(APR_FPROT_WEXECUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_OS_DEFAULT", mrb_fixnum_value(APR_FPROT_OS_DEFAULT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_FILE_SOURCE_PERMS", mrb_fixnum_value(APR_FPROT_FILE_SOURCE_PERMS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_USETID", mrb_fixnum_value(APR_USETID));
+   mrb_define_const(mrb, APR_module(mrb), "APR_UREAD", mrb_fixnum_value(APR_UREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_UWRITE", mrb_fixnum_value(APR_UWRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_UEXECUTE", mrb_fixnum_value(APR_UEXECUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_GSETID", mrb_fixnum_value(APR_GSETID));
+   mrb_define_const(mrb, APR_module(mrb), "APR_GREAD", mrb_fixnum_value(APR_GREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_GWRITE", mrb_fixnum_value(APR_GWRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_GEXECUTE", mrb_fixnum_value(APR_GEXECUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_WSTICKY", mrb_fixnum_value(APR_WSTICKY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_WREAD", mrb_fixnum_value(APR_WREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_WWRITE", mrb_fixnum_value(APR_WWRITE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_WEXECUTE", mrb_fixnum_value(APR_WEXECUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_DEFAULT", mrb_fixnum_value(APR_OS_DEFAULT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_SOURCE_PERMS", mrb_fixnum_value(APR_FILE_SOURCE_PERMS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_LINK", mrb_fixnum_value(APR_FINFO_LINK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_MTIME", mrb_fixnum_value(APR_FINFO_MTIME));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_CTIME", mrb_fixnum_value(APR_FINFO_CTIME));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_ATIME", mrb_fixnum_value(APR_FINFO_ATIME));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_SIZE", mrb_fixnum_value(APR_FINFO_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_CSIZE", mrb_fixnum_value(APR_FINFO_CSIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_DEV", mrb_fixnum_value(APR_FINFO_DEV));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_INODE", mrb_fixnum_value(APR_FINFO_INODE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_NLINK", mrb_fixnum_value(APR_FINFO_NLINK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_TYPE", mrb_fixnum_value(APR_FINFO_TYPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_USER", mrb_fixnum_value(APR_FINFO_USER));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_GROUP", mrb_fixnum_value(APR_FINFO_GROUP));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_UPROT", mrb_fixnum_value(APR_FINFO_UPROT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_GPROT", mrb_fixnum_value(APR_FINFO_GPROT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_WPROT", mrb_fixnum_value(APR_FINFO_WPROT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_ICASE", mrb_fixnum_value(APR_FINFO_ICASE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_NAME", mrb_fixnum_value(APR_FINFO_NAME));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_MIN", mrb_fixnum_value(APR_FINFO_MIN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_IDENT", mrb_fixnum_value(APR_FINFO_IDENT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_OWNER", mrb_fixnum_value(APR_FINFO_OWNER));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_PROT", mrb_fixnum_value(APR_FINFO_PROT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_NORM", mrb_fixnum_value(APR_FINFO_NORM));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_DIRENT", mrb_fixnum_value(APR_FINFO_DIRENT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NOTABOVEROOT", mrb_fixnum_value(APR_FILEPATH_NOTABOVEROOT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_SECUREROOTTEST", mrb_fixnum_value(APR_FILEPATH_SECUREROOTTEST));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_SECUREROOT", mrb_fixnum_value(APR_FILEPATH_SECUREROOT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NOTRELATIVE", mrb_fixnum_value(APR_FILEPATH_NOTRELATIVE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NOTABSOLUTE", mrb_fixnum_value(APR_FILEPATH_NOTABSOLUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NATIVE", mrb_fixnum_value(APR_FILEPATH_NATIVE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_TRUENAME", mrb_fixnum_value(APR_FILEPATH_TRUENAME));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_ENCODING_UNKNOWN", mrb_fixnum_value(APR_FILEPATH_ENCODING_UNKNOWN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_ENCODING_LOCALE", mrb_fixnum_value(APR_FILEPATH_ENCODING_LOCALE));
+
+
+   /* apr_errno.h */
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_ERROR", mrb_fixnum_value(APR_OS_START_ERROR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_ERRSPACE_SIZE", mrb_fixnum_value(APR_OS_ERRSPACE_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_UTIL_ERRSPACE_SIZE", mrb_fixnum_value(APR_UTIL_ERRSPACE_SIZE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_STATUS", mrb_fixnum_value(APR_OS_START_STATUS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_UTIL_START_STATUS", mrb_fixnum_value(APR_UTIL_START_STATUS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_USERERR", mrb_fixnum_value(APR_OS_START_USERERR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_USEERR", mrb_fixnum_value(APR_OS_START_USEERR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_CANONERR", mrb_fixnum_value(APR_OS_START_CANONERR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_EAIERR", mrb_fixnum_value(APR_OS_START_EAIERR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_SYSERR", mrb_fixnum_value(APR_OS_START_SYSERR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_SUCCESS", mrb_fixnum_value(APR_SUCCESS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSTAT", mrb_fixnum_value(APR_ENOSTAT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOPOOL", mrb_fixnum_value(APR_ENOPOOL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBADDATE", mrb_fixnum_value(APR_EBADDATE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINVALSOCK", mrb_fixnum_value(APR_EINVALSOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOPROC", mrb_fixnum_value(APR_ENOPROC));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTIME", mrb_fixnum_value(APR_ENOTIME));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENODIR", mrb_fixnum_value(APR_ENODIR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOLOCK", mrb_fixnum_value(APR_ENOLOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOPOLL", mrb_fixnum_value(APR_ENOPOLL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSOCKET", mrb_fixnum_value(APR_ENOSOCKET));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTHREAD", mrb_fixnum_value(APR_ENOTHREAD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTHDKEY", mrb_fixnum_value(APR_ENOTHDKEY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EGENERAL", mrb_fixnum_value(APR_EGENERAL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSHMAVAIL", mrb_fixnum_value(APR_ENOSHMAVAIL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBADIP", mrb_fixnum_value(APR_EBADIP));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBADMASK", mrb_fixnum_value(APR_EBADMASK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EDSOOPEN", mrb_fixnum_value(APR_EDSOOPEN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EABSOLUTE", mrb_fixnum_value(APR_EABSOLUTE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ERELATIVE", mrb_fixnum_value(APR_ERELATIVE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINCOMPLETE", mrb_fixnum_value(APR_EINCOMPLETE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EABOVEROOT", mrb_fixnum_value(APR_EABOVEROOT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBADPATH", mrb_fixnum_value(APR_EBADPATH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EPATHWILD", mrb_fixnum_value(APR_EPATHWILD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ESYMNOTFOUND", mrb_fixnum_value(APR_ESYMNOTFOUND));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EPROC_UNKNOWN", mrb_fixnum_value(APR_EPROC_UNKNOWN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTENOUGHENTROPY", mrb_fixnum_value(APR_ENOTENOUGHENTROPY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_INCHILD", mrb_fixnum_value(APR_INCHILD));
+   mrb_define_const(mrb, APR_module(mrb), "APR_INPARENT", mrb_fixnum_value(APR_INPARENT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_DETACH", mrb_fixnum_value(APR_DETACH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_NOTDETACH", mrb_fixnum_value(APR_NOTDETACH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_CHILD_DONE", mrb_fixnum_value(APR_CHILD_DONE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_CHILD_NOTDONE", mrb_fixnum_value(APR_CHILD_NOTDONE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_TIMEUP", mrb_fixnum_value(APR_TIMEUP));
+   mrb_define_const(mrb, APR_module(mrb), "APR_INCOMPLETE", mrb_fixnum_value(APR_INCOMPLETE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_BADCH", mrb_fixnum_value(APR_BADCH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_BADARG", mrb_fixnum_value(APR_BADARG));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EOF", mrb_fixnum_value(APR_EOF));
+   mrb_define_const(mrb, APR_module(mrb), "APR_NOTFOUND", mrb_fixnum_value(APR_NOTFOUND));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ANONYMOUS", mrb_fixnum_value(APR_ANONYMOUS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_FILEBASED", mrb_fixnum_value(APR_FILEBASED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_KEYBASED", mrb_fixnum_value(APR_KEYBASED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINIT", mrb_fixnum_value(APR_EINIT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTIMPL", mrb_fixnum_value(APR_ENOTIMPL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EMISMATCH", mrb_fixnum_value(APR_EMISMATCH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBUSY", mrb_fixnum_value(APR_EBUSY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EACCES", mrb_fixnum_value(APR_EACCES));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EACCES", mrb_fixnum_value(APR_EACCES));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EEXIST", mrb_fixnum_value(APR_EEXIST));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EEXIST", mrb_fixnum_value(APR_EEXIST));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENAMETOOLONG", mrb_fixnum_value(APR_ENAMETOOLONG));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENAMETOOLONG", mrb_fixnum_value(APR_ENAMETOOLONG));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOENT", mrb_fixnum_value(APR_ENOENT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOENT", mrb_fixnum_value(APR_ENOENT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTDIR", mrb_fixnum_value(APR_ENOTDIR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTDIR", mrb_fixnum_value(APR_ENOTDIR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSPC", mrb_fixnum_value(APR_ENOSPC));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSPC", mrb_fixnum_value(APR_ENOSPC));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOMEM", mrb_fixnum_value(APR_ENOMEM));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOMEM", mrb_fixnum_value(APR_ENOMEM));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EMFILE", mrb_fixnum_value(APR_EMFILE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EMFILE", mrb_fixnum_value(APR_EMFILE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENFILE", mrb_fixnum_value(APR_ENFILE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENFILE", mrb_fixnum_value(APR_ENFILE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBADF", mrb_fixnum_value(APR_EBADF));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EBADF", mrb_fixnum_value(APR_EBADF));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINVAL", mrb_fixnum_value(APR_EINVAL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINVAL", mrb_fixnum_value(APR_EINVAL));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ESPIPE", mrb_fixnum_value(APR_ESPIPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ESPIPE", mrb_fixnum_value(APR_ESPIPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EAGAIN", mrb_fixnum_value(APR_EAGAIN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EAGAIN", mrb_fixnum_value(APR_EAGAIN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EAGAIN", mrb_fixnum_value(APR_EAGAIN));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINTR", mrb_fixnum_value(APR_EINTR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINTR", mrb_fixnum_value(APR_EINTR));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTSOCK", mrb_fixnum_value(APR_ENOTSOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTSOCK", mrb_fixnum_value(APR_ENOTSOCK));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNREFUSED", mrb_fixnum_value(APR_ECONNREFUSED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNREFUSED", mrb_fixnum_value(APR_ECONNREFUSED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINPROGRESS", mrb_fixnum_value(APR_EINPROGRESS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EINPROGRESS", mrb_fixnum_value(APR_EINPROGRESS));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNABORTED", mrb_fixnum_value(APR_ECONNABORTED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNABORTED", mrb_fixnum_value(APR_ECONNABORTED));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNRESET", mrb_fixnum_value(APR_ECONNRESET));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNRESET", mrb_fixnum_value(APR_ECONNRESET));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ETIMEDOUT", mrb_fixnum_value(APR_ETIMEDOUT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ETIMEDOUT", mrb_fixnum_value(APR_ETIMEDOUT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EHOSTUNREACH", mrb_fixnum_value(APR_EHOSTUNREACH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EHOSTUNREACH", mrb_fixnum_value(APR_EHOSTUNREACH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENETUNREACH", mrb_fixnum_value(APR_ENETUNREACH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENETUNREACH", mrb_fixnum_value(APR_ENETUNREACH));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EFTYPE", mrb_fixnum_value(APR_EFTYPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EFTYPE", mrb_fixnum_value(APR_EFTYPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EPIPE", mrb_fixnum_value(APR_EPIPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EPIPE", mrb_fixnum_value(APR_EPIPE));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EXDEV", mrb_fixnum_value(APR_EXDEV));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EXDEV", mrb_fixnum_value(APR_EXDEV));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTEMPTY", mrb_fixnum_value(APR_ENOTEMPTY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTEMPTY", mrb_fixnum_value(APR_ENOTEMPTY));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EAFNOSUPPORT", mrb_fixnum_value(APR_EAFNOSUPPORT));
+   mrb_define_const(mrb, APR_module(mrb), "APR_EAFNOSUPPORT", mrb_fixnum_value(APR_EAFNOSUPPORT));
+}
 
 void mrb_mruby_apr_gem_init(mrb_state* mrb) {
   RClass* APR_module = mrb_define_module(mrb, "APR");
+  mrb_APR_define_constants(mrb);
+
+  mrb_define_class_under(mrb, APR_module, "AprTimeT", mrb->object_class);
 
   /*
    * Initialize class bindings
@@ -23617,6 +23822,9 @@ void mrb_mruby_apr_gem_init(mrb_state* mrb) {
 #endif
 #if BIND_apr_pool_clear_debug_FUNCTION
   mrb_define_class_method(mrb, APR_module, "apr_pool_clear_debug", mrb_APR_apr_pool_clear_debug, MRB_ARGS_ARG(apr_pool_clear_debug_REQUIRED_ARGC, apr_pool_clear_debug_OPTIONAL_ARGC));
+#endif
+#if BIND_apr_pool_create_FUNCTION
+  mrb_define_class_method(mrb, APR_module, "apr_pool_create", mrb_APR_apr_pool_create, MRB_ARGS_ARG(apr_pool_create_REQUIRED_ARGC, apr_pool_create_OPTIONAL_ARGC));
 #endif
 #if BIND_apr_pool_create_core_ex_FUNCTION
   mrb_define_class_method(mrb, APR_module, "apr_pool_create_core_ex", mrb_APR_apr_pool_create_core_ex, MRB_ARGS_ARG(apr_pool_create_core_ex_REQUIRED_ARGC, apr_pool_create_core_ex_OPTIONAL_ARGC));
