@@ -1,5 +1,6 @@
 TestFixture.new('Directories') do
   err, @pool = APR::apr_pool_create nil
+  @a_rwx = 0x070707
 
   def check_errno(errno)
     unless assert(errno == 0)
@@ -43,7 +44,7 @@ TestFixture.new('Directories') do
 
   describe 'APR::apr_dir_make(path: String, permissions: Fixnum, pool: AprPoolType): errno: Fixnum' do
     it 'Creates a directory' do
-      err = APR.apr_dir_make 'sandbox/test_create_dir', 0, @pool
+      err = APR.apr_dir_make 'sandbox/test_create_dir', @a_rwx, @pool
       check_errno(err)
       err, dir = APR.apr_dir_open('sandbox/test_create_dir', @pool)
       check_errno(err)
@@ -52,9 +53,9 @@ TestFixture.new('Directories') do
 
   describe 'APR::apr_dir_make_recursive(path: String, permissions: Fixnum, pool: AprPoolType): errno: Fixnum' do
     it 'Creates a directory and any required parent directories' do
-      err = APR.apr_dir_make_recursive 'sandbox\\test_create_dir\\some\\nested\\dir', 0, @pool
+      err = APR.apr_dir_make_recursive 'sandbox/test_create_dir/some/nested/dir', @a_rwx, @pool
       check_errno(err)
-      err, dir = APR.apr_dir_open('sandbox\\test_create_dir/some\\nested/dir', @pool)
+      err, dir = APR.apr_dir_open('sandbox/test_create_dir/some/nested/dir', @pool)
       check_errno(err)
       APR.apr_dir_close(dir)
     end

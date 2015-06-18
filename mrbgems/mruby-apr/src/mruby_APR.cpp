@@ -11604,8 +11604,8 @@ mrb_APR_apr_pool_create(mrb_state* mrb, mrb_value self) {
    apr_pool_t * native_parent = (mrb_nil_p(parent) ? NULL : mruby_unbox_apr_pool_t(parent));
 
    /* Invocation */
-   apr_pool_t ** native_newpool;
-   apr_status_t result = apr_pool_create_ex(native_newpool, native_parent, NULL, NULL);
+   apr_pool_t * native_newpool;
+   apr_status_t result = apr_pool_create_ex(&native_newpool, native_parent, NULL, NULL);
 
    /* Box the return value */
    if (result > MRB_INT_MAX) {
@@ -11621,7 +11621,7 @@ mrb_APR_apr_pool_create(mrb_state* mrb, mrb_value self) {
        * and end up taking a bunch of other objects with it. Instead, the client
        * must explicitly call apr_pool_destroy
        */
-      mrb_ary_push(mrb, results, mruby_box_apr_pool_t(mrb, *native_newpool));
+      mrb_ary_push(mrb, results, mruby_box_apr_pool_t(mrb, native_newpool));
    }
    else {
       mrb_ary_push(mrb, results, mrb_nil_value());

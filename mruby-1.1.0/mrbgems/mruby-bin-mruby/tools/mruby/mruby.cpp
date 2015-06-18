@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mruby.h"
-#include "C:\projects\mruby-bindings\mruby-1.1.0\src\mrb_throw.h"
 #include "mruby/array.h"
 #include "mruby/compile.h"
 #include "mruby/dump.h"
