@@ -972,11 +972,11 @@ void mrb_APR_AprVformatterBuffT_init(mrb_state* mrb);
  */
 
 /*
-* Extra wrapper over native pointer to indicate who owns this memory.
-* (Either mruby, and it should be garage collected, or C, and it shouldn't be)
+* Extra wrapper over native pointer to indicate who owns this memory
+* (either mruby, and it should be garage collected, or C, and it shouldn't be).
 * Considered using the LSB of the pointer itself, but I don't think I can
 * be assured that all memory is word-aligned (especially when C libraries
-* implement their own memory management techniques like memory pools)
+* implement their own memory management techniques like memory pools).
 */
 typedef struct mruby_to_native_ref_ {
   /* If true, indicates that the object should be freed when
@@ -993,7 +993,8 @@ typedef struct mruby_to_native_ref_ {
    * the data pointer can be used to associate arbitrary
    * data with a reference to a C object. This could
    * be a function pointer to invoke instead of `free` on GC,
-   * a pointer back to the RObject, etc. You get the idea.
+   * a pointer back to the RObject, or even cast to an integer type
+   * and used as a bit field. You get the idea...
    */
   void* data;
 } mruby_to_native_ref;

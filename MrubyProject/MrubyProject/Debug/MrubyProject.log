@@ -1,4 +1,4 @@
-﻿Build started 6/17/2015 4:46:21 PM.
+﻿Build started 6/18/2015 9:33:10 AM.
      1>Project "C:\projects\mruby-bindings\MrubyProject\MrubyProject\MrubyProject.vcxproj" on node 2 (Build target(s)).
      1>Build:
          rake mruby:build
@@ -8,7 +8,6 @@
          mruby_APR.cpp
      1>C:\projects\mruby-bindings\mrbgems\mruby-apr\src\mruby_APR.cpp(5051): warning C4244: 'argument' : conversion from 'apr_off_t' to 'mrb_int', possible loss of data
      1>C:\projects\mruby-bindings\mrbgems\mruby-apr\src\mruby_APR.cpp(21968): warning C4101: 'argv_out' : unreferenced local variable
-     1>c:\projects\mruby-bindings\mrbgems\mruby-apr\src\mruby_apr.cpp(11608): warning C4700: uninitialized local variable 'native_newpool' used
          (in C:/projects/mruby-bindings/mruby-1.1.0)
          CC    ../mrbgems/mruby-apr/src/mruby_APR.cpp -> build/host/mrbgems/mruby-apr/src/mruby_APR.obj
          /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
@@ -65,4 +64,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.39
+Time Elapsed 00:00:28.54
