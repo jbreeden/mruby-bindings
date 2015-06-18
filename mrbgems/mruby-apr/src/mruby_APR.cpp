@@ -1772,7 +1772,8 @@ mrb_APR_apr_dir_read(mrb_state* mrb, mrb_value self) {
 
   mrb_value results = mrb_ary_new(mrb);
   mrb_ary_push(mrb, results, return_value);
-  if (result == 0) {
+  /* Even when incomplete is returned, some values are valid */
+  if (result == APR_SUCCESS || result == APR_INCOMPLETE) {
      apr_finfo_t* new_finfo = (apr_finfo_t*)malloc(sizeof(apr_finfo_t));
      memcpy(new_finfo, &native_finfo, sizeof(apr_finfo_t));
      mrb_ary_push(mrb, results, mruby_giftwrap_apr_finfo_t(mrb, new_finfo));
@@ -1803,7 +1804,6 @@ mrb_APR_apr_dir_remove(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &path, &pool);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, path, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
@@ -1814,10 +1814,8 @@ mrb_APR_apr_dir_remove(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   const char * native_path = mrb_string_value_cstr(mrb, &path);
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
@@ -1856,7 +1854,6 @@ mrb_APR_apr_dir_rewind(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprDirT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_dir_t * native_thedir = (mrb_nil_p(thedir) ? NULL : mruby_unbox_apr_dir_t(thedir));

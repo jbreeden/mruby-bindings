@@ -32,7 +32,7 @@ namespace :scrape do
   desc "Generate ldjson file for nanomsg headers"
   task :nanomsg do
     File.delete "declarations.json" if File.exists? 'declarations.json'
-    Dir["#{$nn_dir}/**/*.h"].each do |header|
+    Dir["#{$nn_dir}/*.h"].each do |header|
       sh "\"clang2json.exe\" -x c++ -I #{$nn_dir} #{header} >> declarations.json"
     end
   end

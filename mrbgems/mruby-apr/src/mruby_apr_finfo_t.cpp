@@ -78,33 +78,33 @@ mrb_APR_AprFinfoT_get_pool(mrb_state* mrb, mrb_value self) {
   return ruby_field;
 }
 
-/* set_pool
- *
- * Parameters:
- * - value: apr_pool_t *
- */
-mrb_value
-mrb_APR_AprFinfoT_set_pool(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprPoolT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
-    return mrb_nil_value();
-  }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pool_box"), ruby_field);
-
-  apr_pool_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_pool_t(ruby_field));
-
-  native_self->pool = native_field;
-
-  return ruby_field;
-}
+///* set_pool
+// *
+// * Parameters:
+// * - value: apr_pool_t *
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_pool(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprPoolT_class(mrb))) {
+//    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+//    return mrb_nil_value();
+//  }
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pool_box"), ruby_field);
+//
+//  apr_pool_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_pool_t(ruby_field));
+//
+//  native_self->pool = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_valid_FIELD
@@ -129,33 +129,33 @@ mrb_APR_AprFinfoT_get_valid(mrb_state* mrb, mrb_value self) {
   return ruby_field;
 }
 
-/* set_valid
- *
- * Parameters:
- * - value: apr_int32_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_valid(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@valid_box"), ruby_field);
-
-  int native_field = mrb_fixnum(ruby_field);
-
-  native_self->valid = native_field;
-
-  return ruby_field;
-}
+///* set_valid
+// *
+// * Parameters:
+// * - value: apr_int32_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_valid(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+//    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+//    return mrb_nil_value();
+//  }
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@valid_box"), ruby_field);
+//
+//  int native_field = mrb_fixnum(ruby_field);
+//
+//  native_self->valid = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_protection_FIELD
@@ -166,40 +166,35 @@ mrb_APR_AprFinfoT_set_valid(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_protection(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_fileperms_t native_field = native_self->protection;
-
-  mrb_value ruby_field = TODO_mruby_box_apr_fileperms_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@protection_box"), ruby_field);
-
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
   return ruby_field;
 }
 
-/* set_protection
- *
- * Parameters:
- * - value: apr_fileperms_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_protection(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_fileperms_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@protection_box"), ruby_field);
-
-  apr_fileperms_t native_field = TODO_mruby_unbox_apr_fileperms_t(ruby_field);
-
-  native_self->protection = native_field;
-
-  return ruby_field;
-}
+///* set_protection
+// *
+// * Parameters:
+// * - value: apr_fileperms_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_protection(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_fileperms_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@protection_box"), ruby_field);
+//
+//  apr_fileperms_t native_field = TODO_mruby_unbox_apr_fileperms_t(ruby_field);
+//
+//  native_self->protection = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_filetype_FIELD
@@ -210,40 +205,35 @@ mrb_APR_AprFinfoT_set_protection(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_filetype(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_filetype_e native_field = native_self->filetype;
-
-  mrb_value ruby_field = TODO_mruby_box_apr_filetype_e(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@filetype_box"), ruby_field);
-
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
   return ruby_field;
 }
 
-/* set_filetype
- *
- * Parameters:
- * - value: apr_filetype_e
- */
-mrb_value
-mrb_APR_AprFinfoT_set_filetype(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_filetype_e(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@filetype_box"), ruby_field);
-
-  apr_filetype_e native_field = TODO_mruby_unbox_apr_filetype_e(ruby_field);
-
-  native_self->filetype = native_field;
-
-  return ruby_field;
-}
+///* set_filetype
+// *
+// * Parameters:
+// * - value: apr_filetype_e
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_filetype(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_filetype_e(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@filetype_box"), ruby_field);
+//
+//  apr_filetype_e native_field = TODO_mruby_unbox_apr_filetype_e(ruby_field);
+//
+//  native_self->filetype = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_user_FIELD
@@ -264,30 +254,30 @@ mrb_APR_AprFinfoT_get_user(mrb_state* mrb, mrb_value self) {
   return ruby_field;
 }
 
-/* set_user
- *
- * Parameters:
- * - value: apr_uid_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_user(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_uid_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@user_box"), ruby_field);
-
-  apr_uid_t native_field = TODO_mruby_unbox_apr_uid_t(ruby_field);
-
-  native_self->user = native_field;
-
-  return ruby_field;
-}
+///* set_user
+// *
+// * Parameters:
+// * - value: apr_uid_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_user(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_uid_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@user_box"), ruby_field);
+//
+//  apr_uid_t native_field = TODO_mruby_unbox_apr_uid_t(ruby_field);
+//
+//  native_self->user = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_group_FIELD
@@ -308,30 +298,30 @@ mrb_APR_AprFinfoT_get_group(mrb_state* mrb, mrb_value self) {
   return ruby_field;
 }
 
-/* set_group
- *
- * Parameters:
- * - value: apr_gid_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_group(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_gid_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@group_box"), ruby_field);
-
-  apr_gid_t native_field = TODO_mruby_unbox_apr_gid_t(ruby_field);
-
-  native_self->group = native_field;
-
-  return ruby_field;
-}
+///* set_group
+// *
+// * Parameters:
+// * - value: apr_gid_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_group(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_gid_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@group_box"), ruby_field);
+//
+//  apr_gid_t native_field = TODO_mruby_unbox_apr_gid_t(ruby_field);
+//
+//  native_self->group = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_inode_FIELD
@@ -352,30 +342,30 @@ mrb_APR_AprFinfoT_get_inode(mrb_state* mrb, mrb_value self) {
   return ruby_field;
 }
 
-/* set_inode
- *
- * Parameters:
- * - value: apr_ino_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_inode(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_ino_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@inode_box"), ruby_field);
-
-  apr_ino_t native_field = TODO_mruby_unbox_apr_ino_t(ruby_field);
-
-  native_self->inode = native_field;
-
-  return ruby_field;
-}
+///* set_inode
+// *
+// * Parameters:
+// * - value: apr_ino_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_inode(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_ino_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@inode_box"), ruby_field);
+//
+//  apr_ino_t native_field = TODO_mruby_unbox_apr_ino_t(ruby_field);
+//
+//  native_self->inode = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_device_FIELD
@@ -386,40 +376,35 @@ mrb_APR_AprFinfoT_set_inode(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_device(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_dev_t native_field = native_self->device;
-
-  mrb_value ruby_field = TODO_mruby_box_apr_dev_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@device_box"), ruby_field);
-
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
   return ruby_field;
 }
 
-/* set_device
- *
- * Parameters:
- * - value: apr_dev_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_device(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_dev_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@device_box"), ruby_field);
-
-  apr_dev_t native_field = TODO_mruby_unbox_apr_dev_t(ruby_field);
-
-  native_self->device = native_field;
-
-  return ruby_field;
-}
+///* set_device
+// *
+// * Parameters:
+// * - value: apr_dev_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_device(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_dev_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@device_box"), ruby_field);
+//
+//  apr_dev_t native_field = TODO_mruby_unbox_apr_dev_t(ruby_field);
+//
+//  native_self->device = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_nlink_FIELD
@@ -430,47 +415,42 @@ mrb_APR_AprFinfoT_set_device(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_nlink(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_int32_t native_field = native_self->nlink;
-
   if (native_field > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nlink_box"), ruby_field);
-
   return ruby_field;
 }
 
-/* set_nlink
- *
- * Parameters:
- * - value: apr_int32_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_nlink(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nlink_box"), ruby_field);
-
-  int native_field = mrb_fixnum(ruby_field);
-
-  native_self->nlink = native_field;
-
-  return ruby_field;
-}
+///* set_nlink
+// *
+// * Parameters:
+// * - value: apr_int32_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_nlink(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+//    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+//    return mrb_nil_value();
+//  }
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nlink_box"), ruby_field);
+//
+//  int native_field = mrb_fixnum(ruby_field);
+//
+//  native_self->nlink = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_size_FIELD
@@ -481,40 +461,39 @@ mrb_APR_AprFinfoT_set_nlink(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_size(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_off_t native_field = native_self->size;
-
-  mrb_value ruby_field = TODO_mruby_box_long_long(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@size_box"), ruby_field);
-
+  if (native_field > MRB_INT_MAX) {
+     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+     return mrb_nil_value();
+  }
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
   return ruby_field;
 }
 
-/* set_size
- *
- * Parameters:
- * - value: apr_off_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_size(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_long_long(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@size_box"), ruby_field);
-
-  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
-
-  native_self->size = native_field;
-
-  return ruby_field;
-}
+///* set_size
+// *
+// * Parameters:
+// * - value: apr_off_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_size(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_long_long(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@size_box"), ruby_field);
+//
+//  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
+//
+//  native_self->size = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_csize_FIELD
@@ -525,40 +504,39 @@ mrb_APR_AprFinfoT_set_size(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_csize(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_off_t native_field = native_self->csize;
-
-  mrb_value ruby_field = TODO_mruby_box_long_long(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@csize_box"), ruby_field);
-
+  if (native_field > MRB_INT_MAX) {
+     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+     return mrb_nil_value();
+  }
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
   return ruby_field;
 }
 
-/* set_csize
- *
- * Parameters:
- * - value: apr_off_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_csize(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_long_long(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@csize_box"), ruby_field);
-
-  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
-
-  native_self->csize = native_field;
-
-  return ruby_field;
-}
+///* set_csize
+// *
+// * Parameters:
+// * - value: apr_off_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_csize(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_long_long(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@csize_box"), ruby_field);
+//
+//  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
+//
+//  native_self->csize = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_atime_FIELD
@@ -569,13 +547,10 @@ mrb_APR_AprFinfoT_set_csize(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_atime(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_time_t native_field = native_self->atime;
-
-  mrb_value ruby_field = mruby_box_apr_time_t(mrb, &native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@atime_box"), ruby_field);
-
+  apr_time_t* new_atime = (apr_time_t*)malloc(sizeof(apr_time_t));
+  memcpy(new_atime, &native_field, sizeof(apr_time_t));
+  mrb_value ruby_field = mruby_giftwrap_apr_time_t(mrb, new_atime);
   return ruby_field;
 }
 
@@ -610,40 +585,37 @@ mrb_APR_AprFinfoT_get_atime(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_mtime(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   apr_time_t native_field = native_self->mtime;
-
-  mrb_value ruby_field = TODO_mruby_box_apr_time_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@mtime_box"), ruby_field);
-
+  apr_time_t* new_mtime = (apr_time_t*)malloc(sizeof(apr_time_t));
+  memcpy(new_mtime, &native_field, sizeof(apr_time_t));
+  mrb_value ruby_field = mruby_giftwrap_apr_time_t(mrb, new_mtime);
   return ruby_field;
 }
 
-/* set_mtime
- *
- * Parameters:
- * - value: apr_time_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_mtime(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_time_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@mtime_box"), ruby_field);
-
-  apr_time_t native_field = TODO_mruby_unbox_apr_time_t(ruby_field);
-
-  native_self->mtime = native_field;
-
-  return ruby_field;
-}
+///* set_mtime
+// *
+// * Parameters:
+// * - value: apr_time_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_mtime(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_time_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@mtime_box"), ruby_field);
+//
+//  apr_time_t native_field = TODO_mruby_unbox_apr_time_t(ruby_field);
+//
+//  native_self->mtime = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_ctime_FIELD
@@ -653,41 +625,38 @@ mrb_APR_AprFinfoT_set_mtime(mrb_state* mrb, mrb_value self) {
  */
 mrb_value
 mrb_APR_AprFinfoT_get_ctime(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
-  apr_time_t native_field = native_self->ctime;
-
-  mrb_value ruby_field = TODO_mruby_box_apr_time_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ctime_box"), ruby_field);
-
-  return ruby_field;
+   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+   apr_time_t native_field = native_self->ctime;
+   apr_time_t* new_ctime = (apr_time_t*)malloc(sizeof(apr_time_t));
+   memcpy(new_ctime, &native_field, sizeof(apr_time_t));
+   mrb_value ruby_field = mruby_giftwrap_apr_time_t(mrb, new_ctime);
+   return ruby_field;
 }
 
-/* set_ctime
- *
- * Parameters:
- * - value: apr_time_t
- */
-mrb_value
-mrb_APR_AprFinfoT_set_ctime(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_apr_time_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ctime_box"), ruby_field);
-
-  apr_time_t native_field = TODO_mruby_unbox_apr_time_t(ruby_field);
-
-  native_self->ctime = native_field;
-
-  return ruby_field;
-}
+///* set_ctime
+// *
+// * Parameters:
+// * - value: apr_time_t
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_ctime(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  TODO_type_check_apr_time_t(ruby_field);
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ctime_box"), ruby_field);
+//
+//  apr_time_t native_field = TODO_mruby_unbox_apr_time_t(ruby_field);
+//
+//  native_self->ctime = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_fname_FIELD
@@ -698,43 +667,38 @@ mrb_APR_AprFinfoT_set_ctime(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_fname(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   const char * native_field = native_self->fname;
-
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@fname_box"), ruby_field);
-
   return ruby_field;
 }
 
-/* set_fname
- *
- * Parameters:
- * - value: const char *
- */
-mrb_value
-mrb_APR_AprFinfoT_set_fname(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@fname_box"), ruby_field);
-
-  const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
-
-  native_self->fname = native_field;
-
-  return ruby_field;
-}
+///* set_fname
+// *
+// * Parameters:
+// * - value: const char *
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_fname(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+//    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+//    return mrb_nil_value();
+//  }
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@fname_box"), ruby_field);
+//
+//  const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
+//
+//  native_self->fname = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_name_FIELD
@@ -745,43 +709,38 @@ mrb_APR_AprFinfoT_set_fname(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_name(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   const char * native_field = native_self->name;
-
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@name_box"), ruby_field);
-
   return ruby_field;
 }
 
-/* set_name
- *
- * Parameters:
- * - value: const char *
- */
-mrb_value
-mrb_APR_AprFinfoT_set_name(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@name_box"), ruby_field);
-
-  const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
-
-  native_self->name = native_field;
-
-  return ruby_field;
-}
+///* set_name
+// *
+// * Parameters:
+// * - value: const char *
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_name(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
+//    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+//    return mrb_nil_value();
+//  }
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@name_box"), ruby_field);
+//
+//  const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
+//
+//  native_self->name = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 #if BIND_AprFinfoT_filehand_FIELD
@@ -792,43 +751,38 @@ mrb_APR_AprFinfoT_set_name(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_AprFinfoT_get_filehand(mrb_state* mrb, mrb_value self) {
   apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-
   struct apr_file_t * native_field = native_self->filehand;
-
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_file_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@filehand_box"), ruby_field);
-
   return ruby_field;
 }
 
-/* set_filehand
- *
- * Parameters:
- * - value: struct apr_file_t *
- */
-mrb_value
-mrb_APR_AprFinfoT_set_filehand(mrb_state* mrb, mrb_value self) {
-  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprFileT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
-    return mrb_nil_value();
-  }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@filehand_box"), ruby_field);
-
-  struct apr_file_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_file_t(ruby_field));
-
-  native_self->filehand = native_field;
-
-  return ruby_field;
-}
+///* set_filehand
+// *
+// * Parameters:
+// * - value: struct apr_file_t *
+// */
+//mrb_value
+//mrb_APR_AprFinfoT_set_filehand(mrb_state* mrb, mrb_value self) {
+//  apr_finfo_t * native_self = mruby_unbox_apr_finfo_t(self);
+//  mrb_value ruby_field;
+//
+//  mrb_get_args(mrb, "o", &ruby_field);
+//
+//  /* type checking */
+//  if (!mrb_obj_is_kind_of(mrb, ruby_field, AprFileT_class(mrb))) {
+//    mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
+//    return mrb_nil_value();
+//  }
+//
+//  /* Store the ruby object to prevent garage collection of the underlying native object */
+//  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@filehand_box"), ruby_field);
+//
+//  struct apr_file_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_file_t(ruby_field));
+//
+//  native_self->filehand = native_field;
+//
+//  return ruby_field;
+//}
 #endif
 
 
