@@ -1729,4 +1729,13 @@ mruby_unbox_apr_vformatter_buff_t(mrb_value boxed);
 #endif
 
 
+/*
+ * This functions tries to define all encountered macros as integer
+ * constants on the generated module. This part of the code generation
+ * is exceptionally ignorant. The types are not known, as macros are just text
+ * with no type information, so everything is assumed to be an int. You'll
+ * probably need to remove a lot of these, and fix the types for any that aren't ints.
+ */
+void mruby_APR_define_macro_constants(mrb_state* mrb);
+
 #endif

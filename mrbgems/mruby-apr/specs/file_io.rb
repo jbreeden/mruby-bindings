@@ -20,6 +20,7 @@ TestFixture.new('File IO') do
       check_errno(err)
       assert (file.kind_of?(APR::AprFileT))
       APR.apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
 
     it 'Can open a file for reading' do
@@ -27,6 +28,7 @@ TestFixture.new('File IO') do
       check_errno(err)
       assert (file.kind_of?(APR::AprFileT))
       APR.apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -41,6 +43,7 @@ TestFixture.new('File IO') do
       check_errno(err)
 
       APR.apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -55,6 +58,7 @@ TestFixture.new('File IO') do
       assert (str == 'This is a test')
 
       APR::apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
 
     it 'Reads as many characters as possible when length is beyond EOF' do
@@ -66,6 +70,7 @@ TestFixture.new('File IO') do
       assert (err == 0 && str == 'This is a test')
 
       APR::apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -84,6 +89,7 @@ TestFixture.new('File IO') do
       assert (bytes_written == length)
 
       APR::apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -98,6 +104,7 @@ TestFixture.new('File IO') do
       assert (str.length == @str_with_null.length)
 
       APR::apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
 
     it 'Returns EOF on first attempt to read past EOF' do
@@ -113,6 +120,7 @@ TestFixture.new('File IO') do
       assert(err == APR::APR_EOF)
 
       APR::apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -138,6 +146,7 @@ TestFixture.new('File IO') do
 
       err = APR.apr_file_close(file)
       check_errno(err)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -150,6 +159,7 @@ TestFixture.new('File IO') do
       check_errno(err)
 
       APR.apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -162,6 +172,7 @@ TestFixture.new('File IO') do
       check_errno(err)
 
       APR.apr_file_close(file)
+      APR.apr_pool_clear(@pool)
     end
   end
 
@@ -172,6 +183,7 @@ TestFixture.new('File IO') do
 
       err, file = APR::apr_file_open("sandbox/test_renamed.txt", APR::APR_FOPEN_READ, 0, @pool)
       assert (err != 0)
+      APR.apr_pool_clear(@pool)
     end
   end
 

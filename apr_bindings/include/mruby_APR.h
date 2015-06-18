@@ -991,7 +991,8 @@ typedef struct mruby_to_native_ref_ {
    * the data pointer can be used to associate arbitrary
    * data with a reference to a C object. This could
    * be a function pointer to invoke instead of `free` on GC,
-   * a pointer back to the RObject, etc. You get the idea.
+   * a pointer back to the RObject, or even cast to an integer type
+   * and used as a bit field. You get the idea...
    */
   void* data;
 } mruby_to_native_ref;
@@ -1710,5 +1711,11 @@ apr_vformatter_buff_t *
 mruby_unbox_apr_vformatter_buff_t(mrb_value boxed);
 #endif
 
+
+/*
+ * Macro definition function declaration
+ * -------------------------------------
+ */
+void mruby_APR_define_macro_constants(mrb_state* mrb);
 
 #endif

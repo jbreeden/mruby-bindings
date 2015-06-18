@@ -12,7 +12,7 @@ static void free_apr_time_t(mrb_state* mrb, void* ptr) {
       */
       if (box->obj != NULL) {
          free(box->obj);
-         box->obj == NULL;
+         box->obj = NULL;
       }
    }
 }
@@ -71,7 +71,7 @@ static void free_apr_allocator_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -131,7 +131,7 @@ static void free_apr_array_header_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -191,7 +191,7 @@ static void free_apr_crypto_hash_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -251,7 +251,7 @@ static void free_apr_dir_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -311,7 +311,7 @@ static void free_apr_dso_handle_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -371,7 +371,7 @@ static void free_apr_file_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -431,7 +431,7 @@ static void free_apr_finfo_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -491,7 +491,7 @@ static void free_apr_getopt_option_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -551,7 +551,7 @@ static void free_apr_getopt_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -611,7 +611,7 @@ static void free_apr_hash_index_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -671,7 +671,7 @@ static void free_apr_hash_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -731,7 +731,7 @@ static void free_apr_hdtr_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -791,7 +791,7 @@ static void free_apr_ipsubnet_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -851,7 +851,7 @@ static void free_apr_memnode_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -911,7 +911,7 @@ static void free_apr_mmap_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -971,7 +971,7 @@ static void free_apr_os_sock_info_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1031,7 +1031,7 @@ static void free_apr_other_child_rec_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1091,7 +1091,7 @@ static void free_apr_pollcb_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1151,7 +1151,7 @@ static void free_apr_pollfd_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1211,7 +1211,7 @@ static void free_apr_pollset_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1271,7 +1271,7 @@ static void free_apr_pool_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1331,7 +1331,7 @@ static void free_apr_proc_mutex_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1391,7 +1391,7 @@ static void free_apr_proc_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1451,7 +1451,7 @@ static void free_apr_procattr_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1511,7 +1511,7 @@ static void free_apr_random_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1571,7 +1571,7 @@ static void free_apr_shm_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1631,7 +1631,7 @@ static void free_apr_skiplist(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1691,7 +1691,7 @@ static void free_apr_skiplistnode(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1751,7 +1751,7 @@ static void free_apr_sockaddr_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1811,7 +1811,7 @@ static void free_apr_socket_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1871,7 +1871,7 @@ static void free_apr_table_entry_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1931,7 +1931,7 @@ static void free_apr_table_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -1991,7 +1991,7 @@ static void free_apr_thread_cond_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2051,7 +2051,7 @@ static void free_apr_thread_mutex_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2111,7 +2111,7 @@ static void free_apr_thread_once_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2171,7 +2171,7 @@ static void free_apr_thread_rwlock_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2231,7 +2231,7 @@ static void free_apr_thread_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2291,7 +2291,7 @@ static void free_apr_threadattr_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2351,7 +2351,7 @@ static void free_apr_threadkey_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2411,7 +2411,7 @@ static void free_apr_time_exp_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2471,7 +2471,7 @@ static void free_apr_version_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }
@@ -2531,7 +2531,7 @@ static void free_apr_vformatter_buff_t(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }

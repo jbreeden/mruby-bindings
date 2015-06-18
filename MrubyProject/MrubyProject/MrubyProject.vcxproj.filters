@@ -180,6 +180,9 @@
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr_in6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_APR_macro_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\mrbgems\mruby-apr\include\mruby_APR.h">

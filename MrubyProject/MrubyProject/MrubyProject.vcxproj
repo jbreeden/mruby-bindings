@@ -72,6 +72,7 @@
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_hash_t.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_hdtr_t.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_ipsubnet_t.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_APR_macro_constants.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_memnode_t.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_mmap_t.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_os_sock_info_t.cpp" />
