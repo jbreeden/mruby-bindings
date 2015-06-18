@@ -30,6 +30,7 @@ $current_function = nil
 $classes = {} # Includes structs
 $module_functions = []
 $enums = {}
+$macros = []
 
 at_exit do
   make_declaration_tree
@@ -105,6 +106,15 @@ def make_declaration_tree
         $current_function['argc'] += 1
         $current_function['params'] ||= []
         $current_function['params'].push(datum)
+      when "MacroDefinition"
+        $macros.push(datum)
+        datum['has_expansion'] = datum['text'] =~ /\s/
+        if datum['text'] =~ /^[a-zA-Z_0-9]+\(/
+          datum['is_function_like'] = true
+          datum['argv'] = datum['text'][/[^(]+\(([^)]*)\)/, 1].split(',').map { |a| a.strip }
+        else
+          datum['is_function_like'] = false
+        end
       end
     rescue StandardError => ex
       $stderr.puts "ERROR: #{ex} \n  (while processing #{datum})\n  Backtrace:\n  #{ex.backtrace.join("\n  ")}"
@@ -149,6 +159,9 @@ def print_diagnostics
   File.open('enum_definitions.txt', 'w') do |file|
     PP.pp $enums, file
   end
+  File.open('macro_definitions.txt', 'w') do |file|
+    PP.pp $macros, file
+  end
 end
 
 def generate_bindings
@@ -158,12 +171,14 @@ def generate_bindings
   module_functions = $module_functions.sort_by { |f| f['name'].downcase }
   enums = $enums.values.sort_by { |e| e['name'].downcase }
   classes = $classes.values.sort_by { |c| c['name'].downcase }
+  macros = $macros.sort_by { |m| m['name'].downcase }
 
   boxing_erb = ERB.new(File.read('boxing_template.erb'), nil, "-")
   class_erb = ERB.new(File.read('class_template.erb'), nil, "-")
   module_erb = ERB.new(File.read('module_template.erb'), nil, "-")
   enums_erb = ERB.new(File.read('enums_template.erb'), nil, "-")
   header_erb = ERB.new(File.read('header_template.erb'), nil, "-")
+  macros_erb = ERB.new(File.read('macros_template.erb'), nil, "-")
 
   if $classes.any?
     to_gen = $classes.values.reject { |c| c['is_template'] }
@@ -192,5 +207,9 @@ def generate_bindings
 
   File.open("#{$output_dir}/include/mruby_#{module_name}.h", "w") do |file|
     file.puts(header_erb.result binding)
+  end
+
+  File.open("#{$output_dir}/src/mruby_#{module_name}_macro_constants.cpp", "w") do |file|
+    file.puts(macros_erb.result binding)
   end
 end

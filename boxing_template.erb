@@ -24,7 +24,7 @@ static void free_<%= klass['name'] %>(mrb_state* mrb, void* ptr) {
      */
     if (box->obj != NULL) {
       free(box->obj);
-      box->obj == NULL;
+      box->obj = NULL;
     }
   }
 }

@@ -81,6 +81,7 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 
 void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
   RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name%>");
+  mruby_<%= module_name %>_define_macro_constants(mrb);
 
   /*
    * Initialize class bindings
