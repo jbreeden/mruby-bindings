@@ -3,6 +3,7 @@
 
 TestFixture.new('File IO') do
   err, @pool = APR::apr_pool_create nil
+  @ug_rw = 0x060600
 
   @str_with_null = "BeforeNull\x00AfterNull"
 
@@ -15,7 +16,7 @@ TestFixture.new('File IO') do
   describe 'APR::apr_file_open(name: String, mode: Fixnum, permissions: Fixnum, pool: AprPoolT): [errno: Fixnum, file: AprFileT]' do
     it 'Can open a file for writing' do
       err, file = APR.apr_file_open 'sandbox/test.txt',
-        APR::APR_FOPEN_CREATE | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_TRUNCATE, 0, @pool
+        APR::APR_FOPEN_CREATE | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_TRUNCATE, @ug_rw, @pool
       check_errno(err)
       assert (file.kind_of?(APR::AprFileT))
       APR.apr_file_close(file)
@@ -32,7 +33,7 @@ TestFixture.new('File IO') do
   describe 'APR::apr_file_puts(buf: String, file: AprFileT)' do
     it 'Can write to an open, writable, file' do
       err, file = APR.apr_file_open 'sandbox/test.txt',
-        APR::APR_FOPEN_CREATE | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_TRUNCATE, 0, @pool
+        APR::APR_FOPEN_CREATE | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_TRUNCATE, @ug_rw, @pool
       check_errno(err)
       assert (file.kind_of?(APR::AprFileT))
 
@@ -71,7 +72,7 @@ TestFixture.new('File IO') do
   describe 'APR::apr_file_write(file: AprFileT, buffer: String, num_bytes: Fixnum): [errno: Fixnum, bytes_written: Fixnum]' do
     it 'Can write strings with nulls to a file' do
       err, file = APR.apr_file_open('sandbox/test.txt',
-        APR::APR_FOPEN_CREATE | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_TRUNCATE, 0, @pool)
+        APR::APR_FOPEN_CREATE | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_TRUNCATE, @ug_rw, @pool)
       check_errno(err)
       assert (file.kind_of?(APR::AprFileT))
 
@@ -142,7 +143,7 @@ TestFixture.new('File IO') do
 
   describe 'APR::apr_file_copy(from_path: String, to_path: String, perms: int, pool: AprPoolType): errno: Fixnum' do
     it 'Copies files by name' do
-      err = APR.apr_file_copy("sandbox/test.txt", "sandbox/test_copy.txt", 0, @pool)
+      err = APR.apr_file_copy("sandbox/test.txt", "sandbox/test_copy.txt", @ug_rw, @pool)
       check_errno(err)
 
       err, file = APR::apr_file_open("sandbox/test_copy.txt", APR::APR_FOPEN_READ, 0, @pool)
