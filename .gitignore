@@ -1,0 +1,5 @@
+*.bak
+*.opensdf
+*.sdf
+*_definitions.txt
+declarations.json
