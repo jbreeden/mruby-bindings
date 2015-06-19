@@ -4442,53 +4442,54 @@ mrb_APR_apr_file_perms_set(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_file_pipe_create_FUNCTION
-#define apr_file_pipe_create_REQUIRED_ARGC 3
+#define apr_file_pipe_create_REQUIRED_ARGC 1
 #define apr_file_pipe_create_OPTIONAL_ARGC 0
 /* apr_file_pipe_create
  *
  * Parameters:
- * - in: apr_file_t **
- * - out: apr_file_t **
- * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * - pool: AprPoolT
+ * Return Type: [errno: Fixnum, readEnd: AprFileT, writeEnd: AprFileT]
  */
 mrb_value
 mrb_APR_apr_file_pipe_create(mrb_state* mrb, mrb_value self) {
-  mrb_value in;
-  mrb_value out;
-  mrb_value pool;
+   mrb_value pool;
 
-  /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &in, &out, &pool);
+   /* Fetch the args */
+   mrb_get_args(mrb, "o", &pool);
 
+   /* Type checking */
+   if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
+      mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
+      return mrb_nil_value();
+   }
 
-  /* Type checking */
-  TODO_type_check_apr_file_t_PTR_PTR(in);
-  TODO_type_check_apr_file_t_PTR_PTR(out);
-  if (!mrb_obj_is_kind_of(mrb, pool, AprPoolT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
-    return mrb_nil_value();
-  }
+   /* Unbox parameters */
+   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
+   /* Invocation */
+   apr_file_t * native_in;
+   apr_file_t * native_out;
+   apr_status_t result = apr_file_pipe_create(&native_in, &native_out, native_pool);
 
-  /* Unbox parameters */
-  apr_file_t ** native_in = TODO_mruby_unbox_apr_file_t_PTR_PTR(in);
+   /* Box the return value */
+   if (result > MRB_INT_MAX) {
+      mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+      return mrb_nil_value();
+   }
+   mrb_value return_value = mrb_fixnum_value(result);
 
-  apr_file_t ** native_out = TODO_mruby_unbox_apr_file_t_PTR_PTR(out);
+   mrb_value results = mrb_ary_new(mrb);
+   mrb_ary_push(mrb, results, return_value);
+   if (result == 0) {
+      mrb_ary_push(mrb, results, mruby_box_apr_file_t(mrb, native_in));
+      mrb_ary_push(mrb, results, mruby_box_apr_file_t(mrb, native_out));
+   }
+   else {
+      mrb_ary_push(mrb, results, mrb_nil_value());
+      mrb_ary_push(mrb, results, mrb_nil_value());
+   }
 
-  apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
-
-  /* Invocation */
-  apr_status_t result = apr_file_pipe_create(native_in, native_out, native_pool);
-
-  /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  return results;
 }
 #endif
 
@@ -11604,7 +11605,7 @@ mrb_APR_apr_pool_create(mrb_state* mrb, mrb_value self) {
    apr_pool_t * native_parent = (mrb_nil_p(parent) ? NULL : mruby_unbox_apr_pool_t(parent));
 
    /* Invocation */
-   apr_pool_t * native_newpool;
+   apr_pool_t * native_newpool = NULL;
    apr_status_t result = apr_pool_create_ex(&native_newpool, native_parent, NULL, NULL);
 
    /* Box the return value */
@@ -12506,17 +12507,15 @@ mrb_APR_apr_pool_userdata_setn(mrb_state* mrb, mrb_value self) {
 /* apr_proc_create
  *
  * Parameters:
- * - new_proc: apr_proc_t *
  * - progname: const char *
  * - args: const char *const *
  * - env: const char *const *
  * - attr: apr_procattr_t *
  * - pool: apr_pool_t *
- * Return Type: apr_status_t
+ * Return Type: [Fixnum, AprProcT]
  */
 mrb_value
 mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
-  mrb_value new_proc;
   mrb_value progname;
   mrb_value args;
   mrb_value env;
@@ -12524,20 +12523,21 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   mrb_value pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oooooo", &new_proc, &progname, &args, &env, &attr, &pool);
-
+  mrb_get_args(mrb, "ooooo", &progname, &args, &env, &attr, &pool);
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, new_proc, AprProcT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprProcT expected");
-    return mrb_nil_value();
-  }
   if (!mrb_obj_is_kind_of(mrb, progname, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  TODO_type_check_const_char_PTR_const_PTR(args);
-  TODO_type_check_const_char_PTR_const_PTR(env);
+  if (!mrb_obj_is_kind_of(mrb, args, mrb->array_class) && !mrb_nil_p(args)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Array expected");
+     return mrb_nil_value();
+  }
+  if (!mrb_obj_is_kind_of(mrb, env, mrb->array_class) && !mrb_nil_p(env)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Array expected");
+     return mrb_nil_value();
+  }
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
     return mrb_nil_value();
@@ -12547,21 +12547,44 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_proc_t * native_new_proc = (mrb_nil_p(new_proc) ? NULL : mruby_unbox_apr_proc_t(new_proc));
-
   const char * native_progname = mrb_string_value_cstr(mrb, &progname);
-
-  const char *const * native_args = TODO_mruby_unbox_const_char_PTR_const_PTR(args);
-
-  const char *const * native_env = TODO_mruby_unbox_const_char_PTR_const_PTR(env);
-
+  
+  const char ** native_args;
+  if (mrb_nil_p(args)) {
+    native_args = (const char**)malloc(sizeof(char*));
+    *native_args = NULL;
+  }
+  else {
+     int argc = mrb_ary_len(mrb, args);
+     native_args = (const char**)malloc(sizeof(char*) * (argc + 1));
+     for (int i = 0; i < argc; ++i) {
+        mrb_value ruby_string = mrb_ary_entry(args, i);
+        native_args[i] = mrb_string_value_cstr(mrb, &ruby_string);
+     }
+     native_args[argc] = NULL;
+  }
+  
+  const char ** native_env;
+  if (mrb_nil_p(env)) {
+     native_env = (const char**)malloc(sizeof(char*));
+     *native_env = NULL;
+  }
+  else {
+     int envc = mrb_ary_len(mrb, env);
+     native_env = (const char**)malloc(sizeof(char*) * (envc + 1));
+     for (int i = 0; i < envc; ++i) {
+        mrb_value ruby_string = mrb_ary_entry(env, i);
+        native_env[i] = mrb_string_value_cstr(mrb, &ruby_string);
+     }
+     native_env[envc] = NULL;
+  }
+  
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
+  apr_proc_t * native_new_proc;
   apr_status_t result = apr_proc_create(native_new_proc, native_progname, native_args, native_env, native_attr, native_pool);
 
   /* Box the return value */
@@ -12571,7 +12594,16 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_proc_t(mrb, native_new_proc));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -13377,20 +13409,16 @@ mrb_APR_apr_proc_other_child_unregister(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - proc: apr_proc_t *
- * - exitcode: int *
- * - exitwhy: apr_exit_why_e *
  * - waithow: apr_wait_how_e
- * Return Type: apr_status_t
+ * Return Type: [errno: Fixnum, exitcode: Fixnum, exitwhy: Fixnum]
  */
 mrb_value
 mrb_APR_apr_proc_wait(mrb_state* mrb, mrb_value self) {
   mrb_value proc;
-  mrb_value exitcode;
-  mrb_value exitwhy;
   mrb_value waithow;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oooo", &proc, &exitcode, &exitwhy, &waithow);
+  mrb_get_args(mrb, "oo", &proc, &waithow);
 
 
   /* Type checking */
@@ -13398,22 +13426,19 @@ mrb_APR_apr_proc_wait(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(exitcode);
-  TODO_type_check_apr_exit_why_e_PTR(exitwhy);
-  TODO_type_check_apr_wait_how_e(waithow);
-
+  if (!mrb_obj_is_kind_of(mrb, waithow, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_proc_t * native_proc = (mrb_nil_p(proc) ? NULL : mruby_unbox_apr_proc_t(proc));
-
-  int * native_exitcode = TODO_mruby_unbox_int_PTR(exitcode);
-
-  apr_exit_why_e * native_exitwhy = TODO_mruby_unbox_apr_exit_why_e_PTR(exitwhy);
-
-  apr_wait_how_e native_waithow = TODO_mruby_unbox_apr_wait_how_e(waithow);
+  apr_wait_how_e native_waithow = (apr_wait_how_e)mrb_fixnum(waithow);
 
   /* Invocation */
-  apr_status_t result = apr_proc_wait(native_proc, native_exitcode, native_exitwhy, native_waithow);
+  int native_exitcode;
+  apr_exit_why_e native_exitwhy;
+  apr_status_t result = apr_proc_wait(native_proc, &native_exitcode, &native_exitwhy, native_waithow);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -13422,7 +13447,17 @@ mrb_APR_apr_proc_wait(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mrb_fixnum_value(native_exitcode));
+     mrb_ary_push(mrb, results, mrb_fixnum_value(native_exitwhy));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -13508,7 +13543,6 @@ mrb_APR_apr_procattr_addrspace_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &attr, &addrspace);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -13518,7 +13552,6 @@ mrb_APR_apr_procattr_addrspace_set(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
@@ -13559,27 +13592,23 @@ mrb_APR_apr_procattr_child_err_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &attr, &child_err, &parent_err);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, child_err, AprFileT_class(mrb))) {
+  if (!mrb_obj_is_kind_of(mrb, child_err, AprFileT_class(mrb)) && !mrb_nil_p(child_err)) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, parent_err, AprFileT_class(mrb))) {
+  if (!mrb_obj_is_kind_of(mrb, parent_err, AprFileT_class(mrb)) && !mrb_nil_p(parent_err)) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   apr_file_t * native_child_err = (mrb_nil_p(child_err) ? NULL : mruby_unbox_apr_file_t(child_err));
-
   apr_file_t * native_parent_err = (mrb_nil_p(parent_err) ? NULL : mruby_unbox_apr_file_t(parent_err));
 
   /* Invocation */
@@ -13662,27 +13691,23 @@ mrb_APR_apr_procattr_child_in_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &attr, &child_in, &parent_in);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, child_in, AprFileT_class(mrb))) {
+  if (!mrb_obj_is_kind_of(mrb, child_in, AprFileT_class(mrb)) && !mrb_nil_p(parent_in)) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, parent_in, AprFileT_class(mrb))) {
+  if (!mrb_obj_is_kind_of(mrb, parent_in, AprFileT_class(mrb)) && !mrb_nil_p(parent_in)) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   apr_file_t * native_child_in = (mrb_nil_p(child_in) ? NULL : mruby_unbox_apr_file_t(child_in));
-
   apr_file_t * native_parent_in = (mrb_nil_p(parent_in) ? NULL : mruby_unbox_apr_file_t(parent_in));
 
   /* Invocation */
@@ -13719,27 +13744,23 @@ mrb_APR_apr_procattr_child_out_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &attr, &child_out, &parent_out);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, child_out, AprFileT_class(mrb))) {
+  if (!mrb_obj_is_kind_of(mrb, child_out, AprFileT_class(mrb)) && !mrb_nil_p(parent_out)) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, parent_out, AprFileT_class(mrb))) {
+  if (!mrb_obj_is_kind_of(mrb, parent_out, AprFileT_class(mrb)) && !mrb_nil_p(parent_out)) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   apr_file_t * native_child_out = (mrb_nil_p(child_out) ? NULL : mruby_unbox_apr_file_t(child_out));
-
   apr_file_t * native_parent_out = (mrb_nil_p(parent_out) ? NULL : mruby_unbox_apr_file_t(parent_out));
 
   /* Invocation */
@@ -13774,19 +13795,19 @@ mrb_APR_apr_procattr_cmdtype_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &attr, &cmd);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_apr_cmdtype_e(cmd);
-
+  if (!mrb_obj_is_kind_of(mrb, cmd, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
-  apr_cmdtype_e native_cmd = TODO_mruby_unbox_apr_cmdtype_e(cmd);
+  apr_cmdtype_e native_cmd = (apr_cmdtype_e)mrb_fixnum(cmd);
 
   /* Invocation */
   apr_status_t result = apr_procattr_cmdtype_set(native_attr, native_cmd);
@@ -13803,39 +13824,33 @@ mrb_APR_apr_procattr_cmdtype_set(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_procattr_create_FUNCTION
-#define apr_procattr_create_REQUIRED_ARGC 2
+#define apr_procattr_create_REQUIRED_ARGC 1
 #define apr_procattr_create_OPTIONAL_ARGC 0
 /* apr_procattr_create
  *
  * Parameters:
- * - new_attr: apr_procattr_t **
- * - cont: apr_pool_t *
- * Return Type: apr_status_t
+ * - cont: AprPoolT
+ * Return Type: [Fixnum, AprProcattrT]
  */
 mrb_value
 mrb_APR_apr_procattr_create(mrb_state* mrb, mrb_value self) {
-  mrb_value new_attr;
   mrb_value cont;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &new_attr, &cont);
-
+  mrb_get_args(mrb, "o", &cont);
 
   /* Type checking */
-  TODO_type_check_apr_procattr_t_PTR_PTR(new_attr);
   if (!mrb_obj_is_kind_of(mrb, cont, AprPoolT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_procattr_t ** native_new_attr = TODO_mruby_unbox_apr_procattr_t_PTR_PTR(new_attr);
-
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
   /* Invocation */
-  apr_status_t result = apr_procattr_create(native_new_attr, native_cont);
+  apr_procattr_t * native_new_attr;
+  apr_status_t result = apr_procattr_create(&native_new_attr, native_cont);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -13844,7 +13859,16 @@ mrb_APR_apr_procattr_create(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  if (result == 0) {
+     mrb_ary_push(mrb, results, mruby_box_apr_procattr_t(mrb, native_new_attr));
+  }
+  else {
+     mrb_ary_push(mrb, results, mrb_nil_value());
+  }
+
+  return results;
 }
 #endif
 
@@ -13866,7 +13890,6 @@ mrb_APR_apr_procattr_detach_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &attr, &detach);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -13877,10 +13900,8 @@ mrb_APR_apr_procattr_detach_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   int native_detach = mrb_fixnum(detach);
 
   /* Invocation */
@@ -13915,7 +13936,6 @@ mrb_APR_apr_procattr_dir_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &attr, &dir);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -13925,7 +13945,6 @@ mrb_APR_apr_procattr_dir_set(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
@@ -13964,7 +13983,6 @@ mrb_APR_apr_procattr_error_check_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &attr, &chk);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -13974,7 +13992,6 @@ mrb_APR_apr_procattr_error_check_set(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
@@ -14013,7 +14030,6 @@ mrb_APR_apr_procattr_group_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &attr, &groupname);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -14024,10 +14040,8 @@ mrb_APR_apr_procattr_group_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   const char * native_groupname = mrb_string_value_cstr(mrb, &groupname);
 
   /* Invocation */
@@ -14066,7 +14080,6 @@ mrb_APR_apr_procattr_io_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oooo", &attr, &in, &out, &err);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -14085,14 +14098,10 @@ mrb_APR_apr_procattr_io_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   int native_in = mrb_fixnum(in);
-
   int native_out = mrb_fixnum(out);
-
   int native_err = mrb_fixnum(err);
 
   /* Invocation */
@@ -14129,7 +14138,6 @@ mrb_APR_apr_procattr_user_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &attr, &username, &password);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, attr, AprProcattrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprProcattrT expected");
@@ -14144,12 +14152,9 @@ mrb_APR_apr_procattr_user_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
-
   const char * native_username = mrb_string_value_cstr(mrb, &username);
-
   const char * native_password = mrb_string_value_cstr(mrb, &password);
 
   /* Invocation */
@@ -21958,9 +21963,9 @@ mrb_APR_apr_time_now(mrb_state* mrb, mrb_value self) {
 /* apr_tokenize_to_argv
  *
  * Parameters:
- * - arg_str: const char *
- * - token_context: apr_pool_t *
- * Return Type: apr_status_t
+ * - arg_str: String
+ * - token_context: AprPoolType
+ * Return Type: [Fixnum, Array[String]]
  */
 mrb_value
 mrb_APR_apr_tokenize_to_argv(mrb_state* mrb, mrb_value self) {
@@ -22772,232 +22777,6 @@ mrb_APR_apr_wait_for_io_or_timeout(mrb_state* mrb, mrb_value self) {
   return return_value;
 }
 #endif
-
-//void mrb_APR_define_constants(mrb_state* mrb) {
-//   /* apr_file_io.h */
-//   /*mrb_define_const(mrb, APR_module(mrb), "APR_WANT_STDIO", mrb_fixnum_value(APR_WANT_STDIO));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_WANT_IOVEC", mrb_fixnum_value(APR_WANT_IOVEC));*/
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_READ", mrb_fixnum_value(APR_FOPEN_READ));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_WRITE", mrb_fixnum_value(APR_FOPEN_WRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_CREATE", mrb_fixnum_value(APR_FOPEN_CREATE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_APPEND", mrb_fixnum_value(APR_FOPEN_APPEND));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_TRUNCATE", mrb_fixnum_value(APR_FOPEN_TRUNCATE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_BINARY", mrb_fixnum_value(APR_FOPEN_BINARY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_EXCL", mrb_fixnum_value(APR_FOPEN_EXCL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_BUFFERED", mrb_fixnum_value(APR_FOPEN_BUFFERED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_DELONCLOSE", mrb_fixnum_value(APR_FOPEN_DELONCLOSE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_XTHREAD", mrb_fixnum_value(APR_FOPEN_XTHREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_SHARELOCK", mrb_fixnum_value(APR_FOPEN_SHARELOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_NOCLEANUP", mrb_fixnum_value(APR_FOPEN_NOCLEANUP));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_SENDFILE_ENABLED", mrb_fixnum_value(APR_FOPEN_SENDFILE_ENABLED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_LARGEFILE", mrb_fixnum_value(APR_FOPEN_LARGEFILE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_SPARSE", mrb_fixnum_value(APR_FOPEN_SPARSE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FOPEN_NONBLOCK", mrb_fixnum_value(APR_FOPEN_NONBLOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_READ", mrb_fixnum_value(APR_READ));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_WRITE", mrb_fixnum_value(APR_WRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_CREATE", mrb_fixnum_value(APR_CREATE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_APPEND", mrb_fixnum_value(APR_APPEND));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_TRUNCATE", mrb_fixnum_value(APR_TRUNCATE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_BINARY", mrb_fixnum_value(APR_BINARY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EXCL", mrb_fixnum_value(APR_EXCL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_BUFFERED", mrb_fixnum_value(APR_BUFFERED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_DELONCLOSE", mrb_fixnum_value(APR_DELONCLOSE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_XTHREAD", mrb_fixnum_value(APR_XTHREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_SHARELOCK", mrb_fixnum_value(APR_SHARELOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_NOCLEANUP", mrb_fixnum_value(APR_FILE_NOCLEANUP));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_SENDFILE_ENABLED", mrb_fixnum_value(APR_SENDFILE_ENABLED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_LARGEFILE", mrb_fixnum_value(APR_LARGEFILE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_SET", mrb_fixnum_value(APR_SET));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_CUR", mrb_fixnum_value(APR_CUR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_END", mrb_fixnum_value(APR_END));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_ATTR_READONLY", mrb_fixnum_value(APR_FILE_ATTR_READONLY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_ATTR_EXECUTABLE", mrb_fixnum_value(APR_FILE_ATTR_EXECUTABLE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_ATTR_HIDDEN", mrb_fixnum_value(APR_FILE_ATTR_HIDDEN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_MAX_IOVEC_SIZE", mrb_fixnum_value(APR_MAX_IOVEC_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_SHARED", mrb_fixnum_value(APR_FLOCK_SHARED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_EXCLUSIVE", mrb_fixnum_value(APR_FLOCK_EXCLUSIVE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_TYPEMASK", mrb_fixnum_value(APR_FLOCK_TYPEMASK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FLOCK_NONBLOCK", mrb_fixnum_value(APR_FLOCK_NONBLOCK));
-//
-//   /* apr_file_info.h */
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_USETID", mrb_fixnum_value(APR_FPROT_USETID));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_UREAD", mrb_fixnum_value(APR_FPROT_UREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_UWRITE", mrb_fixnum_value(APR_FPROT_UWRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_UEXECUTE", mrb_fixnum_value(APR_FPROT_UEXECUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GSETID", mrb_fixnum_value(APR_FPROT_GSETID));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GREAD", mrb_fixnum_value(APR_FPROT_GREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GWRITE", mrb_fixnum_value(APR_FPROT_GWRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_GEXECUTE", mrb_fixnum_value(APR_FPROT_GEXECUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WSTICKY", mrb_fixnum_value(APR_FPROT_WSTICKY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WREAD", mrb_fixnum_value(APR_FPROT_WREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WWRITE", mrb_fixnum_value(APR_FPROT_WWRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_WEXECUTE", mrb_fixnum_value(APR_FPROT_WEXECUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_OS_DEFAULT", mrb_fixnum_value(APR_FPROT_OS_DEFAULT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FPROT_FILE_SOURCE_PERMS", mrb_fixnum_value(APR_FPROT_FILE_SOURCE_PERMS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_USETID", mrb_fixnum_value(APR_USETID));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_UREAD", mrb_fixnum_value(APR_UREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_UWRITE", mrb_fixnum_value(APR_UWRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_UEXECUTE", mrb_fixnum_value(APR_UEXECUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_GSETID", mrb_fixnum_value(APR_GSETID));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_GREAD", mrb_fixnum_value(APR_GREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_GWRITE", mrb_fixnum_value(APR_GWRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_GEXECUTE", mrb_fixnum_value(APR_GEXECUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_WSTICKY", mrb_fixnum_value(APR_WSTICKY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_WREAD", mrb_fixnum_value(APR_WREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_WWRITE", mrb_fixnum_value(APR_WWRITE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_WEXECUTE", mrb_fixnum_value(APR_WEXECUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_DEFAULT", mrb_fixnum_value(APR_OS_DEFAULT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILE_SOURCE_PERMS", mrb_fixnum_value(APR_FILE_SOURCE_PERMS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_LINK", mrb_fixnum_value(APR_FINFO_LINK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_MTIME", mrb_fixnum_value(APR_FINFO_MTIME));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_CTIME", mrb_fixnum_value(APR_FINFO_CTIME));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_ATIME", mrb_fixnum_value(APR_FINFO_ATIME));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_SIZE", mrb_fixnum_value(APR_FINFO_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_CSIZE", mrb_fixnum_value(APR_FINFO_CSIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_DEV", mrb_fixnum_value(APR_FINFO_DEV));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_INODE", mrb_fixnum_value(APR_FINFO_INODE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_NLINK", mrb_fixnum_value(APR_FINFO_NLINK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_TYPE", mrb_fixnum_value(APR_FINFO_TYPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_USER", mrb_fixnum_value(APR_FINFO_USER));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_GROUP", mrb_fixnum_value(APR_FINFO_GROUP));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_UPROT", mrb_fixnum_value(APR_FINFO_UPROT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_GPROT", mrb_fixnum_value(APR_FINFO_GPROT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_WPROT", mrb_fixnum_value(APR_FINFO_WPROT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_ICASE", mrb_fixnum_value(APR_FINFO_ICASE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_NAME", mrb_fixnum_value(APR_FINFO_NAME));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_MIN", mrb_fixnum_value(APR_FINFO_MIN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_IDENT", mrb_fixnum_value(APR_FINFO_IDENT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_OWNER", mrb_fixnum_value(APR_FINFO_OWNER));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_PROT", mrb_fixnum_value(APR_FINFO_PROT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_NORM", mrb_fixnum_value(APR_FINFO_NORM));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FINFO_DIRENT", mrb_fixnum_value(APR_FINFO_DIRENT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NOTABOVEROOT", mrb_fixnum_value(APR_FILEPATH_NOTABOVEROOT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_SECUREROOTTEST", mrb_fixnum_value(APR_FILEPATH_SECUREROOTTEST));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_SECUREROOT", mrb_fixnum_value(APR_FILEPATH_SECUREROOT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NOTRELATIVE", mrb_fixnum_value(APR_FILEPATH_NOTRELATIVE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NOTABSOLUTE", mrb_fixnum_value(APR_FILEPATH_NOTABSOLUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_NATIVE", mrb_fixnum_value(APR_FILEPATH_NATIVE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_TRUENAME", mrb_fixnum_value(APR_FILEPATH_TRUENAME));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_ENCODING_UNKNOWN", mrb_fixnum_value(APR_FILEPATH_ENCODING_UNKNOWN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEPATH_ENCODING_LOCALE", mrb_fixnum_value(APR_FILEPATH_ENCODING_LOCALE));
-//
-//
-//   /* apr_errno.h */
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_ERROR", mrb_fixnum_value(APR_OS_START_ERROR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_ERRSPACE_SIZE", mrb_fixnum_value(APR_OS_ERRSPACE_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_UTIL_ERRSPACE_SIZE", mrb_fixnum_value(APR_UTIL_ERRSPACE_SIZE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_STATUS", mrb_fixnum_value(APR_OS_START_STATUS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_UTIL_START_STATUS", mrb_fixnum_value(APR_UTIL_START_STATUS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_USERERR", mrb_fixnum_value(APR_OS_START_USERERR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_USEERR", mrb_fixnum_value(APR_OS_START_USEERR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_CANONERR", mrb_fixnum_value(APR_OS_START_CANONERR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_EAIERR", mrb_fixnum_value(APR_OS_START_EAIERR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_OS_START_SYSERR", mrb_fixnum_value(APR_OS_START_SYSERR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_SUCCESS", mrb_fixnum_value(APR_SUCCESS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSTAT", mrb_fixnum_value(APR_ENOSTAT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOPOOL", mrb_fixnum_value(APR_ENOPOOL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBADDATE", mrb_fixnum_value(APR_EBADDATE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINVALSOCK", mrb_fixnum_value(APR_EINVALSOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOPROC", mrb_fixnum_value(APR_ENOPROC));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTIME", mrb_fixnum_value(APR_ENOTIME));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENODIR", mrb_fixnum_value(APR_ENODIR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOLOCK", mrb_fixnum_value(APR_ENOLOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOPOLL", mrb_fixnum_value(APR_ENOPOLL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSOCKET", mrb_fixnum_value(APR_ENOSOCKET));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTHREAD", mrb_fixnum_value(APR_ENOTHREAD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTHDKEY", mrb_fixnum_value(APR_ENOTHDKEY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EGENERAL", mrb_fixnum_value(APR_EGENERAL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSHMAVAIL", mrb_fixnum_value(APR_ENOSHMAVAIL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBADIP", mrb_fixnum_value(APR_EBADIP));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBADMASK", mrb_fixnum_value(APR_EBADMASK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EDSOOPEN", mrb_fixnum_value(APR_EDSOOPEN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EABSOLUTE", mrb_fixnum_value(APR_EABSOLUTE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ERELATIVE", mrb_fixnum_value(APR_ERELATIVE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINCOMPLETE", mrb_fixnum_value(APR_EINCOMPLETE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EABOVEROOT", mrb_fixnum_value(APR_EABOVEROOT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBADPATH", mrb_fixnum_value(APR_EBADPATH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EPATHWILD", mrb_fixnum_value(APR_EPATHWILD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ESYMNOTFOUND", mrb_fixnum_value(APR_ESYMNOTFOUND));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EPROC_UNKNOWN", mrb_fixnum_value(APR_EPROC_UNKNOWN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTENOUGHENTROPY", mrb_fixnum_value(APR_ENOTENOUGHENTROPY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_INCHILD", mrb_fixnum_value(APR_INCHILD));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_INPARENT", mrb_fixnum_value(APR_INPARENT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_DETACH", mrb_fixnum_value(APR_DETACH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_NOTDETACH", mrb_fixnum_value(APR_NOTDETACH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_CHILD_DONE", mrb_fixnum_value(APR_CHILD_DONE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_CHILD_NOTDONE", mrb_fixnum_value(APR_CHILD_NOTDONE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_TIMEUP", mrb_fixnum_value(APR_TIMEUP));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_INCOMPLETE", mrb_fixnum_value(APR_INCOMPLETE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_BADCH", mrb_fixnum_value(APR_BADCH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_BADARG", mrb_fixnum_value(APR_BADARG));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EOF", mrb_fixnum_value(APR_EOF));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_NOTFOUND", mrb_fixnum_value(APR_NOTFOUND));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ANONYMOUS", mrb_fixnum_value(APR_ANONYMOUS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_FILEBASED", mrb_fixnum_value(APR_FILEBASED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_KEYBASED", mrb_fixnum_value(APR_KEYBASED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINIT", mrb_fixnum_value(APR_EINIT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTIMPL", mrb_fixnum_value(APR_ENOTIMPL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EMISMATCH", mrb_fixnum_value(APR_EMISMATCH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBUSY", mrb_fixnum_value(APR_EBUSY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EACCES", mrb_fixnum_value(APR_EACCES));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EACCES", mrb_fixnum_value(APR_EACCES));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EEXIST", mrb_fixnum_value(APR_EEXIST));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EEXIST", mrb_fixnum_value(APR_EEXIST));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENAMETOOLONG", mrb_fixnum_value(APR_ENAMETOOLONG));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENAMETOOLONG", mrb_fixnum_value(APR_ENAMETOOLONG));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOENT", mrb_fixnum_value(APR_ENOENT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOENT", mrb_fixnum_value(APR_ENOENT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTDIR", mrb_fixnum_value(APR_ENOTDIR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTDIR", mrb_fixnum_value(APR_ENOTDIR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSPC", mrb_fixnum_value(APR_ENOSPC));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOSPC", mrb_fixnum_value(APR_ENOSPC));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOMEM", mrb_fixnum_value(APR_ENOMEM));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOMEM", mrb_fixnum_value(APR_ENOMEM));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EMFILE", mrb_fixnum_value(APR_EMFILE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EMFILE", mrb_fixnum_value(APR_EMFILE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENFILE", mrb_fixnum_value(APR_ENFILE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENFILE", mrb_fixnum_value(APR_ENFILE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBADF", mrb_fixnum_value(APR_EBADF));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EBADF", mrb_fixnum_value(APR_EBADF));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINVAL", mrb_fixnum_value(APR_EINVAL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINVAL", mrb_fixnum_value(APR_EINVAL));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ESPIPE", mrb_fixnum_value(APR_ESPIPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ESPIPE", mrb_fixnum_value(APR_ESPIPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EAGAIN", mrb_fixnum_value(APR_EAGAIN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EAGAIN", mrb_fixnum_value(APR_EAGAIN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EAGAIN", mrb_fixnum_value(APR_EAGAIN));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINTR", mrb_fixnum_value(APR_EINTR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINTR", mrb_fixnum_value(APR_EINTR));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTSOCK", mrb_fixnum_value(APR_ENOTSOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTSOCK", mrb_fixnum_value(APR_ENOTSOCK));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNREFUSED", mrb_fixnum_value(APR_ECONNREFUSED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNREFUSED", mrb_fixnum_value(APR_ECONNREFUSED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINPROGRESS", mrb_fixnum_value(APR_EINPROGRESS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EINPROGRESS", mrb_fixnum_value(APR_EINPROGRESS));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNABORTED", mrb_fixnum_value(APR_ECONNABORTED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNABORTED", mrb_fixnum_value(APR_ECONNABORTED));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNRESET", mrb_fixnum_value(APR_ECONNRESET));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ECONNRESET", mrb_fixnum_value(APR_ECONNRESET));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ETIMEDOUT", mrb_fixnum_value(APR_ETIMEDOUT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ETIMEDOUT", mrb_fixnum_value(APR_ETIMEDOUT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EHOSTUNREACH", mrb_fixnum_value(APR_EHOSTUNREACH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EHOSTUNREACH", mrb_fixnum_value(APR_EHOSTUNREACH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENETUNREACH", mrb_fixnum_value(APR_ENETUNREACH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENETUNREACH", mrb_fixnum_value(APR_ENETUNREACH));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EFTYPE", mrb_fixnum_value(APR_EFTYPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EFTYPE", mrb_fixnum_value(APR_EFTYPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EPIPE", mrb_fixnum_value(APR_EPIPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EPIPE", mrb_fixnum_value(APR_EPIPE));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EXDEV", mrb_fixnum_value(APR_EXDEV));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EXDEV", mrb_fixnum_value(APR_EXDEV));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTEMPTY", mrb_fixnum_value(APR_ENOTEMPTY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_ENOTEMPTY", mrb_fixnum_value(APR_ENOTEMPTY));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EAFNOSUPPORT", mrb_fixnum_value(APR_EAFNOSUPPORT));
-//   mrb_define_const(mrb, APR_module(mrb), "APR_EAFNOSUPPORT", mrb_fixnum_value(APR_EAFNOSUPPORT));
-//}
 
 void mrb_mruby_apr_gem_init(mrb_state* mrb) {
   RClass* APR_module = mrb_define_module(mrb, "APR");

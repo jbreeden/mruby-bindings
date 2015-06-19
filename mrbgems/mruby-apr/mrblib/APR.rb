@@ -1,87 +1,79 @@
 module APR
+  APR.apr_initialize
 
   module AprCmdtypeE
-    Apr_Shellcmd = 0
-    Apr_Program = 1
-    Apr_Program_Env = 2
-    Apr_Program_Path = 3
-    Apr_Shellcmd_Env = 4
+    APR_SHELLCMD = 0
+    APR_PROGRAM = 1
+    APR_PROGRAM_ENV = 2
+    APR_PROGRAM_PATH = 3
+    APR_SHELLCMD_ENV = 4
   end
 
   module AprDatatypeE
-    Apr_No_Desc = 0
-    Apr_Poll_Socket = 1
-    Apr_Poll_File = 2
-    Apr_Poll_Lastdesc = 3
+    APR_NO_DESC = 0
+    APR_POLL_SOCKET = 1
+    APR_POLL_FILE = 2
+    APR_POLL_LASTDESC = 3
   end
 
   module AprExitWhyE
-    Apr_Proc_Exit = 1
-    Apr_Proc_Signal = 2
-    Apr_Proc_Signal_Core = 4
+    APR_PROC_EXIT = 1
+    APR_PROC_SIGNAL = 2
+    APR_PROC_SIGNAL_CORE = 4
   end
 
   module AprFiletypeE
-    Apr_Nofile = 0
-    Apr_Reg = 1
-    Apr_Dir = 2
-    Apr_Chr = 3
-    Apr_Blk = 4
-    Apr_Pipe = 5
-    Apr_Lnk = 6
-    Apr_Sock = 7
-    Apr_Unkfile = 127
+    APR_NOFILE = 0
+    APR_REG = 1
+    APR_DIR = 2
+    APR_CHR = 3
+    APR_BLK = 4
+    APR_PIPE = 5
+    APR_LNK = 6
+    APR_SOCK = 7
+    APR_UNKFILE = 127
   end
 
   module AprInterfaceE
-    Apr_Local = 0
-    Apr_Remote = 1
+    APR_LOCAL = 0
+    APR_REMOTE = 1
   end
 
   module AprKillConditionsE
-    Apr_Kill_Never = 0
-    Apr_Kill_Always = 1
-    Apr_Kill_After_Timeout = 2
-    Apr_Just_Wait = 3
-    Apr_Kill_Only_Once = 4
+    APR_KILL_NEVER = 0
+    APR_KILL_ALWAYS = 1
+    APR_KILL_AFTER_TIMEOUT = 2
+    APR_JUST_WAIT = 3
+    APR_KILL_ONLY_ONCE = 4
   end
 
   module AprLockmechE
-    Apr_Lock_Fcntl = 0
-    Apr_Lock_Flock = 1
-    Apr_Lock_Sysvsem = 2
-    Apr_Lock_Proc_Pthread = 3
-    Apr_Lock_Posixsem = 4
-    Apr_Lock_Default = 5
+    APR_LOCK_FCNTL = 0
+    APR_LOCK_FLOCK = 1
+    APR_LOCK_SYSVSEM = 2
+    APR_LOCK_PROC_PTHREAD = 3
+    APR_LOCK_POSIXSEM = 4
+    APR_LOCK_DEFAULT = 5
   end
 
   module AprPollsetMethodE
-    Apr_Pollset_Default = 0
-    Apr_Pollset_Select = 1
-    Apr_Pollset_Kqueue = 2
-    Apr_Pollset_Port = 3
-    Apr_Pollset_Epoll = 4
-    Apr_Pollset_Poll = 5
-    Apr_Pollset_Aio_Msgq = 6
+    APR_POLLSET_DEFAULT = 0
+    APR_POLLSET_SELECT = 1
+    APR_POLLSET_KQUEUE = 2
+    APR_POLLSET_PORT = 3
+    APR_POLLSET_EPOLL = 4
+    APR_POLLSET_POLL = 5
+    APR_POLLSET_AIO_MSGQ = 6
   end
 
   module AprShutdownHowE
-    Apr_Shutdown_Read = 0
-    Apr_Shutdown_Write = 1
-    Apr_Shutdown_Readwrite = 2
+    APR_SHUTDOWN_READ = 0
+    APR_SHUTDOWN_WRITE = 1
+    APR_SHUTDOWN_READWRITE = 2
   end
 
   module AprWaitHowE
-    Apr_Wait = 0
-    Apr_Nowait = 1
-  end
-
-  self.apr_initialize
-  @pool = nil
-  def self.pool
-    unless @pool
-      err, @pool = self.apr_pool_create(nil)
-    end
-    @pool
+    APR_WAIT = 0
+    APR_NOWAIT = 1
   end
 end

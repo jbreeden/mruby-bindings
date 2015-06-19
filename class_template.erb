@@ -76,8 +76,6 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_sta
 <%    (CTypes[field['type']['type_name']].boxing_fn.invocation_template % ({:box => 'native_field', :as => 'ruby_field'})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%    end -%>
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@<%= field['name'] %>_box"), ruby_field);
 
   return ruby_field;
 }
@@ -98,9 +96,6 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
 <%  (CTypes[field['type']['type_name']].type_check % ({:value => 'ruby_field'})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%  end -%>
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@<%= field['name'] %>_box"), ruby_field);
 
 <%   (CTypes[field['type']['type_name']].unboxing_fn.invocation_template % ({:unbox => 'ruby_field', :as => 'native_field'})).each_line do |line| -%>
   <%= line.sub("\n", "") %>

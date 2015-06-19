@@ -4,7 +4,7 @@ module <%= module_name %>
   module <%= enum['name'].split('_').map { |token| token.capitalize }.join('') %>
 <%   constants = enum['constants'].uniq
      constants.each do |constant| -%>
-    <%= constant['name'].split('_').map { |token| token.capitalize }.join('_') %> = <%= constant['value'] %>
+    <%= constant['name'].split('_').map { |token| token[0].upcase + token[1..(token.length)] }.join('_') %> = <%= constant['value'] %>
 <%   end -%>
   end
 <% end -%>
