@@ -72,8 +72,6 @@ mrb_APR_AprOsSockInfoT_get_os_sock(mrb_state* mrb, mrb_value self) {
   apr_os_sock_t * native_field = native_self->os_sock;
 
   mrb_value ruby_field = TODO_mruby_box_apr_os_sock_t_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@os_sock_box"), ruby_field);
 
   return ruby_field;
 }
@@ -92,9 +90,6 @@ mrb_APR_AprOsSockInfoT_set_os_sock(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_os_sock_t_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@os_sock_box"), ruby_field);
 
   apr_os_sock_t * native_field = TODO_mruby_unbox_apr_os_sock_t_PTR(ruby_field);
 
@@ -116,8 +111,6 @@ mrb_APR_AprOsSockInfoT_get_local(mrb_state* mrb, mrb_value self) {
   struct sockaddr * native_field = native_self->local;
 
   mrb_value ruby_field = TODO_mruby_box_struct_sockaddr_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@local_box"), ruby_field);
 
   return ruby_field;
 }
@@ -136,9 +129,6 @@ mrb_APR_AprOsSockInfoT_set_local(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_struct_sockaddr_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@local_box"), ruby_field);
 
   struct sockaddr * native_field = TODO_mruby_unbox_struct_sockaddr_PTR(ruby_field);
 
@@ -160,8 +150,6 @@ mrb_APR_AprOsSockInfoT_get_remote(mrb_state* mrb, mrb_value self) {
   struct sockaddr * native_field = native_self->remote;
 
   mrb_value ruby_field = TODO_mruby_box_struct_sockaddr_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@remote_box"), ruby_field);
 
   return ruby_field;
 }
@@ -180,9 +168,6 @@ mrb_APR_AprOsSockInfoT_set_remote(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_struct_sockaddr_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@remote_box"), ruby_field);
 
   struct sockaddr * native_field = TODO_mruby_unbox_struct_sockaddr_PTR(ruby_field);
 
@@ -208,8 +193,6 @@ mrb_APR_AprOsSockInfoT_get_family(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@family_box"), ruby_field);
 
   return ruby_field;
 }
@@ -231,9 +214,6 @@ mrb_APR_AprOsSockInfoT_set_family(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@family_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -259,8 +239,6 @@ mrb_APR_AprOsSockInfoT_get_type(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@type_box"), ruby_field);
 
   return ruby_field;
 }
@@ -282,9 +260,6 @@ mrb_APR_AprOsSockInfoT_set_type(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@type_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -310,8 +285,6 @@ mrb_APR_AprOsSockInfoT_get_protocol(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@protocol_box"), ruby_field);
 
   return ruby_field;
 }
@@ -333,9 +306,6 @@ mrb_APR_AprOsSockInfoT_set_protocol(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@protocol_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 

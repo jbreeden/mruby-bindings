@@ -72,8 +72,6 @@ mrb_APR_AprMemnodeT_get_next(mrb_state* mrb, mrb_value self) {
   apr_memnode_t * native_field = native_self->next;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_memnode_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@next_box"), ruby_field);
 
   return ruby_field;
 }
@@ -96,9 +94,6 @@ mrb_APR_AprMemnodeT_set_next(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@next_box"), ruby_field);
-
   apr_memnode_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_memnode_t(ruby_field));
 
   native_self->next = native_field;
@@ -119,8 +114,6 @@ mrb_APR_AprMemnodeT_get_ref(mrb_state* mrb, mrb_value self) {
   apr_memnode_t ** native_field = native_self->ref;
 
   mrb_value ruby_field = TODO_mruby_box_apr_memnode_t_PTR_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ref_box"), ruby_field);
 
   return ruby_field;
 }
@@ -139,9 +132,6 @@ mrb_APR_AprMemnodeT_set_ref(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_memnode_t_PTR_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ref_box"), ruby_field);
 
   apr_memnode_t ** native_field = TODO_mruby_unbox_apr_memnode_t_PTR_PTR(ruby_field);
 
@@ -167,8 +157,6 @@ mrb_APR_AprMemnodeT_get_index(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@index_box"), ruby_field);
 
   return ruby_field;
 }
@@ -190,9 +178,6 @@ mrb_APR_AprMemnodeT_set_index(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@index_box"), ruby_field);
 
   unsigned int native_field = mrb_fixnum(ruby_field);
 
@@ -218,8 +203,6 @@ mrb_APR_AprMemnodeT_get_free_index(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@free_index_box"), ruby_field);
 
   return ruby_field;
 }
@@ -242,9 +225,6 @@ mrb_APR_AprMemnodeT_set_free_index(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@free_index_box"), ruby_field);
-
   unsigned int native_field = mrb_fixnum(ruby_field);
 
   native_self->free_index = native_field;
@@ -265,8 +245,6 @@ mrb_APR_AprMemnodeT_get_first_avail(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->first_avail;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@first_avail_box"), ruby_field);
 
   return ruby_field;
 }
@@ -288,9 +266,6 @@ mrb_APR_AprMemnodeT_set_first_avail(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@first_avail_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.
@@ -317,8 +292,6 @@ mrb_APR_AprMemnodeT_get_endp(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->endp;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@endp_box"), ruby_field);
 
   return ruby_field;
 }
@@ -340,9 +313,6 @@ mrb_APR_AprMemnodeT_set_endp(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@endp_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.

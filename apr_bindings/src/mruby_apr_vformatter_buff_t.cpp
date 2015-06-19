@@ -72,8 +72,6 @@ mrb_APR_AprVformatterBuffT_get_curpos(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->curpos;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@curpos_box"), ruby_field);
 
   return ruby_field;
 }
@@ -95,9 +93,6 @@ mrb_APR_AprVformatterBuffT_set_curpos(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@curpos_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.
@@ -124,8 +119,6 @@ mrb_APR_AprVformatterBuffT_get_endpos(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->endpos;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@endpos_box"), ruby_field);
 
   return ruby_field;
 }
@@ -147,9 +140,6 @@ mrb_APR_AprVformatterBuffT_set_endpos(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@endpos_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.

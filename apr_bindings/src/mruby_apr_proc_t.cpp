@@ -72,8 +72,6 @@ mrb_APR_AprProcT_get_pid(mrb_state* mrb, mrb_value self) {
   pid_t native_field = native_self->pid;
 
   mrb_value ruby_field = TODO_mruby_box_pid_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pid_box"), ruby_field);
 
   return ruby_field;
 }
@@ -92,9 +90,6 @@ mrb_APR_AprProcT_set_pid(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_pid_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pid_box"), ruby_field);
 
   pid_t native_field = TODO_mruby_unbox_pid_t(ruby_field);
 
@@ -116,8 +111,6 @@ mrb_APR_AprProcT_get_in(mrb_state* mrb, mrb_value self) {
   apr_file_t * native_field = native_self->in;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_file_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@in_box"), ruby_field);
 
   return ruby_field;
 }
@@ -140,9 +133,6 @@ mrb_APR_AprProcT_set_in(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@in_box"), ruby_field);
-
   apr_file_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_file_t(ruby_field));
 
   native_self->in = native_field;
@@ -163,8 +153,6 @@ mrb_APR_AprProcT_get_out(mrb_state* mrb, mrb_value self) {
   apr_file_t * native_field = native_self->out;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_file_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@out_box"), ruby_field);
 
   return ruby_field;
 }
@@ -187,9 +175,6 @@ mrb_APR_AprProcT_set_out(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@out_box"), ruby_field);
-
   apr_file_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_file_t(ruby_field));
 
   native_self->out = native_field;
@@ -210,8 +195,6 @@ mrb_APR_AprProcT_get_err(mrb_state* mrb, mrb_value self) {
   apr_file_t * native_field = native_self->err;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_file_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@err_box"), ruby_field);
 
   return ruby_field;
 }
@@ -234,9 +217,6 @@ mrb_APR_AprProcT_set_err(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@err_box"), ruby_field);
-
   apr_file_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_file_t(ruby_field));
 
   native_self->err = native_field;
@@ -257,8 +237,6 @@ mrb_APR_AprProcT_get_invoked(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->invoked;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@invoked_box"), ruby_field);
 
   return ruby_field;
 }
@@ -280,9 +258,6 @@ mrb_APR_AprProcT_set_invoked(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@invoked_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.
@@ -309,8 +284,6 @@ mrb_APR_AprProcT_get_hproc(mrb_state* mrb, mrb_value self) {
   HANDLE native_field = native_self->hproc;
 
   mrb_value ruby_field = TODO_mruby_box_HANDLE(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@hproc_box"), ruby_field);
 
   return ruby_field;
 }
@@ -329,9 +302,6 @@ mrb_APR_AprProcT_set_hproc(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_HANDLE(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@hproc_box"), ruby_field);
 
   HANDLE native_field = TODO_mruby_unbox_HANDLE(ruby_field);
 

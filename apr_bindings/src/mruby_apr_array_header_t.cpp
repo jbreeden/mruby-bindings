@@ -72,8 +72,6 @@ mrb_APR_AprArrayHeaderT_get_pool(mrb_state* mrb, mrb_value self) {
   apr_pool_t * native_field = native_self->pool;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_pool_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pool_box"), ruby_field);
 
   return ruby_field;
 }
@@ -95,9 +93,6 @@ mrb_APR_AprArrayHeaderT_set_pool(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprPoolT expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@pool_box"), ruby_field);
 
   apr_pool_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_pool_t(ruby_field));
 
@@ -123,8 +118,6 @@ mrb_APR_AprArrayHeaderT_get_elt_size(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@elt_size_box"), ruby_field);
 
   return ruby_field;
 }
@@ -146,9 +139,6 @@ mrb_APR_AprArrayHeaderT_set_elt_size(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@elt_size_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -174,8 +164,6 @@ mrb_APR_AprArrayHeaderT_get_nelts(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nelts_box"), ruby_field);
 
   return ruby_field;
 }
@@ -197,9 +185,6 @@ mrb_APR_AprArrayHeaderT_set_nelts(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nelts_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -225,8 +210,6 @@ mrb_APR_AprArrayHeaderT_get_nalloc(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nalloc_box"), ruby_field);
 
   return ruby_field;
 }
@@ -249,9 +232,6 @@ mrb_APR_AprArrayHeaderT_set_nalloc(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@nalloc_box"), ruby_field);
-
   int native_field = mrb_fixnum(ruby_field);
 
   native_self->nalloc = native_field;
@@ -272,8 +252,6 @@ mrb_APR_AprArrayHeaderT_get_elts(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->elts;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@elts_box"), ruby_field);
 
   return ruby_field;
 }
@@ -295,9 +273,6 @@ mrb_APR_AprArrayHeaderT_set_elts(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@elts_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.

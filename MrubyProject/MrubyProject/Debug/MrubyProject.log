@@ -1,14 +1,17 @@
-﻿Build started 6/18/2015 10:31:36 PM.
+﻿Build started 6/19/2015 4:31:30 PM.
      1>Project "C:\projects\mruby-bindings\MrubyProject\MrubyProject\MrubyProject.vcxproj" on node 2 (Build target(s)).
      1>Build:
          rake mruby:build
          (in C:/projects/mruby-bindings)
          ruby minirake
-     1>cl : Command line warning D9002: ignoring unknown option '-std=c++11'
-         mruby_apr_proc_t.cpp
+         gem_init.c
+            Creating library C:\projects\mruby-bindings\mruby-1.1.0\build\host\bin\mirb.lib and object C:\projects\mruby-bindings\mruby-1.1.0\build\host\bin\mirb.exp
+            Creating library C:\projects\mruby-bindings\mruby-1.1.0\build\host\bin\mruby.lib and object C:\projects\mruby-bindings\mruby-1.1.0\build\host\bin\mruby.exp
+            Creating library C:\projects\mruby-bindings\mruby-1.1.0\build\host\bin\mruby-strip.lib and object C:\projects\mruby-bindings\mruby-1.1.0\build\host\bin\mruby-strip.exp
          (in C:/projects/mruby-bindings/mruby-1.1.0)
-         CC    ../mrbgems/mruby-apr/src/mruby_apr_proc_t.cpp -> build/host/mrbgems/mruby-apr/src/mruby_apr_proc_t.obj
-         /c /nologo /W3 /Zi /MD /O2 /EHs /D_CRT_SECURE_NO_WARNINGS -std=c++11 /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DMRBGEM_MRUBY_APR_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include"
+               MRBC ../mrbgems/mruby-nanomsg/mrblib/nn_socket.rb 
+         CC    build/host/mrbgems/mruby-nanomsg/gem_init.c -> build/host/mrbgems/mruby-nanomsg/gem_init.obj
+         /c /nologo /W3 /we4013 /Zi /MD /O2 /D_CRT_SECURE_NO_WARNINGS /DMRB_STACK_EXTEND_DOUBLING /DMRB_ENABLE_CXX_EXCEPTION /DAPR_DECLARE_STATIC /DNN_NO_EXPORTS /DMRBGEM_MRUBY_NANOMSG_VERSION=0.0.0 /I"C:\projects\mruby-bindings\mruby-1.1.0\include" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr" /I"C:\projects\mruby-bindings\mrbgems\mruby-apr\include\apr\win" /I"C:\projects\mruby-bindings\mrbgems\mruby-nanomsg\include\nanomsg" /I"C:\projects\mruby-bindings\mrbgems\mruby-nanomsg\include"
          AR    build/host/lib/libmruby.lib 
          LD    build/host/bin/mirb 
          LD    build/host/bin/mruby 
@@ -52,6 +55,7 @@
                       mruby-time - standard Time class
                       mruby-toplevel-ext - extended toplevel object (main) methods
                       mruby-apr - Bindings to the APR libraries
+                      mruby-nanomsg - Bindings to the nanomsg library
          ================================================
          
          mv mirb mirb.exe
@@ -62,4 +66,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:07.08
+Time Elapsed 00:00:02.64

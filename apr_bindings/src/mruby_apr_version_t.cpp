@@ -76,8 +76,6 @@ mrb_APR_AprVersionT_get_major(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@major_box"), ruby_field);
 
   return ruby_field;
 }
@@ -99,9 +97,6 @@ mrb_APR_AprVersionT_set_major(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@major_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -127,8 +122,6 @@ mrb_APR_AprVersionT_get_minor(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@minor_box"), ruby_field);
 
   return ruby_field;
 }
@@ -150,9 +143,6 @@ mrb_APR_AprVersionT_set_minor(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@minor_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -178,8 +168,6 @@ mrb_APR_AprVersionT_get_patch(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@patch_box"), ruby_field);
 
   return ruby_field;
 }
@@ -201,9 +189,6 @@ mrb_APR_AprVersionT_set_patch(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@patch_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -229,8 +214,6 @@ mrb_APR_AprVersionT_get_is_dev(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@is_dev_box"), ruby_field);
 
   return ruby_field;
 }
@@ -252,9 +235,6 @@ mrb_APR_AprVersionT_set_is_dev(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@is_dev_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 

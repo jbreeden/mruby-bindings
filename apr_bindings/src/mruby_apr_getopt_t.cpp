@@ -72,8 +72,6 @@ mrb_APR_AprGetoptT_get_cont(mrb_state* mrb, mrb_value self) {
   apr_pool_t * native_field = native_self->cont;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_pool_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@cont_box"), ruby_field);
 
   return ruby_field;
 }
@@ -96,9 +94,6 @@ mrb_APR_AprGetoptT_set_cont(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@cont_box"), ruby_field);
-
   apr_pool_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_pool_t(ruby_field));
 
   native_self->cont = native_field;
@@ -119,8 +114,6 @@ mrb_APR_AprGetoptT_get_errfn(mrb_state* mrb, mrb_value self) {
   apr_getopt_err_fn_t * native_field = native_self->errfn;
 
   mrb_value ruby_field = TODO_mruby_box_apr_getopt_err_fn_t_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@errfn_box"), ruby_field);
 
   return ruby_field;
 }
@@ -139,9 +132,6 @@ mrb_APR_AprGetoptT_set_errfn(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_getopt_err_fn_t_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@errfn_box"), ruby_field);
 
   apr_getopt_err_fn_t * native_field = TODO_mruby_unbox_apr_getopt_err_fn_t_PTR(ruby_field);
 
@@ -163,8 +153,6 @@ mrb_APR_AprGetoptT_get_errarg(mrb_state* mrb, mrb_value self) {
   void * native_field = native_self->errarg;
 
   mrb_value ruby_field = TODO_mruby_box_void_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@errarg_box"), ruby_field);
 
   return ruby_field;
 }
@@ -183,9 +171,6 @@ mrb_APR_AprGetoptT_set_errarg(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_void_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@errarg_box"), ruby_field);
 
   void * native_field = TODO_mruby_unbox_void_PTR(ruby_field);
 
@@ -211,8 +196,6 @@ mrb_APR_AprGetoptT_get_ind(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ind_box"), ruby_field);
 
   return ruby_field;
 }
@@ -234,9 +217,6 @@ mrb_APR_AprGetoptT_set_ind(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@ind_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -262,8 +242,6 @@ mrb_APR_AprGetoptT_get_opt(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@opt_box"), ruby_field);
 
   return ruby_field;
 }
@@ -285,9 +263,6 @@ mrb_APR_AprGetoptT_set_opt(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@opt_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -313,8 +288,6 @@ mrb_APR_AprGetoptT_get_reset(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@reset_box"), ruby_field);
 
   return ruby_field;
 }
@@ -336,9 +309,6 @@ mrb_APR_AprGetoptT_set_reset(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@reset_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -364,8 +334,6 @@ mrb_APR_AprGetoptT_get_argc(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@argc_box"), ruby_field);
 
   return ruby_field;
 }
@@ -388,9 +356,6 @@ mrb_APR_AprGetoptT_set_argc(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@argc_box"), ruby_field);
-
   int native_field = mrb_fixnum(ruby_field);
 
   native_self->argc = native_field;
@@ -411,8 +376,6 @@ mrb_APR_AprGetoptT_get_argv(mrb_state* mrb, mrb_value self) {
   const char ** native_field = native_self->argv;
 
   mrb_value ruby_field = TODO_mruby_box_const_char_PTR_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@argv_box"), ruby_field);
 
   return ruby_field;
 }
@@ -431,9 +394,6 @@ mrb_APR_AprGetoptT_set_argv(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_const_char_PTR_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@argv_box"), ruby_field);
 
   const char ** native_field = TODO_mruby_unbox_const_char_PTR_PTR(ruby_field);
 
@@ -455,8 +415,6 @@ mrb_APR_AprGetoptT_get_place(mrb_state* mrb, mrb_value self) {
   const char * native_field = native_self->place;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@place_box"), ruby_field);
 
   return ruby_field;
 }
@@ -478,9 +436,6 @@ mrb_APR_AprGetoptT_set_place(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@place_box"), ruby_field);
 
   const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
 
@@ -506,8 +461,6 @@ mrb_APR_AprGetoptT_get_interleave(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@interleave_box"), ruby_field);
 
   return ruby_field;
 }
@@ -529,9 +482,6 @@ mrb_APR_AprGetoptT_set_interleave(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@interleave_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -557,8 +507,6 @@ mrb_APR_AprGetoptT_get_skip_start(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@skip_start_box"), ruby_field);
 
   return ruby_field;
 }
@@ -580,9 +528,6 @@ mrb_APR_AprGetoptT_set_skip_start(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@skip_start_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -608,8 +553,6 @@ mrb_APR_AprGetoptT_get_skip_end(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@skip_end_box"), ruby_field);
 
   return ruby_field;
 }
@@ -631,9 +574,6 @@ mrb_APR_AprGetoptT_set_skip_end(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@skip_end_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 

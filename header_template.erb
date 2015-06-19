@@ -72,6 +72,7 @@
  * they should be commented out.
  */
 
+#include <stdlib.h>
 #include "mruby.h"
 #include "mruby/array.h"
 #include "mruby/class.h"
@@ -79,7 +80,15 @@
 #include "mruby/string.h"
 #include "mruby/value.h"
 #include "mruby/variable.h"
-<% classes.map { |c| File.basename(c['file']) }.concat(module_functions.map { |f| File.basename(f['file']) }).uniq.sort.each do |file| -%>
+<%
+classes.map { |c|
+  File.basename(c['file'])
+  }.concat(module_functions.map { |f|
+    File.basename(f['file'])
+  }).concat(macros.map { |m|
+    File.basename(m['file'])
+  }).uniq.sort.each do |file|
+-%>
 #include "<%= file %>"
 <% end -%>
 

@@ -785,6 +785,7 @@
  * they should be commented out.
  */
 
+#include <stdlib.h>
 #include "mruby.h"
 #include "mruby/array.h"
 #include "mruby/class.h"
@@ -792,6 +793,7 @@
 #include "mruby/string.h"
 #include "mruby/value.h"
 #include "mruby/variable.h"
+#include "apr.h"
 #include "apr_allocator.h"
 #include "apr_atomic.h"
 #include "apr_dso.h"
@@ -803,7 +805,9 @@
 #include "apr_fnmatch.h"
 #include "apr_general.h"
 #include "apr_getopt.h"
+#include "apr_global_mutex.h"
 #include "apr_hash.h"
+#include "apr_inherit.h"
 #include "apr_lib.h"
 #include "apr_mmap.h"
 #include "apr_network_io.h"
@@ -812,6 +816,7 @@
 #include "apr_portable.h"
 #include "apr_proc_mutex.h"
 #include "apr_random.h"
+#include "apr_ring.h"
 #include "apr_shm.h"
 #include "apr_signal.h"
 #include "apr_skiplist.h"

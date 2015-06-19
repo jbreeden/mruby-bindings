@@ -72,8 +72,6 @@ mrb_APR_AprHdtrT_get_headers(mrb_state* mrb, mrb_value self) {
   struct iovec * native_field = native_self->headers;
 
   mrb_value ruby_field = TODO_mruby_box_struct_iovec_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@headers_box"), ruby_field);
 
   return ruby_field;
 }
@@ -92,9 +90,6 @@ mrb_APR_AprHdtrT_set_headers(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_struct_iovec_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@headers_box"), ruby_field);
 
   struct iovec * native_field = TODO_mruby_unbox_struct_iovec_PTR(ruby_field);
 
@@ -120,8 +115,6 @@ mrb_APR_AprHdtrT_get_numheaders(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@numheaders_box"), ruby_field);
 
   return ruby_field;
 }
@@ -144,9 +137,6 @@ mrb_APR_AprHdtrT_set_numheaders(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@numheaders_box"), ruby_field);
-
   int native_field = mrb_fixnum(ruby_field);
 
   native_self->numheaders = native_field;
@@ -167,8 +157,6 @@ mrb_APR_AprHdtrT_get_trailers(mrb_state* mrb, mrb_value self) {
   struct iovec * native_field = native_self->trailers;
 
   mrb_value ruby_field = TODO_mruby_box_struct_iovec_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@trailers_box"), ruby_field);
 
   return ruby_field;
 }
@@ -187,9 +175,6 @@ mrb_APR_AprHdtrT_set_trailers(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_struct_iovec_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@trailers_box"), ruby_field);
 
   struct iovec * native_field = TODO_mruby_unbox_struct_iovec_PTR(ruby_field);
 
@@ -215,8 +200,6 @@ mrb_APR_AprHdtrT_get_numtrailers(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@numtrailers_box"), ruby_field);
 
   return ruby_field;
 }
@@ -238,9 +221,6 @@ mrb_APR_AprHdtrT_set_numtrailers(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@numtrailers_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 

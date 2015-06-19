@@ -72,8 +72,6 @@ mrb_APR_AprPollfdT_get_p(mrb_state* mrb, mrb_value self) {
   apr_pool_t * native_field = native_self->p;
 
   mrb_value ruby_field = (native_field == NULL ? mrb_nil_value() : mruby_box_apr_pool_t(mrb, native_field));
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@p_box"), ruby_field);
 
   return ruby_field;
 }
@@ -96,9 +94,6 @@ mrb_APR_AprPollfdT_set_p(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@p_box"), ruby_field);
-
   apr_pool_t * native_field = (mrb_nil_p(ruby_field) ? NULL : mruby_unbox_apr_pool_t(ruby_field));
 
   native_self->p = native_field;
@@ -119,8 +114,6 @@ mrb_APR_AprPollfdT_get_desc_type(mrb_state* mrb, mrb_value self) {
   apr_datatype_e native_field = native_self->desc_type;
 
   mrb_value ruby_field = TODO_mruby_box_apr_datatype_e(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@desc_type_box"), ruby_field);
 
   return ruby_field;
 }
@@ -139,9 +132,6 @@ mrb_APR_AprPollfdT_set_desc_type(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_datatype_e(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@desc_type_box"), ruby_field);
 
   apr_datatype_e native_field = TODO_mruby_unbox_apr_datatype_e(ruby_field);
 
@@ -163,8 +153,6 @@ mrb_APR_AprPollfdT_get_reqevents(mrb_state* mrb, mrb_value self) {
   apr_int16_t native_field = native_self->reqevents;
 
   mrb_value ruby_field = TODO_mruby_box_apr_int16_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@reqevents_box"), ruby_field);
 
   return ruby_field;
 }
@@ -183,9 +171,6 @@ mrb_APR_AprPollfdT_set_reqevents(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_int16_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@reqevents_box"), ruby_field);
 
   apr_int16_t native_field = TODO_mruby_unbox_apr_int16_t(ruby_field);
 
@@ -207,8 +192,6 @@ mrb_APR_AprPollfdT_get_rtnevents(mrb_state* mrb, mrb_value self) {
   apr_int16_t native_field = native_self->rtnevents;
 
   mrb_value ruby_field = TODO_mruby_box_apr_int16_t(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@rtnevents_box"), ruby_field);
 
   return ruby_field;
 }
@@ -227,9 +210,6 @@ mrb_APR_AprPollfdT_set_rtnevents(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_int16_t(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@rtnevents_box"), ruby_field);
 
   apr_int16_t native_field = TODO_mruby_unbox_apr_int16_t(ruby_field);
 
@@ -251,8 +231,6 @@ mrb_APR_AprPollfdT_get_desc(mrb_state* mrb, mrb_value self) {
   apr_descriptor native_field = native_self->desc;
 
   mrb_value ruby_field = TODO_mruby_box_apr_descriptor(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@desc_box"), ruby_field);
 
   return ruby_field;
 }
@@ -271,9 +249,6 @@ mrb_APR_AprPollfdT_set_desc(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_apr_descriptor(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@desc_box"), ruby_field);
 
   apr_descriptor native_field = TODO_mruby_unbox_apr_descriptor(ruby_field);
 
@@ -295,8 +270,6 @@ mrb_APR_AprPollfdT_get_client_data(mrb_state* mrb, mrb_value self) {
   void * native_field = native_self->client_data;
 
   mrb_value ruby_field = TODO_mruby_box_void_PTR(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@client_data_box"), ruby_field);
 
   return ruby_field;
 }
@@ -315,9 +288,6 @@ mrb_APR_AprPollfdT_set_client_data(mrb_state* mrb, mrb_value self) {
 
   /* type checking */
   TODO_type_check_void_PTR(ruby_field);
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@client_data_box"), ruby_field);
 
   void * native_field = TODO_mruby_unbox_void_PTR(ruby_field);
 

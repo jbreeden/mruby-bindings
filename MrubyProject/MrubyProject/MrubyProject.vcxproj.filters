@@ -111,24 +111,6 @@
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_vformatter_buff_t.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_atime_t.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_FSI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_IOSB.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_PBI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_pollfd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sock_userdata_t.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_APR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,24 +150,87 @@
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_table_t.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_in_addr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr_in.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr_in6.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_APR_macro_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_NN.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_NN_boxing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_cmsghdr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_cp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_ctx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_ep.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_ep_options.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_epbase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_epbase_vfptr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_iovec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_NN_macro_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_msghdr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_optset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_optset_vfptr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pipe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pipebase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pipebase_vfptr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pollfd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_sock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_sockbase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_sockbase_vfptr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_socktype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_symbol_properties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_transport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\mrbgems\mruby-apr\include\mruby_APR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mrbgems\mruby-nanomsg\include\mruby_NN.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

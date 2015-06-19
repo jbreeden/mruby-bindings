@@ -72,8 +72,6 @@ mrb_APR_AprGetoptOptionT_get_name(mrb_state* mrb, mrb_value self) {
   const char * native_field = native_self->name;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@name_box"), ruby_field);
 
   return ruby_field;
 }
@@ -95,9 +93,6 @@ mrb_APR_AprGetoptOptionT_set_name(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@name_box"), ruby_field);
 
   const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
 
@@ -123,8 +118,6 @@ mrb_APR_AprGetoptOptionT_get_optch(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@optch_box"), ruby_field);
 
   return ruby_field;
 }
@@ -146,9 +139,6 @@ mrb_APR_AprGetoptOptionT_set_optch(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@optch_box"), ruby_field);
 
   int native_field = mrb_fixnum(ruby_field);
 
@@ -174,8 +164,6 @@ mrb_APR_AprGetoptOptionT_get_has_arg(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@has_arg_box"), ruby_field);
 
   return ruby_field;
 }
@@ -198,9 +186,6 @@ mrb_APR_AprGetoptOptionT_set_has_arg(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@has_arg_box"), ruby_field);
-
   int native_field = mrb_fixnum(ruby_field);
 
   native_self->has_arg = native_field;
@@ -221,8 +206,6 @@ mrb_APR_AprGetoptOptionT_get_description(mrb_state* mrb, mrb_value self) {
   const char * native_field = native_self->description;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@description_box"), ruby_field);
 
   return ruby_field;
 }
@@ -244,9 +227,6 @@ mrb_APR_AprGetoptOptionT_set_description(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@description_box"), ruby_field);
 
   const char * native_field = mrb_string_value_cstr(mrb, &ruby_field);
 

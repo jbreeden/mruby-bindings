@@ -41,7 +41,7 @@
     <NMakeCleanCommandLine>rake mruby:clean</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>rake mruby:clean &amp;&amp; rake mruby:build</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <IncludePath>$(SolutionDir)\..\mrbgems\mruby-apr\include\apr\win;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr;$(SolutionDir)\..\mrbgems\mruby-apr\include;$(SolutionDir)\..\mruby-1.1.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\mrbgems\mruby-nanomsg\include\nanomsg;$(SolutionDir)\..\mrbgems\mruby-nanomsg\include;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr\win;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr;$(SolutionDir)\..\mrbgems\mruby-apr\include;$(SolutionDir)\..\mruby-1.1.0\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>rake mruby:build</NMakeBuildCommandLine>
@@ -49,7 +49,7 @@
     <NMakeCleanCommandLine>rake mruby:clean</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>rake mruby:clean &amp;&amp; rake mruby:build</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <IncludePath>$(SolutionDir)\..\mrbgems\mruby-apr\include\apr\win;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr;$(SolutionDir)\..\mrbgems\mruby-apr\include;$(SolutionDir)\..\mruby-1.1.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\mrbgems\mruby-nanomsg\include\nanomsg;$(SolutionDir)\..\mrbgems\mruby-nanomsg\include;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr\win;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr;$(SolutionDir)\..\mrbgems\mruby-apr\include;$(SolutionDir)\..\mruby-1.1.0\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -102,19 +102,34 @@
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_time_exp_t.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_version_t.cpp" />
     <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_apr_vformatter_buff_t.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_atime_t.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_FSI.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_in_addr.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_IOSB.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_PBI.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_pollfd.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr_in.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sockaddr_in6.cpp" />
-    <ClCompile Include="..\..\mrbgems\mruby-apr\src\mruby_sock_userdata_t.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_NN.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_NN_boxing.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_cmsghdr.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_cp.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_ctx.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_ep.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_epbase.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_epbase_vfptr.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_ep_options.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_iovec.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_NN_macro_constants.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_msghdr.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_optset.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_optset_vfptr.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pipe.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pipebase.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pipebase_vfptr.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_pollfd.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_sock.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_sockbase.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_sockbase_vfptr.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_socktype.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_symbol_properties.cpp" />
+    <ClCompile Include="..\..\mrbgems\mruby-nanomsg\src\mruby_nn_transport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\mrbgems\mruby-apr\include\mruby_APR.h" />
+    <ClInclude Include="..\..\mrbgems\mruby-nanomsg\include\mruby_NN.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -787,6 +787,7 @@
  * they should be commented out.
  */
 
+#include <stdlib.h>
 #include "mruby.h"
 #include "mruby/array.h"
 #include "mruby/class.h"
@@ -794,6 +795,7 @@
 #include "mruby/string.h"
 #include "mruby/value.h"
 #include "mruby/variable.h"
+#include "apr.h"
 #include "apr_allocator.h"
 #include "apr_atomic.h"
 #include "apr_dso.h"
@@ -805,7 +807,9 @@
 #include "apr_fnmatch.h"
 #include "apr_general.h"
 #include "apr_getopt.h"
+#include "apr_global_mutex.h"
 #include "apr_hash.h"
+#include "apr_inherit.h"
 #include "apr_lib.h"
 #include "apr_mmap.h"
 #include "apr_network_io.h"
@@ -814,6 +818,7 @@
 #include "apr_portable.h"
 #include "apr_proc_mutex.h"
 #include "apr_random.h"
+#include "apr_ring.h"
 #include "apr_shm.h"
 #include "apr_signal.h"
 #include "apr_skiplist.h"
@@ -972,11 +977,11 @@ void mrb_APR_AprVformatterBuffT_init(mrb_state* mrb);
  */
 
 /*
-* Extra wrapper over native pointer to indicate who owns this memory
-* (either mruby, and it should be garage collected, or C, and it shouldn't be).
+* Extra wrapper over native pointer to indicate who owns this memory.
+* (Either mruby, and it should be garage collected, or C, and it shouldn't be)
 * Considered using the LSB of the pointer itself, but I don't think I can
 * be assured that all memory is word-aligned (especially when C libraries
-* implement their own memory management techniques like memory pools).
+* implement their own memory management techniques like memory pools)
 */
 typedef struct mruby_to_native_ref_ {
   /* If true, indicates that the object should be freed when
@@ -1730,11 +1735,8 @@ mruby_unbox_apr_vformatter_buff_t(mrb_value boxed);
 
 
 /*
- * This functions tries to define all encountered macros as integer
- * constants on the generated module. This part of the code generation
- * is exceptionally ignorant. The types are not known, as macros are just text
- * with no type information, so everything is assumed to be an int. You'll
- * probably need to remove a lot of these, and fix the types for any that aren't ints.
+ * Macro definition function declaration
+ * -------------------------------------
  */
 void mruby_APR_define_macro_constants(mrb_state* mrb);
 

@@ -72,8 +72,6 @@ mrb_APR_AprTableEntryT_get_key(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->key;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@key_box"), ruby_field);
 
   return ruby_field;
 }
@@ -95,9 +93,6 @@ mrb_APR_AprTableEntryT_set_key(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@key_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.
@@ -124,8 +119,6 @@ mrb_APR_AprTableEntryT_get_val(mrb_state* mrb, mrb_value self) {
   char * native_field = native_self->val;
 
   mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@val_box"), ruby_field);
 
   return ruby_field;
 }
@@ -147,9 +140,6 @@ mrb_APR_AprTableEntryT_set_val(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@val_box"), ruby_field);
 
   /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
    *          Please verify that this memory is cleaned up correctly.
@@ -180,8 +170,6 @@ mrb_APR_AprTableEntryT_get_key_checksum(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value ruby_field = mrb_fixnum_value(native_field);
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@key_checksum_box"), ruby_field);
 
   return ruby_field;
 }
@@ -203,9 +191,6 @@ mrb_APR_AprTableEntryT_set_key_checksum(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-
-  /* Store the ruby object to prevent garage collection of the underlying native object */
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@key_checksum_box"), ruby_field);
 
   unsigned int native_field = mrb_fixnum(ruby_field);
 
