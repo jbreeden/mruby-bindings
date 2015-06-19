@@ -17,8 +17,7 @@ classes, methods, and macros are currently supported. Generated bindings include
 
 Have a peek at the [APR bindings](https://github.com/jbreeden/mruby-bindings/tree/master/apr_bindings) if you're curious what the output looks like.
 
-The supported functions for APR are listed below. Many of these bindings are exactly as generated. Others required minor tweaks (like changing "output
-parameters" passed in as pointers to return values, since there is not way for the generator to know the intentions of the library's API in the regard).
+The supported functions for APR are listed below. Many of these bindings are exactly as generated. Others required minor tweaks (like changing "output parameters" - passed in as pointers - to return values, since there is not way for the generator to know the intentions of the library's API in that regard).
 
 ```Ruby
 # Supported APR functions
