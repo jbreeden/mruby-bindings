@@ -15,9 +15,17 @@ end
 namespace :scrape do
   desc "Generate ldjson file for apr headers"
   task :apr do
+    puts $apr_dir
     File.delete "declarations.json" if File.exists? 'declarations.json'
-    Dir["#{$apr_dir}/*.h"].concat(["#{$apr_dir}/win/apr.h"]).each do |header|
-      sh "\"clang2json.exe\" -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
+    if ENV['OS'] =~ /windows/i
+      apr_h =  "#{$apr_dir}/win/apr.h"
+      Dir["#{$apr_dir}/*.h"].concat([apr_h]).each do |header|
+        sh "clang2json -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
+      end
+    else
+      Dir["/usr/local/apr/include/apr-1/*.h"].each do |header|
+        sh "clang2json -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
+      end
     end
   end
 
@@ -25,7 +33,7 @@ namespace :scrape do
   task :cef do
     File.delete "declarations.json" if File.exists? 'declarations.json'
     Dir["#{$cef_dir}/*.h"].each do |header|
-      sh "\"clang2json.exe\" -x c++ -I #{$cef_dir}  #{header} >> declarations.json"
+      sh "clang2json -x c++ -I #{$cef_dir}  #{header} >> declarations.json"
     end
   end
 
@@ -33,7 +41,7 @@ namespace :scrape do
   task :nanomsg do
     File.delete "declarations.json" if File.exists? 'declarations.json'
     Dir["#{$nn_dir}/*.h"].each do |header|
-      sh "\"clang2json.exe\" -x c++ -I #{$nn_dir} #{header} >> declarations.json"
+      sh "clang2json -x c++ -I #{$nn_dir} #{header} >> declarations.json"
     end
   end
 end
