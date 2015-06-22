@@ -5036,7 +5036,7 @@ mrb_APR_apr_file_seek(mrb_state* mrb, mrb_value self) {
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
   apr_seek_where_t native_where = mrb_fixnum(where);
   apr_off_t native_offset = mrb_fixnum(offset);
-  
+
   /* Invocation */
   apr_status_t result = apr_file_seek(native_thefile, native_where, &native_offset);
 
@@ -12549,11 +12549,10 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
 
   /* Unbox parameters */
   const char * native_progname = mrb_string_value_cstr(mrb, &progname);
-  
+
   const char ** native_args;
   if (mrb_nil_p(args)) {
-    native_args = (const char**)malloc(sizeof(char*));
-    *native_args = NULL;
+    native_args = NULL;
   }
   else {
      int argc = mrb_ary_len(mrb, args);
@@ -12564,11 +12563,10 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
      }
      native_args[argc] = NULL;
   }
-  
+
   const char ** native_env;
   if (mrb_nil_p(env)) {
-     native_env = (const char**)malloc(sizeof(char*));
-     *native_env = NULL;
+     native_env = NULL;
   }
   else {
      int envc = mrb_ary_len(mrb, env);
@@ -12579,13 +12577,14 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
      }
      native_env[envc] = NULL;
   }
-  
+
   apr_procattr_t * native_attr = (mrb_nil_p(attr) ? NULL : mruby_unbox_apr_procattr_t(attr));
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_proc_t * native_new_proc;
-  apr_status_t result = apr_proc_create(native_new_proc, native_progname, native_args, native_env, native_attr, native_pool);
+  apr_proc_t native_new_proc;
+  apr_status_t result = apr_proc_create(&native_new_proc, native_progname, native_args, native_env, native_attr, native_pool);
+  printf("Created proc \n");
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -12597,7 +12596,9 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   mrb_value results = mrb_ary_new(mrb);
   mrb_ary_push(mrb, results, return_value);
   if (result == 0) {
-     mrb_ary_push(mrb, results, mruby_box_apr_proc_t(mrb, native_new_proc));
+     apr_proc_t* copied_proc = (apr_proc_t*)malloc(sizeof(apr_proc_t));
+     memcpy(copied_proc, &native_new_proc, sizeof(apr_proc_t));
+     mrb_ary_push(mrb, results, mruby_giftwrap_apr_proc_t(mrb, copied_proc));
   }
   else {
      mrb_ary_push(mrb, results, mrb_nil_value());
@@ -13445,7 +13446,6 @@ mrb_APR_apr_proc_wait(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
 
   mrb_value results = mrb_ary_new(mrb);
   if (result == 0) {
@@ -21970,7 +21970,6 @@ mrb_APR_apr_time_now(mrb_state* mrb, mrb_value self) {
 mrb_value
 mrb_APR_apr_tokenize_to_argv(mrb_state* mrb, mrb_value self) {
   mrb_value arg_str;
-  mrb_value argv_out;
   mrb_value token_context;
 
   /* Fetch the args */
