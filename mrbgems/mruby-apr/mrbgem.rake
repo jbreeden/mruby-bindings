@@ -19,6 +19,7 @@ def configure_mruby_apr_win(conf)
   conf.linker.libraries << "Ws2_32"
   conf.linker.libraries << "Advapi32"
   conf.linker.libraries << "Shell32"
+  conf.linker.libraries << "Mswsock"
 end
 
 def configure_mruby_apr_lin(conf)

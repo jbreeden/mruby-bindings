@@ -12,12 +12,12 @@ bindings that are currently used.
 
 # Details
 
-It should be close to complete & stable. Still need to work through function pointers. Structs, enums, functions, typedefs, 
+It should be close to complete & stable. Still need to work through function pointers. Structs, enums, functions, typedefs,
 classes, methods, and macros are currently supported. Generated bindings include type checking and a convenient macro system to configure the bindings.
 
 Have a peek at the [APR bindings](https://github.com/jbreeden/mruby-bindings/tree/master/apr_bindings) for an example of the raw output. The [APR gem](https://github.com/jbreeden/mruby-bindings/tree/master/mrbgems/mruby-apr) is the result of taking the raw generated code, enabling bindings and performing the necessary tweaks (like changing "output parameters" - passed in as pointers - to return values, since there is not way for the generator to know the intentions of the library's API in that regard). Many of the function bindings in the APR gem required no tweaking, and simple work as generated.
 
-The supported functions for APR are listed below:
+The supported functions for APR are listed below. (Note: I've just started the sockets testing. So far I've only verified that a client can connect to a tcp server and receive a single string. See the tests in `mrbgems/mruby-apr/specs`)
 
 ```Ruby
 apr_ctime
@@ -83,6 +83,28 @@ apr_procattr_error_check_set
 apr_procattr_group_set
 apr_procattr_io_set
 apr_procattr_user_set
+apr_sockaddr_equal
+apr_sockaddr_info_get
+apr_sockaddr_ip_get
+apr_sockaddr_is_wildcard
+apr_socket_accept
+apr_socket_addr_get
+apr_socket_bind
+apr_socket_close
+apr_socket_connect
+apr_socket_create
+apr_socket_listen
+apr_socket_opt_get
+apr_socket_opt_set
+apr_socket_protocol_get
+apr_socket_recv
+apr_socket_recvfrom
+apr_socket_send
+apr_socket_sendto
+apr_socket_shutdown
+apr_socket_timeout_get
+apr_socket_timeout_set
+apr_socket_type_get
 apr_strerror
 apr_temp_dir_get
 apr_terminate

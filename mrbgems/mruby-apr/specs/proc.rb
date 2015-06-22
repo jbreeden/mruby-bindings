@@ -8,7 +8,7 @@ TestFixture.new('Processes') do
   end
 
   describe 'APR::apr_proc_create(command: String, argv: Array<String>, env: Array<String>, proc_attr: AprProcattrT, pool: AprPoolT): [errno: Fixnum, proc: AprProcT]' do
-    it 'Can run a shell command and redirect output' do
+    it 'Can run a shell command and redirect output to a file' do
       err, proc_attr = APR.apr_procattr_create @pool
       check_errno(err)
 
@@ -24,7 +24,7 @@ TestFixture.new('Processes') do
       err = APR.apr_procattr_child_out_set proc_attr, file, nil
       check_errno(err)
 
-      err, argv = APR.apr_tokenize_to_argv "echo this string of \"command args\"", @pool
+      err, argv = APR.apr_tokenize_to_argv "echo this string of args", @pool
       assert(argv.length == 5)
       check_errno(err)
 
@@ -41,7 +41,7 @@ TestFixture.new('Processes') do
       err, str = APR.apr_file_read file, 100
       check_errno err
       # strip newline from echo before compare
-      assert (str.strip == "this string of \"command args\"")
+      assert (str.strip == "this string of args")
       APR.apr_file_close(file)
     end
 
@@ -54,10 +54,11 @@ TestFixture.new('Processes') do
 
       err, readEnd, writeEnd = APR.apr_file_pipe_create @pool
 
+      # Passing pipe ends:                            child,    parent
       err = APR.apr_procattr_child_out_set proc_attr, writeEnd, readEnd
       check_errno(err)
 
-      err, argv = APR.apr_tokenize_to_argv "echo this string of \"command args\"", @pool
+      err, argv = APR.apr_tokenize_to_argv "echo this string of args", @pool
       assert(argv.length == 5)
       check_errno(err)
 
@@ -67,7 +68,7 @@ TestFixture.new('Processes') do
       rr, str = APR.apr_file_read readEnd, 100
       check_errno err
       # strip newline from echo before compare
-      assert (str.strip == "this string of \"command args\"")
+      assert (str.strip == "this string of args")
 
       APR.apr_file_close(readEnd)
 
@@ -86,7 +87,7 @@ TestFixture.new('Processes') do
       #                                  in                out                  err
       APR.apr_procattr_io_set proc_attr, APR::APR_NO_PIPE, APR::APR_FULL_BLOCK, APR::APR_NO_PIPE
 
-      err, argv = APR.apr_tokenize_to_argv "echo this string of \"command args\"", @pool
+      err, argv = APR.apr_tokenize_to_argv "echo this string of args", @pool
       assert(argv.length == 5)
       check_errno(err)
 
@@ -96,7 +97,7 @@ TestFixture.new('Processes') do
       rr, str = APR.apr_file_read process.out, 100
       check_errno err
       # strip newline from echo before compare
-      assert (str.strip == "this string of \"command args\"")
+      assert (str.strip == "this string of args")
 
       APR.apr_file_close(process.out)
 
