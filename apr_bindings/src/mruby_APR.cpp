@@ -21651,7 +21651,7 @@ mrb_APR_apr_threadkey_private_set(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - result: long long *
- * - input: long
+ * - input: long long
  * Return Type: apr_status_t
  */
 mrb_value
@@ -21665,13 +21665,13 @@ mrb_APR_apr_time_ansi_put(mrb_state* mrb, mrb_value self) {
 
   /* Type checking */
   TODO_type_check_long_long_PTR(result);
-  TODO_type_check_long(input);
+  TODO_type_check_long_long(input);
 
 
   /* Unbox parameters */
   long long * native_result = TODO_mruby_unbox_long_long_PTR(result);
 
-  long native_input = TODO_mruby_unbox_long(input);
+  long long native_input = TODO_mruby_unbox_long_long(input);
 
   /* Invocation */
   apr_status_t result = apr_time_ansi_put(native_result, native_input);

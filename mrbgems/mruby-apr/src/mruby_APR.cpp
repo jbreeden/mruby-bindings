@@ -8,6 +8,17 @@
 extern "C" {
 #endif
 
+#define RETURN_ERRNO_AND_OUTPUT(err, output) \
+   do { \
+      mrb_value results = mrb_ary_new(mrb); \
+      mrb_ary_push(mrb, results, mrb_fixnum_value(err)); \
+      if (result == 0) \
+        mrb_ary_push(mrb, results, output); \
+            else \
+         mrb_ary_push(mrb, results, mrb_nil_value()); \
+      return results; \
+      } while (0);
+
 #if BIND_apr_allocator_alloc_FUNCTION
 #define apr_allocator_alloc_REQUIRED_ARGC 2
 #define apr_allocator_alloc_OPTIONAL_ARGC 0
@@ -12552,8 +12563,7 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   
   const char ** native_args;
   if (mrb_nil_p(args)) {
-    native_args = (const char**)malloc(sizeof(char*));
-    *native_args = NULL;
+    native_args = NULL;
   }
   else {
      int argc = mrb_ary_len(mrb, args);
@@ -12567,8 +12577,7 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   
   const char ** native_env;
   if (mrb_nil_p(env)) {
-     native_env = (const char**)malloc(sizeof(char*));
-     *native_env = NULL;
+     native_env = NULL;
   }
   else {
      int envc = mrb_ary_len(mrb, env);
@@ -12586,6 +12595,8 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   /* Invocation */
   apr_proc_t * native_new_proc;
   apr_status_t result = apr_proc_create(native_new_proc, native_progname, native_args, native_env, native_attr, native_pool);
+  if (native_args != NULL) free(native_args);
+  if (native_env != NULL) free(native_env);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -16721,7 +16732,7 @@ mrb_APR_apr_snprintf(mrb_state* mrb, mrb_value self) {
  * Parameters:
  * - addr1: const apr_sockaddr_t *
  * - addr2: const apr_sockaddr_t *
- * Return Type: int
+ * Return Type: int (0 for false, non-zero otherwise)
  */
 mrb_value
 mrb_APR_apr_sockaddr_equal(mrb_state* mrb, mrb_value self) {
@@ -16730,7 +16741,6 @@ mrb_APR_apr_sockaddr_equal(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &addr1, &addr2);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, addr1, AprSockaddrT_class(mrb))) {
@@ -16742,11 +16752,9 @@ mrb_APR_apr_sockaddr_equal(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  const apr_sockaddr_t * native_addr1 = (mrb_nil_p(addr1) ? NULL : mruby_unbox_const apr_sockaddr_t(addr1));
-
-  const apr_sockaddr_t * native_addr2 = (mrb_nil_p(addr2) ? NULL : mruby_unbox_const apr_sockaddr_t(addr2));
+  const apr_sockaddr_t * native_addr1 = (mrb_nil_p(addr1) ? NULL : mruby_unbox_apr_sockaddr_t(addr1));
+  const apr_sockaddr_t * native_addr2 = (mrb_nil_p(addr2) ? NULL : mruby_unbox_apr_sockaddr_t(addr2));
 
   /* Invocation */
   int result = apr_sockaddr_equal(native_addr1, native_addr2);
@@ -16763,22 +16771,20 @@ mrb_APR_apr_sockaddr_equal(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_sockaddr_info_get_FUNCTION
-#define apr_sockaddr_info_get_REQUIRED_ARGC 6
+#define apr_sockaddr_info_get_REQUIRED_ARGC 5
 #define apr_sockaddr_info_get_OPTIONAL_ARGC 0
 /* apr_sockaddr_info_get
  *
  * Parameters:
- * - sa: apr_sockaddr_t **
  * - hostname: const char *
  * - family: int
  * - port: unsigned short
  * - flags: int
  * - p: apr_pool_t *
- * Return Type: apr_status_t
+ * Return Type: [errno, Fixnum, sock_add, AprSockaddrT]
  */
 mrb_value
 mrb_APR_apr_sockaddr_info_get(mrb_state* mrb, mrb_value self) {
-  mrb_value sa;
   mrb_value hostname;
   mrb_value family;
   mrb_value port;
@@ -16786,11 +16792,9 @@ mrb_APR_apr_sockaddr_info_get(mrb_state* mrb, mrb_value self) {
   mrb_value p;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oooooo", &sa, &hostname, &family, &port, &flags, &p);
-
+  mrb_get_args(mrb, "ooooo", &hostname, &family, &port, &flags, &p);
 
   /* Type checking */
-  TODO_type_check_apr_sockaddr_t_PTR_PTR(sa);
   if (!mrb_obj_is_kind_of(mrb, hostname, mrb->string_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
@@ -16799,7 +16803,10 @@ mrb_APR_apr_sockaddr_info_get(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-  TODO_type_check_unsigned_short(port);
+  if (!mrb_obj_is_kind_of(mrb, port, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
   if (!mrb_obj_is_kind_of(mrb, flags, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -16809,36 +16816,22 @@ mrb_APR_apr_sockaddr_info_get(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_sockaddr_t ** native_sa = TODO_mruby_unbox_apr_sockaddr_t_PTR_PTR(sa);
-
   const char * native_hostname = mrb_string_value_cstr(mrb, &hostname);
-
   int native_family = mrb_fixnum(family);
-
-  unsigned short native_port = TODO_mruby_unbox_unsigned_short(port);
-
+  unsigned short native_port = mrb_fixnum(port);
   int native_flags = mrb_fixnum(flags);
-
   apr_pool_t * native_p = (mrb_nil_p(p) ? NULL : mruby_unbox_apr_pool_t(p));
 
   /* Invocation */
-  apr_status_t result = apr_sockaddr_info_get(native_sa, native_hostname, native_family, native_port, native_flags, native_p);
-
-  /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  apr_sockaddr_t * native_sa;
+  apr_status_t result = apr_sockaddr_info_get(&native_sa, native_hostname, native_family, native_port, native_flags, native_p);
+  RETURN_ERRNO_AND_OUTPUT(result, mruby_box_apr_sockaddr_t(mrb, native_sa));
 }
 #endif
 
 #if BIND_apr_sockaddr_ip_get_FUNCTION
-#define apr_sockaddr_ip_get_REQUIRED_ARGC 2
+#define apr_sockaddr_ip_get_REQUIRED_ARGC 1
 #define apr_sockaddr_ip_get_OPTIONAL_ARGC 0
 /* apr_sockaddr_ip_get
  *
@@ -16849,37 +16842,24 @@ mrb_APR_apr_sockaddr_info_get(mrb_state* mrb, mrb_value self) {
  */
 mrb_value
 mrb_APR_apr_sockaddr_ip_get(mrb_state* mrb, mrb_value self) {
-  mrb_value addr;
   mrb_value sockaddr;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &addr, &sockaddr);
-
+  mrb_get_args(mrb, "o", &sockaddr);
 
   /* Type checking */
-  TODO_type_check_char_PTR_PTR(addr);
   if (!mrb_obj_is_kind_of(mrb, sockaddr, AprSockaddrT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprSockaddrT expected");
-    return mrb_nil_value();
+     mrb_raise(mrb, E_TYPE_ERROR, "AprSockaddrT expected");
+     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  char ** native_addr = TODO_mruby_unbox_char_PTR_PTR(addr);
-
   apr_sockaddr_t * native_sockaddr = (mrb_nil_p(sockaddr) ? NULL : mruby_unbox_apr_sockaddr_t(sockaddr));
 
   /* Invocation */
-  apr_status_t result = apr_sockaddr_ip_get(native_addr, native_sockaddr);
-
-  /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  char * native_addr = NULL;
+  apr_status_t result = apr_sockaddr_ip_get(&native_addr, native_sockaddr);
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_str_new_cstr(mrb, native_addr));
 }
 #endif
 
@@ -16960,7 +16940,7 @@ mrb_APR_apr_sockaddr_ip_getbuf(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - addr: const apr_sockaddr_t *
- * Return Type: int
+ * Return Type: Fixnum (non-zero if the address is initialize and is the wildcard)
  */
 mrb_value
 mrb_APR_apr_sockaddr_is_wildcard(mrb_state* mrb, mrb_value self) {
@@ -16969,16 +16949,14 @@ mrb_APR_apr_sockaddr_is_wildcard(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &addr);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, addr, AprSockaddrT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSockaddrT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  const apr_sockaddr_t * native_addr = (mrb_nil_p(addr) ? NULL : mruby_unbox_const apr_sockaddr_t(addr));
+  const apr_sockaddr_t * native_addr = (mrb_nil_p(addr) ? NULL : mruby_unbox_apr_sockaddr_t(addr));
 
   /* Invocation */
   int result = apr_sockaddr_is_wildcard(native_addr);
@@ -16995,28 +16973,24 @@ mrb_APR_apr_sockaddr_is_wildcard(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_socket_accept_FUNCTION
-#define apr_socket_accept_REQUIRED_ARGC 3
+#define apr_socket_accept_REQUIRED_ARGC 2
 #define apr_socket_accept_OPTIONAL_ARGC 0
 /* apr_socket_accept
  *
  * Parameters:
- * - new_sock: apr_socket_t **
  * - sock: apr_socket_t *
  * - connection_pool: apr_pool_t *
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_socket_accept(mrb_state* mrb, mrb_value self) {
-  mrb_value new_sock;
   mrb_value sock;
   mrb_value connection_pool;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &new_sock, &sock, &connection_pool);
-
+  mrb_get_args(mrb, "oo", &sock, &connection_pool);
 
   /* Type checking */
-  TODO_type_check_apr_socket_t_PTR_PTR(new_sock);
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
@@ -17026,16 +17000,13 @@ mrb_APR_apr_socket_accept(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_socket_t ** native_new_sock = TODO_mruby_unbox_apr_socket_t_PTR_PTR(new_sock);
-
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   apr_pool_t * native_connection_pool = (mrb_nil_p(connection_pool) ? NULL : mruby_unbox_apr_pool_t(connection_pool));
 
   /* Invocation */
-  apr_status_t result = apr_socket_accept(native_new_sock, native_sock, native_connection_pool);
+  apr_socket_t * native_new_sock;
+  apr_status_t result = apr_socket_accept(&native_new_sock, native_sock, native_connection_pool);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -17043,59 +17014,46 @@ mrb_APR_apr_socket_accept(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
   mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mruby_box_apr_socket_t(mrb, native_new_sock));
 }
 #endif
 
 #if BIND_apr_socket_addr_get_FUNCTION
-#define apr_socket_addr_get_REQUIRED_ARGC 3
+#define apr_socket_addr_get_REQUIRED_ARGC 2
 #define apr_socket_addr_get_OPTIONAL_ARGC 0
 /* apr_socket_addr_get
  *
  * Parameters:
- * - sa: apr_sockaddr_t **
- * - which: apr_interface_e
- * - sock: apr_socket_t *
- * Return Type: apr_status_t
+ * - which: Fixnum
+ * - sock: AprSocketT
+ * Return Type: [errno: Fixnum, sock_addr: AprSockaddrT]
  */
 mrb_value
 mrb_APR_apr_socket_addr_get(mrb_state* mrb, mrb_value self) {
-  mrb_value sa;
   mrb_value which;
   mrb_value sock;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &sa, &which, &sock);
-
+  mrb_get_args(mrb, "oo", &which, &sock);
 
   /* Type checking */
-  TODO_type_check_apr_sockaddr_t_PTR_PTR(sa);
-  TODO_type_check_apr_interface_e(which);
+  if (!mrb_obj_is_kind_of(mrb, which, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_sockaddr_t ** native_sa = TODO_mruby_unbox_apr_sockaddr_t_PTR_PTR(sa);
-
-  apr_interface_e native_which = TODO_mruby_unbox_apr_interface_e(which);
-
+  apr_interface_e native_which = (apr_interface_e)mrb_fixnum(which);
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
 
   /* Invocation */
-  apr_status_t result = apr_socket_addr_get(native_sa, native_which, native_sock);
-
-  /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  apr_sockaddr_t * native_sa;
+  apr_status_t result = apr_socket_addr_get(&native_sa, native_which, native_sock);
+  RETURN_ERRNO_AND_OUTPUT(result, mruby_box_apr_sockaddr_t(mrb, native_sa));
 }
 #endif
 
@@ -17209,7 +17167,6 @@ mrb_APR_apr_socket_bind(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &sock, &sa);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
@@ -17220,10 +17177,8 @@ mrb_APR_apr_socket_bind(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   apr_sockaddr_t * native_sa = (mrb_nil_p(sa) ? NULL : mruby_unbox_apr_sockaddr_t(sa));
 
   /* Invocation */
@@ -17256,13 +17211,11 @@ mrb_APR_apr_socket_close(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "o", &thesocket);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thesocket, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-
 
   /* Unbox parameters */
   apr_socket_t * native_thesocket = (mrb_nil_p(thesocket) ? NULL : mruby_unbox_apr_socket_t(thesocket));
@@ -17299,7 +17252,6 @@ mrb_APR_apr_socket_connect(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &sock, &sa);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
@@ -17310,10 +17262,8 @@ mrb_APR_apr_socket_connect(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   apr_sockaddr_t * native_sa = (mrb_nil_p(sa) ? NULL : mruby_unbox_apr_sockaddr_t(sa));
 
   /* Invocation */
@@ -17336,7 +17286,6 @@ mrb_APR_apr_socket_connect(mrb_state* mrb, mrb_value self) {
 /* apr_socket_create
  *
  * Parameters:
- * - new_sock: apr_socket_t **
  * - family: int
  * - type: int
  * - protocol: int
@@ -17345,18 +17294,15 @@ mrb_APR_apr_socket_connect(mrb_state* mrb, mrb_value self) {
  */
 mrb_value
 mrb_APR_apr_socket_create(mrb_state* mrb, mrb_value self) {
-  mrb_value new_sock;
   mrb_value family;
   mrb_value type;
   mrb_value protocol;
   mrb_value cont;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooooo", &new_sock, &family, &type, &protocol, &cont);
-
+  mrb_get_args(mrb, "oooo", &family, &type, &protocol, &cont);
 
   /* Type checking */
-  TODO_type_check_apr_socket_t_PTR_PTR(new_sock);
   if (!mrb_obj_is_kind_of(mrb, family, mrb->fixnum_class)) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
@@ -17374,29 +17320,22 @@ mrb_APR_apr_socket_create(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  apr_socket_t ** native_new_sock = TODO_mruby_unbox_apr_socket_t_PTR_PTR(new_sock);
-
   int native_family = mrb_fixnum(family);
-
   int native_type = mrb_fixnum(type);
-
   int native_protocol = mrb_fixnum(protocol);
-
   apr_pool_t * native_cont = (mrb_nil_p(cont) ? NULL : mruby_unbox_apr_pool_t(cont));
 
   /* Invocation */
-  apr_status_t result = apr_socket_create(native_new_sock, native_family, native_type, native_protocol, native_cont);
+  apr_socket_t * native_new_sock;
+  apr_status_t result = apr_socket_create(&native_new_sock, native_family, native_type, native_protocol, native_cont);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mruby_box_apr_socket_t(mrb, native_new_sock));
 }
 #endif
 
@@ -17536,7 +17475,6 @@ mrb_APR_apr_socket_listen(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &sock, &backlog);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
@@ -17547,10 +17485,8 @@ mrb_APR_apr_socket_listen(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   int native_backlog = mrb_fixnum(backlog);
 
   /* Invocation */
@@ -17568,25 +17504,22 @@ mrb_APR_apr_socket_listen(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_socket_opt_get_FUNCTION
-#define apr_socket_opt_get_REQUIRED_ARGC 3
+#define apr_socket_opt_get_REQUIRED_ARGC 2
 #define apr_socket_opt_get_OPTIONAL_ARGC 0
 /* apr_socket_opt_get
  *
  * Parameters:
  * - sock: apr_socket_t *
  * - opt: int
- * - on: int *
  * Return Type: apr_status_t
  */
 mrb_value
 mrb_APR_apr_socket_opt_get(mrb_state* mrb, mrb_value self) {
   mrb_value sock;
   mrb_value opt;
-  mrb_value on;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooo", &sock, &opt, &on);
-
+  mrb_get_args(mrb, "oo", &sock, &opt);
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
@@ -17597,27 +17530,21 @@ mrb_APR_apr_socket_opt_get(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(on);
-
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
-  int native_opt = mrb_fixnum(opt);
-
-  int * native_on = TODO_mruby_unbox_int_PTR(on);
+  apr_int32_t native_opt = mrb_fixnum(opt);
 
   /* Invocation */
-  apr_status_t result = apr_socket_opt_get(native_sock, native_opt, native_on);
+  apr_int32_t native_on = 0;
+  apr_status_t result = apr_socket_opt_get(native_sock, native_opt, &native_on);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_fixnum_value(native_on));
 }
 #endif
 
@@ -17641,7 +17568,6 @@ mrb_APR_apr_socket_opt_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &sock, &opt, &on);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
@@ -17656,12 +17582,9 @@ mrb_APR_apr_socket_opt_set(mrb_state* mrb, mrb_value self) {
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   int native_opt = mrb_fixnum(opt);
-
   int native_on = mrb_fixnum(on);
 
   /* Invocation */
@@ -17679,48 +17602,40 @@ mrb_APR_apr_socket_opt_set(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_socket_protocol_get_FUNCTION
-#define apr_socket_protocol_get_REQUIRED_ARGC 2
+#define apr_socket_protocol_get_REQUIRED_ARGC 1
 #define apr_socket_protocol_get_OPTIONAL_ARGC 0
 /* apr_socket_protocol_get
  *
  * Parameters:
  * - sock: apr_socket_t *
- * - protocol: int *
- * Return Type: apr_status_t
+ * Return Type: [errno: Fixnum, protocol: Fixnum]
  */
 mrb_value
 mrb_APR_apr_socket_protocol_get(mrb_state* mrb, mrb_value self) {
   mrb_value sock;
-  mrb_value protocol;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &sock, &protocol);
-
+  mrb_get_args(mrb, "o", &sock);
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(protocol);
-
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
-  int * native_protocol = TODO_mruby_unbox_int_PTR(protocol);
-
+  
   /* Invocation */
-  apr_status_t result = apr_socket_protocol_get(native_sock, native_protocol);
+  int native_protocol;
+  apr_status_t result = apr_socket_protocol_get(native_sock, &native_protocol);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_fixnum_value(native_protocol));
 }
 #endif
 
@@ -17730,10 +17645,10 @@ mrb_APR_apr_socket_protocol_get(mrb_state* mrb, mrb_value self) {
 /* apr_socket_recv
  *
  * Parameters:
- * - sock: apr_socket_t *
- * - buf: char *
- * - len: int *
- * Return Type: apr_status_t
+ * - sock: AprSocketT
+ * - buf: String
+ * - len: Fixnum
+ * Return Type: [errno: Fixnum, message: String]
  */
 mrb_value
 mrb_APR_apr_socket_recv(mrb_state* mrb, mrb_value self) {
@@ -17744,7 +17659,6 @@ mrb_APR_apr_socket_recv(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &sock, &buf, &len);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
@@ -17754,73 +17668,59 @@ mrb_APR_apr_socket_recv(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(len);
-
+  if (!mrb_obj_is_kind_of(mrb, len, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
   char * native_buf = strdup(mrb_string_value_cstr(mrb, &buf));
-
-  int * native_len = TODO_mruby_unbox_int_PTR(len);
+  apr_size_t native_len = mrb_fixnum(len);
 
   /* Invocation */
-  apr_status_t result = apr_socket_recv(native_sock, native_buf, native_len);
+  apr_status_t result = apr_socket_recv(native_sock, native_buf, &native_len);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  /* WARNING: Assuming that the new string can be deallocated after the function call.
-   *          Please verify that this is correct (the function does not save this parameter).
-   *
-   *          Has this been verified? [No]
-   */
+  
+  mrb_value result_string = mrb_str_new(mrb, native_buf, native_len);
   free(native_buf);
   native_buf = NULL;
 
-  return return_value;
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, mrb_fixnum_value(result));
+  /* There can be an error, such as EOF, and still have bytes read, so always return this string. */
+  mrb_ary_push(mrb, results, result_string);
+
+  return results;
 }
 #endif
 
 #if BIND_apr_socket_recvfrom_FUNCTION
-#define apr_socket_recvfrom_REQUIRED_ARGC 5
+#define apr_socket_recvfrom_REQUIRED_ARGC 3
 #define apr_socket_recvfrom_OPTIONAL_ARGC 0
 /* apr_socket_recvfrom
  *
  * Parameters:
- * - from: apr_sockaddr_t *
- * - sock: apr_socket_t *
- * - flags: int
- * - buf: char *
- * - len: int *
- * Return Type: apr_status_t
+ * - sock: AprSocketT
+ * - flags: Fixnum
+ * - len: Fixnum
+ * Return Type: [errno: Fixnum, from: AprSocketT, buffer: String]
  */
 mrb_value
 mrb_APR_apr_socket_recvfrom(mrb_state* mrb, mrb_value self) {
-  mrb_value from;
   mrb_value sock;
   mrb_value flags;
-  mrb_value buf;
   mrb_value len;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "ooooo", &from, &sock, &flags, &buf, &len);
-
+  mrb_get_args(mrb, "ooo", &sock, &flags, &len);
 
   /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, from, AprSockaddrT_class(mrb))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "AprSockaddrT expected");
-    return mrb_nil_value();
-  }
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
@@ -17829,31 +17729,20 @@ mrb_APR_apr_socket_recvfrom(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
     return mrb_nil_value();
   }
-  if (!mrb_obj_is_kind_of(mrb, buf, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
+  if (!mrb_obj_is_kind_of(mrb, len, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(len);
-
 
   /* Unbox parameters */
-  apr_sockaddr_t * native_from = (mrb_nil_p(from) ? NULL : mruby_unbox_apr_sockaddr_t(from));
-
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   int native_flags = mrb_fixnum(flags);
-
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
-  char * native_buf = strdup(mrb_string_value_cstr(mrb, &buf));
-
-  int * native_len = TODO_mruby_unbox_int_PTR(len);
+  apr_size_t native_len = mrb_fixnum(len);
 
   /* Invocation */
-  apr_status_t result = apr_socket_recvfrom(native_from, native_sock, native_flags, native_buf, native_len);
+  char * native_buf = (char*)malloc(sizeof(char)*native_len); /* to free after duplicating via mrb_str_new */
+  apr_sockaddr_t * native_from = (apr_sockaddr_t*)malloc(sizeof(apr_sockaddr_t)); /* to free in mrb GC (giftwrapped pointer) */
+  apr_status_t result = apr_socket_recvfrom(native_from, native_sock, native_flags, native_buf, &native_len);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
@@ -17862,15 +17751,18 @@ mrb_APR_apr_socket_recvfrom(mrb_state* mrb, mrb_value self) {
   }
   mrb_value return_value = mrb_fixnum_value(result);
 
-  /* WARNING: Assuming that the new string can be deallocated after the function call.
-   *          Please verify that this is correct (the function does not save this parameter).
-   *
-   *          Has this been verified? [No]
-   */
+  mrb_value buffer = mrb_str_new(mrb, native_buf, native_len);
   free(native_buf);
   native_buf = NULL;
 
-  return return_value;
+  mrb_value from = mruby_giftwrap_apr_sockaddr_t(mrb, native_from);
+
+  mrb_value results = mrb_ary_new(mrb);
+  mrb_ary_push(mrb, results, return_value);
+  mrb_ary_push(mrb, results, from);
+  mrb_ary_push(mrb, results, buffer);
+
+  return results;
 }
 #endif
 
@@ -17880,10 +17772,10 @@ mrb_APR_apr_socket_recvfrom(mrb_state* mrb, mrb_value self) {
 /* apr_socket_send
  *
  * Parameters:
- * - sock: apr_socket_t *
- * - buf: const char *
- * - len: int *
- * Return Type: apr_status_t
+ * - sock: AprSocketT
+ * - buf: String
+ * - len: Fixnum
+ * Return Type: [errno: Fixnum, bytes_sent: Fixnum]
  */
 mrb_value
 mrb_APR_apr_socket_send(mrb_state* mrb, mrb_value self) {
@@ -17894,7 +17786,6 @@ mrb_APR_apr_socket_send(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "ooo", &sock, &buf, &len);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
@@ -17904,27 +17795,25 @@ mrb_APR_apr_socket_send(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(len);
-
+  if (!mrb_obj_is_kind_of(mrb, len, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
-  const char * native_buf = mrb_string_value_cstr(mrb, &buf);
-
-  int * native_len = TODO_mruby_unbox_int_PTR(len);
+  const char * native_buf = mrb_string_value_ptr(mrb, buf);
+  apr_size_t native_len = mrb_fixnum(len);
 
   /* Invocation */
-  apr_status_t result = apr_socket_send(native_sock, native_buf, native_len);
+  apr_status_t result = apr_socket_send(native_sock, native_buf, &native_len);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_fixnum_value(native_len));
 }
 #endif
 
@@ -18014,7 +17903,7 @@ mrb_APR_apr_socket_sendfile(mrb_state* mrb, mrb_value self) {
  * - flags: int
  * - buf: const char *
  * - len: int *
- * Return Type: apr_status_t
+ * Return Type: errno: Fixnum, bytes_written: Fixnum
  */
 mrb_value
 mrb_APR_apr_socket_sendto(mrb_state* mrb, mrb_value self) {
@@ -18026,7 +17915,6 @@ mrb_APR_apr_socket_sendto(mrb_state* mrb, mrb_value self) {
 
   /* Fetch the args */
   mrb_get_args(mrb, "ooooo", &sock, &where, &flags, &buf, &len);
-
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
@@ -18045,31 +17933,28 @@ mrb_APR_apr_socket_sendto(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, E_TYPE_ERROR, "String expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(len);
-
+  if (!mrb_obj_is_kind_of(mrb, len, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
   apr_sockaddr_t * native_where = (mrb_nil_p(where) ? NULL : mruby_unbox_apr_sockaddr_t(where));
-
   int native_flags = mrb_fixnum(flags);
-
   const char * native_buf = mrb_string_value_cstr(mrb, &buf);
-
-  int * native_len = TODO_mruby_unbox_int_PTR(len);
+  apr_size_t native_len = mrb_fixnum(len);
 
   /* Invocation */
-  apr_status_t result = apr_socket_sendto(native_sock, native_where, native_flags, native_buf, native_len);
+  apr_status_t result = apr_socket_sendto(native_sock, native_where, native_flags, native_buf, &native_len);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
 
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_fixnum_value(native_len));
 }
 #endif
 
@@ -18150,19 +18035,19 @@ mrb_APR_apr_socket_shutdown(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &thesocket, &how);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, thesocket, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_apr_shutdown_how_e(how);
-
+  if (!mrb_obj_is_kind_of(mrb, how, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_socket_t * native_thesocket = (mrb_nil_p(thesocket) ? NULL : mruby_unbox_apr_socket_t(thesocket));
-
-  apr_shutdown_how_e native_how = TODO_mruby_unbox_apr_shutdown_how_e(how);
+  apr_shutdown_how_e native_how = (apr_shutdown_how_e)mrb_fixnum(how);
 
   /* Invocation */
   apr_status_t result = apr_socket_shutdown(native_thesocket, native_how);
@@ -18185,8 +18070,7 @@ mrb_APR_apr_socket_shutdown(mrb_state* mrb, mrb_value self) {
  *
  * Parameters:
  * - sock: apr_socket_t *
- * - t: long long *
- * Return Type: apr_status_t
+ * Return Type: [errno: Fixnum, timeout: Fixnum]
  */
 mrb_value
 mrb_APR_apr_socket_timeout_get(mrb_state* mrb, mrb_value self) {
@@ -18194,33 +18078,31 @@ mrb_APR_apr_socket_timeout_get(mrb_state* mrb, mrb_value self) {
   mrb_value t;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &sock, &t);
-
+  mrb_get_args(mrb, "o", &sock);
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_long_long_PTR(t);
-
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
 
-  long long * native_t = TODO_mruby_unbox_long_long_PTR(t);
-
   /* Invocation */
-  apr_status_t result = apr_socket_timeout_get(native_sock, native_t);
+  apr_interval_time_t native_t;
+  apr_status_t result = apr_socket_timeout_get(native_sock, &native_t);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  if (native_t > MRB_INT_MAX) {
+     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+     return mrb_nil_value();
+  }
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_fixnum_value(native_t));
 }
 #endif
 
@@ -18242,19 +18124,19 @@ mrb_APR_apr_socket_timeout_set(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &sock, &t);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_long_long(t);
-
+  if (!mrb_obj_is_kind_of(mrb, t, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
-  long long native_t = TODO_mruby_unbox_long_long(t);
+  apr_interval_time_t native_t = mrb_fixnum(t);
 
   /* Invocation */
   apr_status_t result = apr_socket_timeout_set(native_sock, native_t);
@@ -18288,31 +18170,29 @@ mrb_APR_apr_socket_type_get(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &sock, &type);
 
-
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, sock, AprSocketT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprSocketT expected");
     return mrb_nil_value();
   }
-  TODO_type_check_int_PTR(type);
-
+  if (!mrb_obj_is_kind_of(mrb, type, mrb->fixnum_class)) {
+     mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+     return mrb_nil_value();
+  }
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-
-  int * native_type = TODO_mruby_unbox_int_PTR(type);
+  int native_type = mrb_fixnum(type);
 
   /* Invocation */
-  apr_status_t result = apr_socket_type_get(native_sock, native_type);
+  apr_status_t result = apr_socket_type_get(native_sock, &native_type);
 
   /* Box the return value */
   if (result > MRB_INT_MAX) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  return return_value;
+  RETURN_ERRNO_AND_OUTPUT(result, mrb_fixnum_value(native_type));
 }
 #endif
 

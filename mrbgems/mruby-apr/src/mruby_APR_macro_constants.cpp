@@ -2,12 +2,23 @@
 
 void
 mruby_APR_define_macro_constants(mrb_state* mrb) {
-  /* WARNING
-   * Code generator does it's best to determine the type of the macro
-   * expansions, but mistakes will be made (as macros are just text,
-   * and may contain other macros). So, you'll need to verify the
-   * conversions used here are of the correct type.
-   */
+  
+   /* Need to add a few constants that are in system headers, not APR (and so not generated) */
+#ifdef SOCK_STREAM
+   mrb_define_const(mrb, APR_module(mrb), "SOCK_STREAM", mrb_fixnum_value(SOCK_STREAM));
+#endif
+#ifdef SOCK_DGRAM
+   mrb_define_const(mrb, APR_module(mrb), "SOCK_DGRAM", mrb_fixnum_value(SOCK_DGRAM));
+#endif
+#ifdef SOCK_RAW
+   mrb_define_const(mrb, APR_module(mrb), "SOCK_RAW", mrb_fixnum_value(SOCK_RAW));
+#endif
+#ifdef SOCK_RDM
+   mrb_define_const(mrb, APR_module(mrb), "SOCK_RDM", mrb_fixnum_value(SOCK_RDM));
+#endif
+#ifdef SOCK_SEQPACKET
+   mrb_define_const(mrb, APR_module(mrb), "SOCK_SEQPACKET", mrb_fixnum_value(SOCK_SEQPACKET));
+#endif
 
 #ifdef _APR_FNMATCH_H_
   /* Ignoring macro with no expansion: _APR_FNMATCH_H_ */
