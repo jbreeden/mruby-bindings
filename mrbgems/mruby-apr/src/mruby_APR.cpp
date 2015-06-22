@@ -12582,8 +12582,8 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   apr_pool_t * native_pool = (mrb_nil_p(pool) ? NULL : mruby_unbox_apr_pool_t(pool));
 
   /* Invocation */
-  apr_proc_t native_new_proc;
-  apr_status_t result = apr_proc_create(&native_new_proc, native_progname, native_args, native_env, native_attr, native_pool);
+  apr_proc_t* native_new_proc = (apr_proc_t*)malloc(sizeof(apr_proc_t));
+  apr_status_t result = apr_proc_create(native_new_proc, native_progname, native_args, native_env, native_attr, native_pool);
   printf("Created proc \n");
 
   /* Box the return value */
@@ -12596,11 +12596,10 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
   mrb_value results = mrb_ary_new(mrb);
   mrb_ary_push(mrb, results, return_value);
   if (result == 0) {
-     apr_proc_t* copied_proc = (apr_proc_t*)malloc(sizeof(apr_proc_t));
-     memcpy(copied_proc, &native_new_proc, sizeof(apr_proc_t));
-     mrb_ary_push(mrb, results, mruby_giftwrap_apr_proc_t(mrb, copied_proc));
+     mrb_ary_push(mrb, results, mruby_giftwrap_apr_proc_t(mrb, native_new_proc));
   }
   else {
+     free(native_new_proc);
      mrb_ary_push(mrb, results, mrb_nil_value());
   }
 
