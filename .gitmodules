@@ -1,0 +1,4 @@
+[submodule "mruby"]
+	path = mruby
+	url = http://github.com/jbreeden/mruby
+	branch = mruby-bindings

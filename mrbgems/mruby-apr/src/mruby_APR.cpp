@@ -12570,7 +12570,7 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
      native_args = (const char**)malloc(sizeof(char*) * (argc + 1));
      for (int i = 0; i < argc; ++i) {
         mrb_value ruby_string = mrb_ary_entry(args, i);
-        native_args[i] = mrb_string_value_ptr(mrb, ruby_string);
+        native_args[i] = mrb_string_value_cstr(mrb, &ruby_string);
      }
      native_args[argc] = NULL;
   }
@@ -12584,7 +12584,7 @@ mrb_APR_apr_proc_create(mrb_state* mrb, mrb_value self) {
      native_env = (const char**)malloc(sizeof(char*) * (envc + 1));
      for (int i = 0; i < envc; ++i) {
         mrb_value ruby_string = mrb_ary_entry(env, i);
-        native_env[i] = mrb_string_value_ptr(mrb, ruby_string);
+        native_env[i] = mrb_string_value_cstr(mrb, &ruby_string);
      }
      native_env[envc] = NULL;
   }
