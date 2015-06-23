@@ -1,5 +1,7 @@
 *.bak
 *.opensdf
 *.sdf
+*.suo
+Debug/
 *_definitions.txt
 declarations.json

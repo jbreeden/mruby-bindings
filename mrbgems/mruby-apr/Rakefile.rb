@@ -14,7 +14,7 @@ namespace :test do
     test = File.basename(test_file).sub(/\.rb$/, '')
     desc "Run the #{test} tests"
     task (File.basename(test_file).sub(/\.rb$/, '')) do
-      IO.popen("../../mruby-1.1.0/bin/mruby", 'w') do |mruby|
+      IO.popen("../../mruby/bin/mruby", 'w') do |mruby|
         File.open('specs/fixture.rb', 'r') do |fixture|
           fixture.each_line do |line|
             mruby.puts line
@@ -30,7 +30,7 @@ namespace :test do
   end
 
   task :all do
-    IO.popen("../../mruby-1.1.0/bin/mruby", 'w') do |mruby|
+    IO.popen("../../mruby/bin/mruby", 'w') do |mruby|
       File.open('specs/fixture.rb', 'r') do |fixture|
         fixture.each_line do |line|
           mruby.puts line

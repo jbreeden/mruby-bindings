@@ -66,27 +66,14 @@ end
 namespace :mruby do
   desc "Build the mruby bundled with lamina"
   task :build do
-    Dir.chdir "mruby-1.1.0" do
+    Dir.chdir "mruby" do
       sh "ruby minirake"
-    end
-
-    # Hack:
-    # Something is going wrong in mruby build process...
-    # Not getting the .exe extensions for executables.
-    # I'll try to fix this later
-    if ENV['OS'] =~ /windows/i
-      Dir.chdir "mruby-1.1.0/bin" do
-        mv 'mirb', 'mirb.exe'
-        mv 'mruby', 'mruby.exe'
-        mv 'mrbc', 'mrbc.exe'
-        mv 'mruby-strip', 'mruby-strip.exe'
-      end
     end
   end
 
   desc "Clean the mruby bundled with lamina"
   task :clean do
-    Dir.chdir "mruby-1.1.0" do
+    Dir.chdir "mruby" do
       sh "ruby minirake clean"
     end
   end

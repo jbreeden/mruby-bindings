@@ -4,7 +4,7 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommand>C:\projects\mruby-bindings\mruby-1.1.0\bin\mirb.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>C:\projects\mruby-bindings\mruby\bin\mirb.exe</LocalDebuggerCommand>
     <LocalDebuggerWorkingDirectory>C:\projects\mruby-bindings\mrbgems\mruby-apr</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>

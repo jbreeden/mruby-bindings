@@ -37,11 +37,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <NMakeBuildCommandLine>rake mruby:build</NMakeBuildCommandLine>
-    <NMakeOutput>mruby-1.1.0/bin/mirb.exe</NMakeOutput>
+    <NMakeOutput>mruby/bin/mirb.exe</NMakeOutput>
     <NMakeCleanCommandLine>rake mruby:clean</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>rake mruby:clean &amp;&amp; rake mruby:build</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <IncludePath>$(SolutionDir)\..\mrbgems\mruby-nanomsg\include\nanomsg;$(SolutionDir)\..\mrbgems\mruby-nanomsg\include;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr\win;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr;$(SolutionDir)\..\mrbgems\mruby-apr\include;$(SolutionDir)\..\mruby-1.1.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\mrbgems\mruby-nanomsg\include\nanomsg;$(SolutionDir)\..\mrbgems\mruby-nanomsg\include;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr\win;$(SolutionDir)\..\mrbgems\mruby-apr\include\apr;$(SolutionDir)\..\mrbgems\mruby-apr\include;$(SolutionDir)\..\mruby\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>rake mruby:build</NMakeBuildCommandLine>

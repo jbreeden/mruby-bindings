@@ -2,9 +2,9 @@
     1  sudo apt-get install git
     5  mkdir projects
     6  cd projects/
-    #  download libapr 
-    7  gunzip apr-1.5.2.tar.gz 
-    8  tar xf apr-1.5.2.tar 
+    #  download libapr
+    7  gunzip apr-1.5.2.tar.gz
+    8  tar xf apr-1.5.2.tar
    10  cd apr-1.5.2/
    12  ./configure
    13  sudo make
@@ -14,7 +14,7 @@
    20  cd mruby-bindings/
    23  sudo apt-get install ruby
    28  sudo gem install rake
-   29  cd mruby-1.1.0/
+   29  cd mruby/
    30  ruby minirake clean
    34  sudo apt-get install g++
    36  sudo apt-get install bison
@@ -22,4 +22,3 @@
    48  cd ..
    49  cd mrbgems/mruby-apr/
    50  rake test:all
-
