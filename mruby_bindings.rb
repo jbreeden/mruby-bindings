@@ -7,7 +7,7 @@ end
 require 'fileutils'
 require 'json'
 require 'erb'
-require 'pry'
+require 'pp'
 require_relative './ctypes'
 
 # TODO:

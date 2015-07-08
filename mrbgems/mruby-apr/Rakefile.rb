@@ -10,7 +10,7 @@ end
 
 namespace :test do
 
-  Dir['specs/*.rb'].reject { |f| File.basename(f) == 'specs/fixture.rb' }.each do |test_file|
+  Dir['specs/*.rb'].reject { |f| File.basename(f) == 'fixture.rb' }.each do |test_file|
     test = File.basename(test_file).sub(/\.rb$/, '')
     desc "Run the #{test} tests"
     task (File.basename(test_file).sub(/\.rb$/, '')) do
@@ -29,6 +29,7 @@ namespace :test do
     end
   end
 
+  desc "Run all of the tests"
   task :all do
     IO.popen("../../mruby/bin/mruby", 'w') do |mruby|
       File.open('specs/fixture.rb', 'r') do |fixture|
