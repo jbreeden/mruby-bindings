@@ -4,9 +4,6 @@ require 'socket'
 
 server = TCPServer.new 8888
 
-#$stderr.puts "[TCP Server listening]"
 client = server.accept
-#$stderr.puts "[TCP Server accepted client]"
-client.puts "socket data"
-#$stderr.puts "[TCP Server sent data to client. Closing.]"
+client.write "socket data"
 client.close

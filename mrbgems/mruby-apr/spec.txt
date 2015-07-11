@@ -1,0 +1,106 @@
+
+Directories
+-----------
+
+  APR::apr_dir_open(path: String, pool: AprPoolType): [errno: Fixnum, dir: AprDirT]
+   -  Gets file information for each entry in the directory
+
+  APR::apr_dir_read(finfo: AprFinfoT, wanted: Fixnum, dir: AprDirT): errno: Fixnum
+   -  Gets file information for each entry in the directory
+
+  APR::apr_dir_make(path: String, permissions: Fixnum, pool: AprPoolType): errno: Fixnum
+   -  Creates a directory
+
+  APR::apr_dir_make_recursive(path: String, permissions: Fixnum, pool: AprPoolType): errno: Fixnum
+   -  Creates a directory and any required parent directories
+
+  APR::apr_dir_remove(path: String, pool: AprPoolType): errno: Fixnum
+   -  Deletes a directory
+
+  SUCCESS [5/5 tests passed]
+
+File IO
+-------
+
+  APR::apr_file_open(name: String, mode: Fixnum, permissions: Fixnum, pool: AprPoolT): [errno: Fixnum, file: AprFileT]
+   -  Can open a file for writing
+   -  Can open a file for reading
+
+  APR::apr_file_puts(buf: String, file: AprFileT)
+   -  Can write to an open, writable, file
+
+  APR::apr_file_gets(at_most_n_bytes: Fixnum, file: AprFileT): [errno: Fixnum, str: String]
+   -  Reads length (1st param) characters and returns the string
+   -  Reads as many characters as possible when length is beyond EOF
+
+  APR::apr_file_write(file: AprFileT, buffer: String, num_bytes: Fixnum): [errno: Fixnum, bytes_written: Fixnum]
+   -  Can write strings with nulls to a file
+
+  APR::apr_file_read(file: AprFileT, Fixnum: num_bytes): [errno: Fixnum, str: String]
+   -  Can read strings with nulls from a file
+   -  Returns EOF on first attempt to read past EOF
+
+  APR::apr_file_close(file: AprFileT): errno: Fixnum
+   -  Closes an AprFileT
+
+  APR::apr_file_seek(thefile: AprFileT, where: Fixnum, offset: Fixnum): [errno: Fixnum, resulting_offset: Fixnum]
+   -  Can seek back from the end of the file
+
+  APR::apr_file_copy(from_path: String, to_path: String, perms: int, pool: AprPoolType): errno: Fixnum
+   -  Copies files by name
+
+  APR::apr_file_rename(from_path: String, to_path: String, pool: AprPoolType): errno: Fixnum
+   -  Renames a file
+
+  APR::apr_file_remove(from_path: String, to_path: String, perms: int, pool: AprPoolType): errno: Fixnum
+   -  Removes a file
+
+  APR::apr_file_lock(file: AprFileT, lock_type: Fixnum): errno: Fixnum
+   -  Locks a file (either flock or iocntl based, depending on platform)
+
+  APR::apr_file_unlock(file: AprFileT): errno: Fixnum
+   -  Unlocks a file (either flock or iocntl based, depending on platform)
+
+  APR::apr_file_attrs_set(fname: String, attrs: Fixnum, attr_mask: Fixnum, pool: AprPoolT): errno: Fixnum
+   -  Sets attributes on a file
+
+  SUCCESS [16/16 tests passed]
+
+Processes
+---------
+
+  APR::apr_proc_create(command: String, argv: Array<String>, env: Array<String>, proc_attr: AprProcattrT, pool: AprPoolT): [errno: Fixnum, proc: AprProcT]
+   -  Can run a shell command and redirect output to a file
+   -  Can run a shell command and pipe output to parent via APR.apr_file_pipe_create
+
+  APR::apr_procattr_io_set(procattr: AprProcattrT, in: Fixnum, out: Fixnum, err: Fixnum): errno: Fixnum
+   -  Can automatically create pipes between the parent and child processes (for std in, out, & err)
+
+  SUCCESS [3/3 tests passed]
+
+Sockets
+-------
+
+  APR::apr_sockaddr_info_get
+   - [FAILED] Creates a socket
+    Uncaught SystemCallError: nodename nor servname provided, or not known
+
+  FAILURE [0/1 tests passed]
+
+Standard Lib: Process
+---------------------
+
+  Process::spawn
+10109
+   -  Can spawn echo 1 2 3
+
+  SUCCESS [1/1 tests passed]
+
+Time
+----
+
+  APR::apr_time_now(pool: AprPoolT): time: AprTimeT
+   -  Gets the current time
+
+  SUCCESS [1/1 tests passed]
+1 2 3

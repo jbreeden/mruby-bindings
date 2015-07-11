@@ -94,7 +94,7 @@ TestFixture.new('Processes') do
       err, process = APR.apr_proc_create "echo", argv, nil, proc_attr, @pool
       check_errno(err)
 
-      rr, str = APR.apr_file_read process.out, 100
+      err, str = APR.apr_file_read process.out, 100
       check_errno err
       # strip newline from echo before compare
       assert (str.strip == "this string of args")

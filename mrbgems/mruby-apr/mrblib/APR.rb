@@ -76,4 +76,15 @@ module APR
     APR_WAIT = 0
     APR_NOWAIT = 1
   end
+
+  def self.raise_apr_errno(apr_errno)
+    raise SystemCallError.new(APR.apr_strerror(apr_errno), APR.apr_to_os_error(apr_errno)) if apr_errno != 0
+  end
+
+  def self.with_pool(&block)
+    err, pool = APR.apr_pool_create(nil)
+    return block[pool]
+  ensure
+    APR.apr_pool_destroy(pool)
+  end
 end

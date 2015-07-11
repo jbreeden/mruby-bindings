@@ -23,7 +23,7 @@ namespace :scrape do
         sh "clang2json -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
       end
     else
-      Dir["/usr/local/apr/include/apr-1/*.h"].each do |header|
+      Dir["/usr/local/apr/include/apr-2/*.h"].each do |header|
         sh "clang2json -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
       end
     end

@@ -15,7 +15,7 @@ def configure_mruby_apr_win(conf)
   conf.linker.library_paths << "#{$APR_GEM_DIR}/lib/win"
 
   # I've appended the selected C runtime APR was built with onto the lib file name
-  conf.linker.libraries << "apr-1_md"
+  conf.linker.libraries << "apr-2_md"
   conf.linker.libraries << "Ws2_32"
   conf.linker.libraries << "Advapi32"
   conf.linker.libraries << "Shell32"
@@ -28,16 +28,17 @@ def configure_mruby_apr_lin(conf)
     puts 'To install APR, download the source and run `configure && make && sudo make install`'
     raise 'APR not installed'
   end
-  apr_include_dir = `/usr/local/apr/bin/apr-1-config --includes`.sub('-I', '').strip
+  apr_include_dir = `/usr/local/apr/bin/apr-2-config --includes`.sub('-I', '').strip
   conf.cc.include_paths << apr_include_dir
   conf.cxx.include_paths << apr_include_dir
   conf.linker.library_paths << '/usr/local/apr/lib'
-  conf.linker.libraries = conf.linker.libraries.concat `/usr/local/apr/bin/apr-1-config --libs`.
+  conf.linker.libraries = conf.linker.libraries.concat `/usr/local/apr/bin/apr-2-config --libs`.
     split(' ').
     map { |flag|
       flag.gsub(/^-l/, '').strip
     }
-  conf.linker.flags_before_libraries << '/usr/local/apr/lib/libapr-1.a'
+  conf.linker.libraries << "iconv"
+  conf.linker.flags_before_libraries << '/usr/local/apr/lib/libapr-2.a'
 end
 
 def configure_mruby_apr(conf)

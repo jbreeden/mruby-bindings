@@ -654,7 +654,7 @@
 #define BIND_apr_skiplist_remove_all_FUNCTION FALSE
 #define BIND_apr_skiplist_remove_compare_FUNCTION FALSE
 #define BIND_apr_skiplist_set_compare_FUNCTION FALSE
-#define BIND_apr_sleep_FUNCTION FALSE
+#define BIND_apr_sleep_FUNCTION TRUE
 #define BIND_apr_snprintf_FUNCTION FALSE
 #define BIND_apr_sockaddr_equal_FUNCTION TRUE
 #define BIND_apr_sockaddr_info_get_FUNCTION TRUE
@@ -687,6 +687,7 @@
 #define BIND_apr_socket_type_get_FUNCTION TRUE
 #define BIND_apr_stat_FUNCTION FALSE
 #define BIND_apr_strerror_FUNCTION TRUE
+#define BIND_apr_to_os_error_FUNCTION TRUE
 #define BIND_apr_strfsize_FUNCTION FALSE
 #define BIND_apr_strftime_FUNCTION FALSE
 #define BIND_apr_strnatcasecmp_FUNCTION FALSE

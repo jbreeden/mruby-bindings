@@ -33,7 +33,7 @@ class TestFixture
     @fail_count += 1 unless @current_test_pased
 
     if exc
-      puts "    Uncaught exception: #{exc}"
+      puts "    Uncaught #{exc.class.to_s}: #{exc}"
     end
   end
 

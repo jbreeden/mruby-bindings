@@ -13459,7 +13459,8 @@ mrb_APR_apr_proc_wait(mrb_state* mrb, mrb_value self) {
   }
 
   mrb_value results = mrb_ary_new(mrb);
-  if (result == 0) {
+  mrb_ary_push(mrb, results, mrb_fixnum_value(result));
+  if (result == APR_CHILD_DONE) {
      mrb_ary_push(mrb, results, mrb_fixnum_value(native_exitcode));
      mrb_ary_push(mrb, results, mrb_fixnum_value(native_exitwhy));
   }
@@ -13535,6 +13536,27 @@ mrb_APR_apr_proc_wait_all_procs(mrb_state* mrb, mrb_value self) {
   return return_value;
 }
 #endif
+
+/*
+ * EXTENSION
+ * This function is not in libapr, it's just useful for
+ * implementing some of Ruby's stdlib.
+ * Ex. `spawn` returns only the PID, which we'd like to `wait` on later
+ */
+mrb_value
+mrb_APR_apr_proc_from_pid(mrb_state* mrb, mrb_value self) {
+  mrb_int pid;
+   mrb_get_args(mrb, "i", &pid);
+
+   apr_proc_t* proc = (apr_proc_t*)malloc(sizeof(apr_proc_t));
+   proc->pid = pid;
+#if defined(_WIN32) || defined(_WIN64)
+   proc->hproc = OpenProcess(SYNCHRONIZE, false, pid);
+#endif
+
+  /* Wasn't made from an apr pool, so "giftwrap" so the ruby gc free's it */
+  return mruby_giftwrap_apr_proc_t(mrb, proc);
+}
 
 #if BIND_apr_procattr_addrspace_set_FUNCTION
 #define apr_procattr_addrspace_set_REQUIRED_ARGC 2
@@ -16634,22 +16656,9 @@ mrb_APR_apr_skiplist_set_compare(mrb_state* mrb, mrb_value self) {
  */
 mrb_value
 mrb_APR_apr_sleep(mrb_state* mrb, mrb_value self) {
-  mrb_value t;
-
-  /* Fetch the args */
-  mrb_get_args(mrb, "o", &t);
-
-
-  /* Type checking */
-  TODO_type_check_long_long(t);
-
-
-  /* Unbox parameters */
-  long long native_t = TODO_mruby_unbox_long_long(t);
-
-  /* Invocation */
-  apr_sleep(native_t);
-
+  mrb_int t;
+  mrb_get_args(mrb, "i", &t);
+  apr_sleep(t);
   return mrb_nil_value();
 }
 #endif
@@ -17625,7 +17634,7 @@ mrb_APR_apr_socket_protocol_get(mrb_state* mrb, mrb_value self) {
 
   /* Unbox parameters */
   apr_socket_t * native_sock = (mrb_nil_p(sock) ? NULL : mruby_unbox_apr_socket_t(sock));
-  
+
   /* Invocation */
   int native_protocol;
   apr_status_t result = apr_socket_protocol_get(native_sock, &native_protocol);
@@ -17680,7 +17689,7 @@ mrb_APR_apr_socket_recv(mrb_state* mrb, mrb_value self) {
     mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
     return mrb_nil_value();
   }
-  
+
   mrb_value result_string = mrb_str_new(mrb, native_buf, native_len);
   free(native_buf);
   native_buf = NULL;
@@ -18291,6 +18300,18 @@ mrb_APR_apr_strerror(mrb_state* mrb, mrb_value self) {
   native_buf = NULL;
 
   return return_value;
+}
+#endif
+
+#if BIND_apr_to_os_error_FUNCTION
+#define apr_to_os_error_REQUIRED_ARGC 1
+#define apr_to_os_error_OPTIONAL_ARGC 0
+mrb_value
+mrb_APR_apr_to_os_error(mrb_state *mrb, mrb_value self) {
+  mrb_int apr_errno;
+  mrb_get_args(mrb, "i", &apr_errno);
+  int os_errno = APR_TO_OS_ERROR(apr_errno);
+  return mrb_fixnum_value(os_errno);
 }
 #endif
 
@@ -23597,6 +23618,7 @@ void mrb_mruby_apr_gem_init(mrb_state* mrb) {
 #if BIND_apr_proc_wait_all_procs_FUNCTION
   mrb_define_class_method(mrb, APR_module, "apr_proc_wait_all_procs", mrb_APR_apr_proc_wait_all_procs, MRB_ARGS_ARG(apr_proc_wait_all_procs_REQUIRED_ARGC, apr_proc_wait_all_procs_OPTIONAL_ARGC));
 #endif
+  mrb_define_class_method(mrb, APR_module, "apr_proc_from_pid", mrb_APR_apr_proc_from_pid, MRB_ARGS_ARG(1, 0));
 #if BIND_apr_procattr_addrspace_set_FUNCTION
   mrb_define_class_method(mrb, APR_module, "apr_procattr_addrspace_set", mrb_APR_apr_procattr_addrspace_set, MRB_ARGS_ARG(apr_procattr_addrspace_set_REQUIRED_ARGC, apr_procattr_addrspace_set_OPTIONAL_ARGC));
 #endif
@@ -23890,6 +23912,9 @@ void mrb_mruby_apr_gem_init(mrb_state* mrb) {
 #endif
 #if BIND_apr_strerror_FUNCTION
   mrb_define_class_method(mrb, APR_module, "apr_strerror", mrb_APR_apr_strerror, MRB_ARGS_ARG(apr_strerror_REQUIRED_ARGC, apr_strerror_OPTIONAL_ARGC));
+#endif
+#if BIND_apr_to_os_error_FUNCTION
+  mrb_define_class_method(mrb, APR_module, "apr_to_os_error", mrb_APR_apr_to_os_error, MRB_ARGS_ARG(apr_to_os_error_REQUIRED_ARGC, apr_to_os_error_OPTIONAL_ARGC));
 #endif
 #if BIND_apr_strfsize_FUNCTION
   mrb_define_class_method(mrb, APR_module, "apr_strfsize", mrb_APR_apr_strfsize, MRB_ARGS_ARG(apr_strfsize_REQUIRED_ARGC, apr_strfsize_OPTIONAL_ARGC));
