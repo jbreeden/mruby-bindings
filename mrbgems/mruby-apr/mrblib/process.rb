@@ -14,7 +14,7 @@ module Process
         env = command.shift
       end
 
-      if command[command.length -1].class == Hash
+      if command.last.class == Hash
         options = command.pop
       end
 
@@ -57,8 +57,28 @@ module Process
       APR.apr_procattr_cmdtype_set proc_attr, cmd_type
 
       # TODO: Configure environment variables from env hash
-      # TODO: Determine pipe settings from options hash
-      APR.apr_procattr_io_set proc_attr, APR::APR_NO_PIPE, APR::APR_NO_PIPE, APR::APR_NO_PIPE
+
+      in_io = APR::APR_NO_PIPE
+      out_io = APR::APR_NO_PIPE
+      err_io = APR::APR_NO_PIPE
+      if options
+        if options[:in]
+          # Using instance variable get to avoid exposing non standard `native_file` field on File class
+          err = APR.apr_procattr_child_in_set proc_attr, nil, options[:in].instance_variable_get(:@native_file)
+          APR.raise_apr_errno(err)
+          in_io = APR::APR_FULL_BLOCK
+        end
+        if options[:out]
+          err = APR.apr_procattr_child_out_set proc_attr, options[:out].instance_variable_get(:@native_file), nil
+          APR.raise_apr_errno(err)
+          out_io = APR::APR_FULL_BLOCK
+        end
+        if options[:err]
+          err = APR.apr_procattr_child_err_set proc_attr, options[:err].instance_variable_get(:@native_file), nil
+          APR.raise_apr_errno(err)
+          err_io = APR::APR_FULL_BLOCK
+        end
+      end
 
       err, process = APR.apr_proc_create argv[0], argv, nil, proc_attr, pool
       APR.raise_apr_errno(err)

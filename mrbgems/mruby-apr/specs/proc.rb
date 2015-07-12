@@ -1,4 +1,4 @@
-TestFixture.new('Processes') do
+TestFixture.new('APR API: Processes') do
   err, @pool = APR::apr_pool_create nil
 
   def check_errno(errno)

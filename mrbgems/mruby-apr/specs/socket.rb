@@ -1,4 +1,4 @@
-TestFixture.new('Sockets') do
+TestFixture.new('APR API: Sockets') do
   err, @pool = APR.apr_pool_create(nil)
 
   def run_server

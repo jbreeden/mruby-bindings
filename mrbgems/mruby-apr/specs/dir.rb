@@ -1,4 +1,4 @@
-TestFixture.new('Directories') do
+TestFixture.new('APR API: Directories') do
   err, @pool = APR::apr_pool_create nil
   @a_rwx = 0x070707
 

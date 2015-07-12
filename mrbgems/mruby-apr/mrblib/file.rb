@@ -1,4 +1,24 @@
 class File
+  module Util
+    def self.mode_str_to_flags(mode)
+      case mode
+      when 'r'
+        APR::APR_FOPEN_READ
+      when 'w'
+        APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_TRUNCATE
+      when 'a'
+        APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_APPEND
+      when 'r+'
+        APR::APR_FOPEN_READ | APR::APR_FOPEN_WRITE
+      when 'w+'
+        APR::APR_FOPEN_READ | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_TRUNCATE
+      when 'a+'
+        APR::APR_FOPEN_READ | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_APPEND
+      else
+        raise ArgumentError.new("Invalid access mode #{mode}")
+      end
+    end
+  end
 
   # Modes:
   # "r"  Read-only, starts at beginning of file  (default mode).
@@ -31,31 +51,16 @@ class File
     APR.raise_apr_errno(err)
     @filename = filename
 
-    @mode_flags = APR::APR_FOPEN_BUFFERED # Always at least buffered
-    @mode_flags = case mode
-    when 'r'
-      APR::APR_FOPEN_READ
-    when 'w'
-      APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_TRUNCATE
-    when 'a'
-      APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_APPEND
-    when 'r+'
-      APR::APR_FOPEN_READ | APR::APR_FOPEN_WRITE
-    when 'w+'
-      APR::APR_FOPEN_READ | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_TRUNCATE
-    when 'a+'
-      APR::APR_FOPEN_READ | APR::APR_FOPEN_WRITE | APR::APR_FOPEN_CREATE | APR::APR_FOPEN_APPEND
-    else
-      raise ArgumentError.new("Invalid access mode #{mode}")
-    end
+    @flags = APR::APR_FOPEN_BUFFERED # Always at least buffered
+    @flags = File::Util.mode_str_to_flags(mode)
 
     if mode.include? 'b'
-      @mode_flags = @mode_flags | APR::APR_FOPEN_BINARY
+      @flags = @flags | APR::APR_FOPEN_BINARY
     end
 
     @perm_bits = perm
 
-    err, @native_file = APR.apr_file_open(@filename, @mode_flags, @perm_bits, @pool)
+    err, @native_file = APR.apr_file_open(@filename, @flags, @perm_bits, @pool)
     if err != 0
       APR.apr_pool_destroy(@pool)
       APR.raise_apr_errno(err)
@@ -87,7 +92,7 @@ class File
   end
 
   def gets(sep=nil, limit=nil)
-    if ((@mode_flags & APR::APR_FOPEN_READ) == 0)
+    if ((@flags & APR::APR_FOPEN_READ) == 0)
       raise IOError.new 'not opened for reading'
     end
 
@@ -138,7 +143,7 @@ class File
   end
 
   def puts(*args)
-    if ((@mode_flags & APR::APR_FOPEN_WRITE) == 0)
+    if ((@flags & APR::APR_FOPEN_WRITE) == 0)
       raise IOError.new 'not opened for reading'
     end
 
@@ -163,7 +168,7 @@ class File
   end
 
   def read(length = nil)
-    if ((@mode_flags & APR::APR_FOPEN_READ) == 0)
+    if ((@flags & APR::APR_FOPEN_READ) == 0)
       raise IOError.new 'not opened for reading'
     end
 
@@ -193,7 +198,7 @@ class File
   end
 
   def write(str)
-    if ((@mode_flags & APR::APR_FOPEN_WRITE) == 0)
+    if ((@flags & APR::APR_FOPEN_WRITE) == 0)
       raise IOError.new 'not opened for writing'
     end
 
