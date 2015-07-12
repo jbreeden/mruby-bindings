@@ -15,7 +15,7 @@ class TestFixture
 
   def describe(label, &block)
     puts
-    puts "  #{label}"
+    puts "  - #{label}"
     self.instance_eval(&block)
   end
 
@@ -35,7 +35,7 @@ class TestFixture
     elsif !@current_test_passed
       tag = "[FAILED] "
     end
-    puts "   - #{tag}#{label}"
+    puts "    + #{tag}#{label}"
 
     @test_count += 1
     @fail_count += 1 unless @current_test_passed
