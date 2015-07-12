@@ -20,7 +20,16 @@ module Process
 
       if command.length == 1 && command[0].class == String
         err, argv = APR.apr_tokenize_to_argv(command[0], pool)
-        #argv = command
+        # TODO: Remove this when this bug is resolved & apr is updated
+        # https://bz.apache.org/bugzilla/show_bug.cgi?id=58123
+        argv = argv.map { |a|
+          if a.include?(' ') || a.include?("\t")
+            "\"#{a}\""
+          else
+            a
+          end
+        }
+
         { env: env, argv: argv, options: options, cmd_type: APR::AprCmdtypeE::APR_SHELLCMD_ENV }
       elsif command[0].class == Array
         if command[0].length != 2
@@ -44,10 +53,6 @@ module Process
       argv = args[:argv]
       options = args[:options]
       cmd_type = args[:cmd_type]
-
-      puts cmd_type == APR::AprCmdtypeE::APR_SHELLCMD_ENV
-      puts cmd_type == APR::AprCmdtypeE::APR_PROGRAM_ENV
-      puts argv
 
       APR.apr_procattr_cmdtype_set proc_attr, cmd_type
 
