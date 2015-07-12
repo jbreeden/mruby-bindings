@@ -2,3 +2,6 @@
 	path = mruby
 	url = http://github.com/jbreeden/mruby
 	branch = mruby-bindings
+[submodule "mrbgems/mruby-apr"]
+	path = mrbgems/mruby-apr
+	url = https://github.com/jbreeden/mruby-apr
