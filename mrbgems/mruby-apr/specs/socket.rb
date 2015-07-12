@@ -16,7 +16,7 @@ TestFixture.new('Sockets') do
       run_server
 
       #                                            Host         Family         Port  Flags Pool
-      err, server_addr = APR.apr_sockaddr_info_get "loclhost", APR::APR_INET, 8888, 0,    @pool
+      err, server_addr = APR.apr_sockaddr_info_get "localhost", APR::APR_INET, 8888, 0,    @pool
       APR.raise_apr_errno(err)
 
       err, client = APR.apr_socket_create(APR::APR_INET, APR::SOCK_STREAM, APR::APR_PROTO_TCP, @pool)
@@ -25,19 +25,18 @@ TestFixture.new('Sockets') do
       try_count = 0
       begin
         err = APR.apr_socket_connect(client, server_addr)
-        check_errno(err)
-      rescue
+        APR.raise_apr_errno(err)
+      rescue Exception => ex
         if try_count < 5
           try_count += 1
           retry
         end
-        raise
+        raise ex
       end
 
       err, buf = APR.apr_socket_recv(client, 100)
       APR.raise_apr_errno(err)
 
-      puts "buf: #{buf} length: #{buf.length}"
       assert (buf == 'socket data')
     end
   end

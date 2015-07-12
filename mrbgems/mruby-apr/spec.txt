@@ -17,7 +17,7 @@ Directories
   APR::apr_dir_remove(path: String, pool: AprPoolType): errno: Fixnum
    -  Deletes a directory
 
-  SUCCESS [5/5 tests passed]
+  SUCCESS [0/5 tests failed]
 
 File IO
 -------
@@ -64,7 +64,7 @@ File IO
   APR::apr_file_attrs_set(fname: String, attrs: Fixnum, attr_mask: Fixnum, pool: AprPoolT): errno: Fixnum
    -  Sets attributes on a file
 
-  SUCCESS [16/16 tests passed]
+  SUCCESS [0/16 tests failed]
 
 Processes
 ---------
@@ -76,25 +76,33 @@ Processes
   APR::apr_procattr_io_set(procattr: AprProcattrT, in: Fixnum, out: Fixnum, err: Fixnum): errno: Fixnum
    -  Can automatically create pipes between the parent and child processes (for std in, out, & err)
 
-  SUCCESS [3/3 tests passed]
+  SUCCESS [0/3 tests failed]
 
 Sockets
 -------
 
   APR::apr_sockaddr_info_get
-   - [FAILED] Creates a socket
-    Uncaught SystemCallError: nodename nor servname provided, or not known
+   -  Creates a socket
 
-  FAILURE [0/1 tests passed]
+  SUCCESS [0/1 tests failed]
+
+Standard Lib: IO
+----------------
+
+  IO::open
+   - [PENDING]  Opens a file if given a plain string
+   - [PENDING]  Returns an IO connected to a subprocess if given a string starting with "|"
+
+  SUCCESS [0/2 tests failed]
 
 Standard Lib: Process
 ---------------------
 
   Process::spawn
-10109
-   -  Can spawn echo 1 2 3
+   -  Spawns a shell command if given a string
+   -  Spawns a program, with no shell, if given argv as multiple args
 
-  SUCCESS [1/1 tests passed]
+  SUCCESS [0/2 tests failed]
 
 Time
 ----
@@ -102,5 +110,4 @@ Time
   APR::apr_time_now(pool: AprPoolT): time: AprTimeT
    -  Gets the current time
 
-  SUCCESS [1/1 tests passed]
-1 2 3
+  SUCCESS [0/1 tests failed]

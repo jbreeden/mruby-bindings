@@ -390,7 +390,7 @@
 #define BIND_apr_file_eof_FUNCTION TRUE
 #define BIND_apr_file_flags_get_FUNCTION TRUE
 #define BIND_apr_file_flush_FUNCTION TRUE
-#define BIND_apr_file_getc_FUNCTION FALSE
+#define BIND_apr_file_getc_FUNCTION TRUE
 #define BIND_apr_file_gets_FUNCTION TRUE
 #define BIND_apr_file_info_get_FUNCTION FALSE
 #define BIND_apr_file_link_FUNCTION TRUE
@@ -422,7 +422,7 @@
 #define BIND_apr_file_setaside_FUNCTION FALSE
 #define BIND_apr_file_sync_FUNCTION TRUE
 #define BIND_apr_file_trunc_FUNCTION TRUE
-#define BIND_apr_file_ungetc_FUNCTION FALSE
+#define BIND_apr_file_ungetc_FUNCTION TRUE
 #define BIND_apr_file_unlock_FUNCTION TRUE
 #define BIND_apr_file_write_FUNCTION TRUE
 #define BIND_apr_file_write_full_FUNCTION FALSE

@@ -77,8 +77,11 @@ module APR
     APR_NOWAIT = 1
   end
 
-  def self.raise_apr_errno(apr_errno)
-    raise SystemCallError.new(APR.apr_strerror(apr_errno), APR.apr_to_os_error(apr_errno)) if apr_errno != 0
+  def self.raise_apr_errno(apr_errno, opt = {ignore: []})
+    Array(opt[:ignore]).each do |err|
+      return if apr_errno == err
+    end
+    raise SystemCallError.new(APR.apr_strerror(apr_errno), APR.apr_to_os_error(apr_errno)) if apr_errno != APR::APR_SUCCESS
   end
 
   def self.with_pool(&block)

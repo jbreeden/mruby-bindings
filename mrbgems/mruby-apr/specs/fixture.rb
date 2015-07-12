@@ -4,7 +4,8 @@ class TestFixture
     @fixture_label = label
     @test_count = 0
     @fail_count = 0
-    @current_test_pased = true
+    @current_test_passed = true
+    @current_test_pending = false
     puts
     puts @fixture_label
     puts '-' * label.size
@@ -19,18 +20,25 @@ class TestFixture
   end
 
   def it(label, &block)
-    @current_test_pased = true
+    @current_test_passed = true
+    @current_test_pending = false
     exc = nil
     begin
       self.instance_eval(&block)
     rescue StandardError => ex
       exc = ex
-      @current_test_pased = false
+      @current_test_passed = false
     end
-    puts "   - #{"[FAILED]" unless @current_test_pased} #{label}"
+    tag = ""
+    if @current_test_pending
+      tag = "[PENDING] "
+    elsif !@current_test_passed
+      tag = "[FAILED] "
+    end
+    puts "   - #{tag}#{label}"
 
     @test_count += 1
-    @fail_count += 1 unless @current_test_pased
+    @fail_count += 1 unless @current_test_passed
 
     if exc
       puts "    Uncaught #{exc.class.to_s}: #{exc}"
@@ -38,12 +46,29 @@ class TestFixture
   end
 
   def assert(condition)
-    @current_test_pased &&= condition
+    @current_test_passed &&= condition
     condition # So client can react to result
+  end
+
+  def assert_raises(excClass, &block)
+    begin
+      block[]
+    rescue excClass
+      return
+    end
+    @current_test_passed = false
+  end
+
+  def fail
+    @current_test_passed = false
+  end
+
+  def pending
+    @current_test_pending = true
   end
 
   def summarize
     puts
-    puts "  #{@fail_count == 0 ? 'SUCCESS' : 'FAILURE' } [#{@test_count - @fail_count}/#{@test_count} tests passed]"
+    puts "  #{@fail_count == 0 ? 'SUCCESS' : 'FAILURE' } [#{@fail_count}/#{@test_count} tests failed]"
   end
 end

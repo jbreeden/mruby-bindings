@@ -37,6 +37,7 @@ mrb_APR_apr_allocator_alloc(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &allocator, &size);
 
+  mruby_
 
   /* Type checking */
   if (!mrb_obj_is_kind_of(mrb, allocator, AprAllocatorT_class(mrb))) {
@@ -3531,63 +3532,34 @@ mrb_APR_apr_file_flush(mrb_state* mrb, mrb_value self) {
 #endif
 
 #if BIND_apr_file_getc_FUNCTION
-#define apr_file_getc_REQUIRED_ARGC 2
+#define apr_file_getc_REQUIRED_ARGC 1
 #define apr_file_getc_OPTIONAL_ARGC 0
 /* apr_file_getc
  *
  * Parameters:
- * - ch: char *
- * - thefile: apr_file_t *
- * Return Type: apr_status_t
+ * - thefile: AprFileT
+ * Return Type: errno: Fixnum, char: String
  */
 mrb_value
 mrb_APR_apr_file_getc(mrb_state* mrb, mrb_value self) {
-  mrb_value ch;
   mrb_value thefile;
 
   /* Fetch the args */
-  mrb_get_args(mrb, "oo", &ch, &thefile);
-
-  /* Type checking */
-  if (!mrb_obj_is_kind_of(mrb, ch, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
+  mrb_get_args(mrb, "o", &thefile);
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
-
-
-  /* Unbox parameters */
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
-  char * native_ch = strdup(mrb_string_value_cstr(mrb, &ch));
-
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
 
   /* Invocation */
-  apr_status_t result = apr_file_getc(native_ch, native_thefile);
-
-  /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
+  char native_ch;
+  apr_status_t result = apr_file_getc(&native_ch, native_thefile);
+  if (result == APR_SUCCESS) {
+    RETURN_ERRNO_AND_OUTPUT(result, mrb_str_new(mrb, &native_ch, 1));
+  } else {
+    RETURN_ERRNO_AND_OUTPUT(result, mrb_nil_value());
   }
-  mrb_value return_value = mrb_fixnum_value(result);
-
-  /* WARNING: Assuming that the new string can be deallocated after the function call.
-   *          Please verify that this is correct (the function does not save this parameter).
-   *
-   *          Has this been verified? [No]
-   */
-  free(native_ch);
-  native_ch = NULL;
-
-  return return_value;
 }
 #endif
 
@@ -5224,28 +5196,24 @@ mrb_APR_apr_file_ungetc(mrb_state* mrb, mrb_value self) {
   /* Fetch the args */
   mrb_get_args(mrb, "oo", &ch, &thefile);
 
-
   /* Type checking */
-  TODO_type_check_char(ch);
+  if (!mrb_obj_is_kind_of(mrb, ch, mrb->string_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+    return mrb_nil_value();
+  }
   if (!mrb_obj_is_kind_of(mrb, thefile, AprFileT_class(mrb))) {
     mrb_raise(mrb, E_TYPE_ERROR, "AprFileT expected");
     return mrb_nil_value();
   }
 
-
   /* Unbox parameters */
-  char native_ch = TODO_mruby_unbox_char(ch);
-
+  char native_ch = mrb_string_value_ptr(mrb, ch)[0];
   apr_file_t * native_thefile = (mrb_nil_p(thefile) ? NULL : mruby_unbox_apr_file_t(thefile));
 
   /* Invocation */
   apr_status_t result = apr_file_ungetc(native_ch, native_thefile);
 
   /* Box the return value */
-  if (result > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
   mrb_value return_value = mrb_fixnum_value(result);
 
   return return_value;

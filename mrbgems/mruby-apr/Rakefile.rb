@@ -1,3 +1,30 @@
+# Util Functions
+# --------------
+
+def each_test_file(&block)
+  Dir['specs/*.rb'].reject { |f| File.basename(f) == 'fixture.rb' }.each(&block)
+end
+
+def test_file_name(test_file)
+  File.basename(test_file).sub(/\.rb$/, '')
+end
+
+def with_mruby(&block)
+  IO.popen("../../mruby/bin/mruby", 'w', &block)
+end
+
+def exec_file(mruby, path)
+  File.open(path, 'r') do |test|
+    mruby.puts "$GEM_DIR = '#{File.expand_path('.')}'"
+    test.each_line do |line|
+      mruby.puts line
+    end
+  end
+end
+
+# Tasks
+# -----
+
 desc "Print the supported functions"
 task "tell_functions" do
   File.open('include/mruby_APR.h', 'r') do |f|
@@ -10,39 +37,23 @@ end
 
 namespace :test do
 
-  Dir['specs/*.rb'].reject { |f| File.basename(f) == 'fixture.rb' }.each do |test_file|
-    test = File.basename(test_file).sub(/\.rb$/, '')
+  each_test_file do |test_file|
+    test = test_file_name(test_file)
     desc "Run the #{test} tests"
-    task (File.basename(test_file).sub(/\.rb$/, '')) do
-      IO.popen("../../mruby/bin/mruby", 'w') do |mruby|
-        File.open('specs/fixture.rb', 'r') do |fixture|
-          fixture.each_line do |line|
-            mruby.puts line
-          end
-        end
-        File.open("specs/#{test}.rb", 'r') do |test|
-          test.each_line do |line|
-            mruby.puts line
-          end
-        end
+    task (test) do
+      with_mruby do |mruby|
+        exec_file(mruby, 'specs/fixture.rb')
+        exec_file(mruby, test_file)
       end
     end
   end
 
   desc "Run all of the tests"
   task :all do
-    IO.popen("../../mruby/bin/mruby", 'w') do |mruby|
-      File.open('specs/fixture.rb', 'r') do |fixture|
-        fixture.each_line do |line|
-          mruby.puts line
-        end
-      end
+    with_mruby do |mruby|
+      exec_file(mruby, 'specs/fixture.rb')
       Dir['specs/*.rb'].reject { |f| File.basename(f) == 'specs/fixture.rb' }.each do |f|
-        File.open(f, 'r') do |test|
-          test.each_line do |line|
-            mruby.puts line
-          end
-        end
+        exec_file(mruby, f)
       end
     end
   end

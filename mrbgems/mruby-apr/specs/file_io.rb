@@ -3,7 +3,7 @@
 
 TestFixture.new('File IO') do
   err, @pool = APR::apr_pool_create nil
-  @ug_rw = 0x060600
+  @ug_rw = 0x660 # Probably going to be "umasked" to 640
 
   @str_with_null = "BeforeNull\x00AfterNull"
 
