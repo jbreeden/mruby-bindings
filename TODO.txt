@@ -13,5 +13,6 @@ Just Tips & Reminders
 ---------------------
 
 - Not really a todo... but don't use any string_value_cstr like functions when dealing with buffers (they like to throw when there is a null character)
-  + Prefer RSTRING_PTR, or mrb_string_value_ptr which performs to_s or to_str first
+  + Prefer mrb_string_value_ptr which performs to_s or to_str first
   + More over, mrb_string_value_cstr will crash if you give it something that isn't actually a string
+    - Not anymore: https://github.com/mruby/mruby/pull/2852
