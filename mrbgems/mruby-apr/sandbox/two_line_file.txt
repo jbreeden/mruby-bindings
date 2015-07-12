@@ -1,2 +1,0 @@
-This file has two lines.
-This is the second line.

@@ -1,1 +1,0 @@
-cd .. && rake mruby:build && cd -

@@ -1,1 +1,0 @@
-APR generates apr.h specially for each platform. This folder (apr_win/) holds the header generated for windows
