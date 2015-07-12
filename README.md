@@ -15,7 +15,7 @@ bindings that are currently used.
 It should be close to complete & stable. Still need to work through function pointers. Structs, enums, functions, typedefs,
 classes, methods, and macros are currently supported. Generated bindings include type checking and a convenient macro system to configure the bindings.
 
-Have a peek at the [APR bindings](https://github.com/jbreeden/mruby-bindings/tree/master/apr_bindings) for an example of the raw output. The [APR gem](https://github.com/jbreeden/mruby-bindings/tree/master/mrbgems/mruby-apr) is the result of taking the raw generated code, enabling bindings and performing the necessary tweaks (like changing "output parameters" - passed in as pointers - to return values, since there is not way for the generator to know the intentions of the library's API in that regard). Many of the function bindings in the APR gem required no tweaking, and simple work as generated.
+Have a peek at the [APR bindings](https://github.com/jbreeden/mruby-bindings/tree/master/apr_bindings) for an example of the raw output. The [APR gem](https://github.com/jbreeden/mruby-apr) is the result of taking the raw generated code, enabling bindings and performing the necessary tweaks (like changing "output parameters" - passed in as pointers - to return values, since there is not way for the generator to know the intentions of the library's API in that regard). Many of the function bindings in the APR gem required no tweaking, and simple work as generated.
 
 The supported functions for APR are listed below. (Note: I've just started the sockets testing. So far I've only verified that a client can connect to a tcp server and receive a single string. See the tests in `mrbgems/mruby-apr/specs`)
 
