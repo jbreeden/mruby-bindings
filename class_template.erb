@@ -45,7 +45,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, 
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "<%= module_name %>::<%= self['ruby_name'] %>.disown only accepts objects of type <%= module_name %>::<%= self['ruby_name'] %>");
+    mrb_raise(mrb, E_TYPE_ERROR, "<%= module_name %>::<%= self['ruby_name'] %>.belongs_to_ruby only accepts objects of type <%= module_name %>::<%= self['ruby_name'] %>");
     return mrb_nil_value();
   }
 

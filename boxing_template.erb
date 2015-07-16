@@ -1,7 +1,11 @@
 /*
  * TODO: Update includes
  */
-
+ <%
+   # WARNING: This file should be probably be using CTypes to get function names.
+   #          If you define a CType by hand, it probably won't match up with these
+   #          generated functions.
+ -%>
 #include "mruby_<%= module_name %>.h"
 
 <%
@@ -29,12 +33,12 @@ static void free_<%= klass['name'] %>(mrb_state* mrb, void* ptr) {
   }
 }
 
-static const mrb_data_type <%= klass['name'] %>_data_type = {
-   "<%= klass['name'] %>", free_<%= klass['name'] %>
+static const mrb_data_type <%= klass['name'].type_to_identifier %>_data_type = {
+   "<%= klass['name'] %>", free_<%= klass['name'].type_to_identifier %>
 };
 
 mrb_value
-mruby_box_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
+mruby_box_<%= klass['name'].type_to_identifier %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
   box->belongs_to_ruby = FALSE;
   box->obj = unboxed;
@@ -42,7 +46,7 @@ mruby_box_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
 }
 
 mrb_value
-mruby_giftwrap_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
+mruby_giftwrap_<%= klass['name'].type_to_identifier %>(mrb_state* mrb, <%= klass['name'] %> *unboxed) {
    mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
    box->belongs_to_ruby = TRUE;
    box->obj = unboxed;
@@ -50,7 +54,7 @@ mruby_giftwrap_<%= klass['name'] %>(mrb_state* mrb, <%= klass['name'] %> *unboxe
 }
 
 void
-mruby_set_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed) {
+mruby_set_<%= klass['name'].type_to_identifier %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed) {
   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
   box->belongs_to_ruby = FALSE;
   box->obj = unboxed;
@@ -58,7 +62,7 @@ mruby_set_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unb
 }
 
 void
-mruby_gift_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed) {
+mruby_gift_<%= klass['name'].type_to_identifier %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed) {
   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
   box->belongs_to_ruby = TRUE;
   box->obj = unboxed;
@@ -66,7 +70,7 @@ mruby_gift_<%= klass['name'] %>_data_ptr(mrb_value obj, <%= klass['name'] %> *un
 }
 
 <%= klass['name'] %> *
-mruby_unbox_<%= klass['name'] %>(mrb_value boxed) {
+mruby_unbox_<%= klass['name'].type_to_identifier %>(mrb_value boxed) {
   return (<%= klass['name'] %> *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
 }
 #endif

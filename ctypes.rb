@@ -56,10 +56,11 @@ module CTypes
       return if CTypes[type['type_name']]
 
       CTypes.define(type['type_name']) do
+        # We don't know the type, but we know the pointee type from a struct/class decl
         if type['type_is_pointer'] && $classes[type['pointee_type_usr']]
-          boxing_fn.name = "mruby_box_#{type['pointee_type_name']}"
+          boxing_fn.name = "mruby_box_#{type['pointee_type_name'].type_to_identifier}"
           boxing_fn.invocation_template = "mrb_value %{as} = (%{box} == NULL ? mrb_nil_value() : #{boxing_fn.name}(mrb, %{box}));"
-          unboxing_fn.name = "mruby_unbox_#{type['pointee_type_name']}"
+          unboxing_fn.name = "mruby_unbox_#{type['pointee_type_name'].type_to_identifier}"
           unboxing_fn.invocation_template = "#{type['type_name']} %{as} = (mrb_nil_p(%{unbox}) ? NULL : #{unboxing_fn.name}(%{unbox}));"
 
           self.type_check = <<EOF
@@ -68,8 +69,9 @@ if (!mrb_obj_is_kind_of(mrb, %{value}, #{$classes[type['pointee_type_usr']]['rub
   return mrb_nil_value();
 }
 EOF
+        # We know the exact type from a struct/class decl
         elsif $classes[type['type_usr']]
-          boxing_fn.name = "mruby_box_#{type['type_name']}"
+          boxing_fn.name = "mruby_box_#{type['type_name'].type_to_identifier}"
           boxing_fn.invocation_template = <<EOF
 /* WARNING: Boxing a pointer to a value type.
  * If this is a stack variable, it will be deleted when this function returns.
@@ -78,15 +80,16 @@ EOF
  */
 mrb_value %{as} = #{boxing_fn.name}(mrb, &%{box});
 EOF
-          unboxing_fn.name = "mruby_unbox_#{type['type_name']}"
-          unboxing_fn.invocation_template = "#{type['type_name']} %{as} = *(#{unboxing_fn.name}(%{unbox}));"
+          unboxing_fn.name = "mruby_unbox_#{type['type_name'].type_to_identifier}"
+          unboxing_fn.invocation_template = "#{type['type_name'].type_to_identifier} %{as} = *(#{unboxing_fn.name}(%{unbox}));"
 
           self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, #{type['ruby_name']}_class(mrb))) {
-  mrb_raise(mrb, E_TYPE_ERROR, "#{type['ruby_name']} expected");
+if (!mrb_obj_is_kind_of(mrb, %{value}, #{type['type_name'].type_to_identifier}_class(mrb))) {
+  mrb_raise(mrb, E_TYPE_ERROR, "#{type['type_name'].type_to_identifier} expected");
   return mrb_nil_value();
 }
 EOF
+        # We don't know the type at all, insert TODO's
         else
           boxing_fn.name = "TODO_mruby_box_#{type['type_name'].type_to_identifier.split(' ').join('_')}"
           boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"

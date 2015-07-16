@@ -1,6 +1,22 @@
 class String
   def type_to_identifier
-    self.gsub(/\*|&|\(|\)|,/, '*' => ' PTR ', '&' => ' REF ', '(' => ' LPAREN ', ')' => ' RPAREN ', ',' => 'COMMA').split(/\s+/).join('_')
+    self.sub(/\s*(struct|enum)\s*/, '').
+      sub(/\s*const\s*/, '').
+      gsub(/\*|&|\(|\)|,/,
+        '*' => ' PTR ',
+        '&' => ' REF ',
+        '(' => ' LPAREN ', ')' => ' RPAREN ',
+        ',' => 'COMMA'
+      ).
+      split(/\s+/).
+      join('_')
+  end
+
+  def type_name_to_rb
+    self.sub(/(struct|enum)\s*/, '').
+      split('_').
+      map { |token| "#{token[0].upcase}#{token[1..(token.length)] if token.length > 1}" }.
+      join('')
   end
 end
 
@@ -52,9 +68,10 @@ def make_declaration_tree
       when "TypedefDecl"
         CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
       when "ClassDecl", "StructDecl"
+        datum['name'] = datum['name']
         # Ignore anonymous declarations
-        # (They are named "anonymous something...")
-        next if datum['name'].include? ' '
+        # (They are named "anonymous SPACE something...")
+        next if datum['name'] =~ /anonymous\s/i
         cxxClass = $classes[datum['usr']] || datum
         cxxClass['fields'] ||= []
         cxxClass['member_functions'] ||= []
@@ -125,7 +142,7 @@ end
 # TODO: This function name isn't really valid anymore
 def annotate_declarations
   $classes.each do |usr, klass|
-    klass['ruby_name'] = klass['name'].split('_').map { |token| token.capitalize }.join('')
+    klass['ruby_name'] = klass['name'].type_name_to_rb
   end
 
   $classes.each do |usr, klass|
