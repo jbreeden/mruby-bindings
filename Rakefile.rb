@@ -1,6 +1,6 @@
 $apr_dir = File.expand_path "headers/apr"
 $cef_dir = File.expand_path "headers/cef"
-$nn_dir = File.expand_path "headers/nanomsg"
+$nspr_dir = File.expand_path "headers/nspr"
 
 def generate_bindings(gem_name, module_name, output_dir)
   IO.popen("ruby mruby_bindings.rb #{gem_name} #{module_name} #{output_dir}", 'w') do |io|
@@ -37,11 +37,11 @@ namespace :scrape do
     end
   end
 
-  desc "Generate ldjson file for nanomsg headers"
-  task :nanomsg do
+  desc "Generate ldjson file for NSPR headers"
+  task :nspr do
     File.delete "declarations.json" if File.exists? 'declarations.json'
-    Dir["#{$nn_dir}/*.h"].each do |header|
-      sh "clang2json -x c++ -I #{$nn_dir} #{header} >> declarations.json"
+    Dir["#{$nspr_dir}/nspr/*.h"].each do |header|
+      sh "clang2json -I #{$nspr_dir} #{header} >> declarations.json"
     end
   end
 end
@@ -57,9 +57,9 @@ namespace :bindings do
     generate_bindings('mruby-cef', 'Cef', 'cef_bindings')
   end
 
-  desc "Generates bindings for nanomsg"
-  task :nanomsg => ['scrape:nanomsg'] do
-    generate_bindings('mruby-nanomsg', 'NN', 'nanomsg_bindings')
+  desc "Generates bindings for nspr"
+  task :nspr => ['scrape:nspr'] do
+    generate_bindings('mruby-nspr', 'NSPR', 'nspr_bindings')
   end
 end
 

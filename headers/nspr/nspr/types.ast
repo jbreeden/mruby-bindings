@@ -1,0 +1,338 @@
+TranslationUnitDecl 0x103029ec0 <<invalid sloc>> <invalid sloc>
+|-TypedefDecl 0x10302a3c0 <<invalid sloc>> <invalid sloc> implicit __int128_t '__int128'
+|-TypedefDecl 0x10302a420 <<invalid sloc>> <invalid sloc> implicit __uint128_t 'unsigned __int128'
+|-TypedefDecl 0x10302a770 <<invalid sloc>> <invalid sloc> implicit __builtin_va_list '__va_list_tag [1]'
+|-TypedefDecl 0x10302a7d0 </Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/6.1.0/include/stddef.h:47:1, col:26> col:26 ptrdiff_t 'long'
+|-TypedefDecl 0x10302a830 <line:58:1, col:23> col:23 size_t 'unsigned long'
+|-TypedefDecl 0x10302a890 <line:86:1, col:24> col:24 wchar_t 'int'
+|-TypedefDecl 0x10302aa40 <./prtypes.h:246:1, col:23> col:23 PRUint8 'unsigned char'
+|-TypedefDecl 0x10302aaa0 <line:260:1, col:21> col:21 PRInt8 'signed char'
+|-TypedefDecl 0x10302ab60 <line:285:1, col:24> col:24 PRUint16 'unsigned short'
+|-TypedefDecl 0x10307c000 <line:286:1, col:15> col:15 PRInt16 'short'
+|-TypedefDecl 0x10307c0c0 <line:310:1, col:22> col:22 PRUint32 'unsigned int'
+|-TypedefDecl 0x10307c120 <line:311:1, col:13> col:13 PRInt32 'int'
+|-TypedefDecl 0x10307c1e0 <line:375:1, col:19> col:19 PRInt64 'long long'
+|-TypedefDecl 0x10307c240 <line:376:1, col:28> col:28 PRUint64 'unsigned long long'
+|-TypedefDecl 0x10307c2d0 <line:410:1, col:13> col:13 PRIntn 'int'
+|-TypedefDecl 0x10307c330 <line:411:1, col:22> col:22 PRUintn 'unsigned int'
+|-TypedefDecl 0x10307c3c0 <line:421:1, col:25> col:25 PRFloat64 'double'
+| `-FullComment 0x1040152c0 <line:416:4, line:420:71>
+|   `-ParagraphComment 0x104015290 <line:416:4, line:420:71>
+|     |-TextComment 0x1040151c0 <line:416:4, col:73> Text="**********************************************************************"
+|     |-TextComment 0x1040151e0 <line:417:2, col:25> Text="* TYPES:       PRFloat64"
+|     |-TextComment 0x104015200 <line:418:2, col:15> Text="* DESCRIPTION:"
+|     |-TextComment 0x104015220 <line:419:2, col:49> Text="*  NSPR's floating point type is always 64 bits."
+|     `-TextComment 0x104015240 <line:420:2, col:71> Text="**********************************************************************"
+|-TypedefDecl 0x10307c470 <line:428:1, col:16> col:16 PRSize 'size_t':'unsigned long'
+| `-FullComment 0x10402d230 <line:423:4, line:427:71>
+|   `-ParagraphComment 0x10402d200 <line:423:4, line:427:71>
+|     |-TextComment 0x104015330 <line:423:4, col:73> Text="**********************************************************************"
+|     |-TextComment 0x104015350 <line:424:2, col:22> Text="* TYPES:       PRSize"
+|     |-TextComment 0x104015370 <line:425:2, col:15> Text="* DESCRIPTION:"
+|     |-TextComment 0x104015390 <line:426:2, col:48> Text="*  A type for representing the size of objects."
+|     `-TextComment 0x1040153b0 <line:427:2, col:71> Text="**********************************************************************"
+|-TypedefDecl 0x10307c520 <line:436:1, col:17> col:17 PROffset32 'PRInt32':'int'
+| `-FullComment 0x10402d3a0 <line:431:4, line:435:71>
+|   `-ParagraphComment 0x10402d370 <line:431:4, line:435:71>
+|     |-TextComment 0x10402d2a0 <line:431:4, col:73> Text="**********************************************************************"
+|     |-TextComment 0x10402d2c0 <line:432:2, col:38> Text="* TYPES:       PROffset32, PROffset64"
+|     |-TextComment 0x10402d2e0 <line:433:2, col:15> Text="* DESCRIPTION:"
+|     |-TextComment 0x10402d300 <line:434:2, col:60> Text="*  A type for representing byte offsets from some location."
+|     `-TextComment 0x10402d320 <line:435:2, col:71> Text="**********************************************************************"
+|-TypedefDecl 0x10307c5a0 <line:437:1, col:17> col:17 PROffset64 'PRInt64':'long long'
+|-TypedefDecl 0x10307c650 <line:445:1, col:19> col:19 PRPtrdiff 'ptrdiff_t':'long'
+| `-FullComment 0x10402d530 <line:439:4, line:444:71>
+|   `-ParagraphComment 0x10402d500 <line:439:4, line:444:71>
+|     |-TextComment 0x10402d410 <line:439:4, col:73> Text="**********************************************************************"
+|     |-TextComment 0x10402d430 <line:440:2, col:25> Text="* TYPES:       PRPtrDiff"
+|     |-TextComment 0x10402d450 <line:441:2, col:15> Text="* DESCRIPTION:"
+|     |-TextComment 0x10402d470 <line:442:2, col:70> Text="*  A type for pointer difference. Variables of this type are suitable"
+|     |-TextComment 0x10402d490 <line:443:2, col:53> Text="*      for storing a pointer or pointer subtraction."
+|     `-TextComment 0x10402d4b0 <line:444:2, col:71> Text="**********************************************************************"
+|-TypedefDecl 0x10307c6e0 <line:456:1, col:23> col:23 PRUptrdiff 'unsigned long'
+|-TypedefDecl 0x10307c790 <line:467:1, col:16> col:16 PRBool 'PRIntn':'int'
+| `-FullComment 0x10402d710 <line:459:4, line:466:71>
+|   `-ParagraphComment 0x10402d6e0 <line:459:4, line:466:71>
+|     |-TextComment 0x10402d5a0 <line:459:4, col:73> Text="**********************************************************************"
+|     |-TextComment 0x10402d5c0 <line:460:2, col:22> Text="* TYPES:       PRBool"
+|     |-TextComment 0x10402d5e0 <line:461:2, col:15> Text="* DESCRIPTION:"
+|     |-TextComment 0x10402d600 <line:462:2, col:74> Text="*  Use PRBool for variables and parameter types. Use PR_FALSE and PR_TRUE"
+|     |-TextComment 0x10402d620 <line:463:2, col:75> Text="*      for clarity of target type in assignments and actual arguments. Use"
+|     |-TextComment 0x10402d640 <line:464:2, col:77> Text="*      'if (bool)', 'while (!bool)', '(bool) ? x : y' etc., to test booleans"
+|     |-TextComment 0x10402d660 <line:465:2, col:50> Text="*      just as you would C int-valued conditions."
+|     `-TextComment 0x10402d680 <line:466:2, col:71> Text="**********************************************************************"
+|-TypedefDecl 0x10307c840 <line:477:1, col:17> col:17 PRPackedBool 'PRUint8':'unsigned char'
+| `-FullComment 0x10402d8a0 <line:471:4, line:476:71>
+|   `-ParagraphComment 0x10402d870 <line:471:4, line:476:71>
+|     |-TextComment 0x10402d780 <line:471:4, col:73> Text="**********************************************************************"
+|     |-TextComment 0x10402d7a0 <line:472:2, col:28> Text="* TYPES:       PRPackedBool"
+|     |-TextComment 0x10402d7c0 <line:473:2, col:15> Text="* DESCRIPTION:"
+|     |-TextComment 0x10402d7e0 <line:474:2, col:69> Text="*  Use PRPackedBool within structs where bitfields are not desirable"
+|     |-TextComment 0x10402d800 <line:475:2, col:52> Text="*      but minimum and consistant overhead matters."
+|     `-TextComment 0x10402d820 <line:476:2, col:71> Text="**********************************************************************"
+|-EnumDecl 0x10307c890 <line:483:9, col:48> col:9
+| |-EnumConstantDecl 0x10307c980 <col:16, col:30> col:16 PR_FAILURE 'int'
+| | `-UnaryOperator 0x10307c960 <col:29, col:30> 'int' prefix '-'
+| |   `-IntegerLiteral 0x10307c940 <col:30> 'int' 1
+| `-EnumConstantDecl 0x10307c9f0 <col:33, col:46> col:33 PR_SUCCESS 'int'
+|   `-IntegerLiteral 0x10307c9d0 <col:46> 'int' 0
+|-TypedefDecl 0x10307ca90 <col:1, col:50> col:50 PRStatus 'enum PRStatus':'PRStatus'
+|-TypedefDecl 0x10307cb20 <line:490:1, col:18> col:18 PRUnichar 'PRUint16':'unsigned short'
+|-TypedefDecl 0x10307cb80 <line:509:1, col:14> col:14 PRWord 'long'
+|-TypedefDecl 0x10307cbe0 <line:510:1, col:23> col:23 PRUword 'unsigned long'
+|-TypedefDecl 0x10307cc90 <./obsolete/protypes.h:16:1, col:17> col:17 uintn 'PRUintn':'unsigned int'
+|-TypedefDecl 0x10307ccf0 <line:18:1, col:16> col:16 intn 'PRIntn':'int'
+|-TypedefDecl 0x10307cd50 </usr/include/i386/_types.h:37:1, col:24> col:24 __int8_t 'signed char'
+|-TypedefDecl 0x10307cdb0 <line:41:1, col:24> col:24 __uint8_t 'unsigned char'
+|-TypedefDecl 0x10307ce10 <line:42:1, col:17> col:17 __int16_t 'short'
+|-TypedefDecl 0x10307ce70 <line:43:1, col:25> col:25 __uint16_t 'unsigned short'
+|-TypedefDecl 0x10307ced0 <line:44:1, col:15> col:15 __int32_t 'int'
+|-TypedefDecl 0x10307cf30 <line:45:1, col:23> col:23 __uint32_t 'unsigned int'
+|-TypedefDecl 0x10307cf90 <line:46:1, col:20> col:20 __int64_t 'long long'
+|-TypedefDecl 0x103092200 <line:47:1, col:28> col:28 __uint64_t 'unsigned long long'
+|-TypedefDecl 0x103092260 <line:49:1, col:16> col:16 __darwin_intptr_t 'long'
+|-TypedefDecl 0x1030922c0 <line:50:1, col:23> col:23 __darwin_natural_t 'unsigned int'
+|-TypedefDecl 0x103092320 <line:70:1, col:15> col:15 __darwin_ct_rune_t 'int'
+|-RecordDecl 0x103092370 <line:76:9, line:79:1> line:76:9 union definition
+| |-FieldDecl 0x103092490 <line:77:2, col:22> col:8 __mbstate8 'char [128]'
+| `-FieldDecl 0x1030924f0 <line:78:2, col:12> col:12 _mbstateL 'long long'
+|-TypedefDecl 0x103092590 <line:76:1, line:79:3> col:3 __mbstate_t 'union __mbstate_t':'__mbstate_t'
+|-TypedefDecl 0x103092620 <line:81:1, col:22> col:22 __darwin_mbstate_t '__mbstate_t':'__mbstate_t'
+|-TypedefDecl 0x103092680 <line:84:1, col:26> col:26 __darwin_ptrdiff_t 'long'
+|-TypedefDecl 0x1030926e0 <line:92:1, col:24> col:24 __darwin_size_t 'unsigned long'
+|-TypedefDecl 0x103092760 <line:98:1, col:27> col:27 __darwin_va_list '__builtin_va_list':'__va_list_tag [1]'
+|-TypedefDecl 0x1030927c0 <line:104:1, col:25> col:25 __darwin_wchar_t 'int'
+|-TypedefDecl 0x103092840 <line:109:1, col:26> col:26 __darwin_rune_t '__darwin_wchar_t':'int'
+|-TypedefDecl 0x1030928a0 <line:112:1, col:24> col:24 __darwin_wint_t 'int'
+|-TypedefDecl 0x103092900 <line:117:1, col:24> col:24 __darwin_clock_t 'unsigned long'
+|-TypedefDecl 0x103092980 <line:118:1, col:21> col:21 __darwin_socklen_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x1030929e0 <line:119:1, col:16> col:16 __darwin_ssize_t 'long'
+|-TypedefDecl 0x103092a40 <line:120:1, col:16> col:16 __darwin_time_t 'long'
+|-TypedefDecl 0x103092aa0 </usr/include/sys/_types/_int8_t.h:30:1, col:24> col:24 int8_t 'signed char'
+|-TypedefDecl 0x103092b00 </usr/include/sys/_types/_int16_t.h:30:1, col:17> col:17 int16_t 'short'
+|-TypedefDecl 0x103092b60 </usr/include/sys/_types/_int32_t.h:30:1, col:15> col:15 int32_t 'int'
+|-TypedefDecl 0x103092bc0 </usr/include/sys/_types/_int64_t.h:30:1, col:20> col:20 int64_t 'long long'
+|-TypedefDecl 0x103092c20 </usr/include/i386/types.h:81:1, col:24> col:24 u_int8_t 'unsigned char'
+|-TypedefDecl 0x103092c80 <line:82:1, col:25> col:25 u_int16_t 'unsigned short'
+|-TypedefDecl 0x103092ce0 <line:83:1, col:23> col:23 u_int32_t 'unsigned int'
+|-TypedefDecl 0x103092d40 <line:84:1, col:28> col:28 u_int64_t 'unsigned long long'
+|-TypedefDecl 0x103092dc0 <line:87:1, col:19> col:19 register_t 'int64_t':'long long'
+|-TypedefDecl 0x103092e40 </usr/include/sys/_types/_intptr_t.h:30:1, col:27> col:27 intptr_t '__darwin_intptr_t':'long'
+|-TypedefDecl 0x103092ea0 </usr/include/sys/_types/_uintptr_t.h:30:1, col:24> col:24 uintptr_t 'unsigned long'
+|-TypedefDecl 0x103092f20 </usr/include/i386/types.h:97:1, col:20> col:20 user_addr_t 'u_int64_t':'unsigned long long'
+|-TypedefDecl 0x103092f80 <line:98:1, col:20> col:20 user_size_t 'u_int64_t':'unsigned long long'
+|-TypedefDecl 0x103092fe0 <line:99:1, col:19> col:19 user_ssize_t 'int64_t':'long long'
+|-TypedefDecl 0x103093040 <line:100:1, col:19> col:19 user_long_t 'int64_t':'long long'
+|-TypedefDecl 0x1030930a0 <line:101:1, col:20> col:20 user_ulong_t 'u_int64_t':'unsigned long long'
+|-TypedefDecl 0x103093100 <line:102:1, col:19> col:19 user_time_t 'int64_t':'long long'
+|-TypedefDecl 0x103093160 <line:103:1, col:19> col:19 user_off_t 'int64_t':'long long'
+|-TypedefDecl 0x103098400 <line:111:1, col:20> col:20 syscall_arg_t 'u_int64_t':'unsigned long long'
+|-TypedefDecl 0x103098480 </usr/include/sys/_types.h:55:1, col:19> col:19 __darwin_blkcnt_t '__int64_t':'long long'
+|-TypedefDecl 0x103098500 <line:56:1, col:19> col:19 __darwin_blksize_t '__int32_t':'int'
+|-TypedefDecl 0x103098560 <line:57:1, col:19> col:19 __darwin_dev_t '__int32_t':'int'
+|-TypedefDecl 0x1030985c0 <line:58:1, col:22> col:22 __darwin_fsblkcnt_t 'unsigned int'
+|-TypedefDecl 0x103098620 <line:59:1, col:22> col:22 __darwin_fsfilcnt_t 'unsigned int'
+|-TypedefDecl 0x103098680 <line:60:1, col:20> col:20 __darwin_gid_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x1030986e0 <line:61:1, col:20> col:20 __darwin_id_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x103098760 <line:62:1, col:20> col:20 __darwin_ino64_t '__uint64_t':'unsigned long long'
+|-TypedefDecl 0x1030987e0 <line:64:1, col:26> col:26 __darwin_ino_t '__darwin_ino64_t':'unsigned long long'
+|-TypedefDecl 0x103098860 <line:68:1, col:28> col:28 __darwin_mach_port_name_t '__darwin_natural_t':'unsigned int'
+|-TypedefDecl 0x1030988e0 <line:69:1, col:35> col:35 __darwin_mach_port_t '__darwin_mach_port_name_t':'unsigned int'
+|-TypedefDecl 0x103098960 <line:70:1, col:20> col:20 __darwin_mode_t '__uint16_t':'unsigned short'
+|-TypedefDecl 0x1030989c0 <line:71:1, col:19> col:19 __darwin_off_t '__int64_t':'long long'
+|-TypedefDecl 0x103098a20 <line:72:1, col:19> col:19 __darwin_pid_t '__int32_t':'int'
+|-TypedefDecl 0x103098a80 <line:73:1, col:20> col:20 __darwin_sigset_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x103098ae0 <line:74:1, col:19> col:19 __darwin_suseconds_t '__int32_t':'int'
+|-TypedefDecl 0x103098b40 <line:75:1, col:20> col:20 __darwin_uid_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x103098ba0 <line:76:1, col:20> col:20 __darwin_useconds_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x103098c70 <line:77:1, col:41> col:23 __darwin_uuid_t 'unsigned char [16]'
+|-TypedefDecl 0x103098d40 <line:78:1, col:39> col:14 __darwin_uuid_string_t 'char [37]'
+|-RecordDecl 0x103098d90 </usr/include/sys/_pthread/_pthread_types.h:57:1, line:61:1> line:57:8 struct __darwin_pthread_handler_rec definition
+| |-FieldDecl 0x103098fa0 <line:58:2, col:26> col:9 __routine 'void (*)(void *)'
+| |-FieldDecl 0x103099000 <line:59:2, col:8> col:8 __arg 'void *'
+| `-FieldDecl 0x103099100 <line:60:2, col:39> col:39 __next 'struct __darwin_pthread_handler_rec *'
+|-RecordDecl 0x103099150 <line:63:1, line:66:1> line:63:8 struct _opaque_pthread_attr_t definition
+| |-FieldDecl 0x103099200 <line:64:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x1030992d0 <line:65:2, col:37> col:7 __opaque 'char [56]'
+|-RecordDecl 0x103099320 <line:68:1, line:71:1> line:68:8 struct _opaque_pthread_cond_t definition
+| |-FieldDecl 0x10309e000 <line:69:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309e0d0 <line:70:2, col:37> col:7 __opaque 'char [40]'
+|-RecordDecl 0x10309e120 <line:73:1, line:76:1> line:73:8 struct _opaque_pthread_condattr_t definition
+| |-FieldDecl 0x10309e1d0 <line:74:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309e2a0 <line:75:2, col:41> col:7 __opaque 'char [8]'
+|-RecordDecl 0x10309e2f0 <line:78:1, line:81:1> line:78:8 struct _opaque_pthread_mutex_t definition
+| |-FieldDecl 0x10309e3a0 <line:79:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309e430 <line:80:2, col:38> col:7 __opaque 'char [56]'
+|-RecordDecl 0x10309e480 <line:83:1, line:86:1> line:83:8 struct _opaque_pthread_mutexattr_t definition
+| |-FieldDecl 0x10309e530 <line:84:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309e5c0 <line:85:2, col:42> col:7 __opaque 'char [8]'
+|-RecordDecl 0x10309e610 <line:88:1, line:91:1> line:88:8 struct _opaque_pthread_once_t definition
+| |-FieldDecl 0x10309e6c0 <line:89:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309e750 <line:90:2, col:37> col:7 __opaque 'char [8]'
+|-RecordDecl 0x10309e7a0 <line:93:1, line:96:1> line:93:8 struct _opaque_pthread_rwlock_t definition
+| |-FieldDecl 0x10309e850 <line:94:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309e920 <line:95:2, col:39> col:7 __opaque 'char [192]'
+|-RecordDecl 0x10309e970 <line:98:1, line:101:1> line:98:8 struct _opaque_pthread_rwlockattr_t definition
+| |-FieldDecl 0x10309ea20 <line:99:2, col:7> col:7 __sig 'long'
+| `-FieldDecl 0x10309eaf0 <line:100:2, col:43> col:7 __opaque 'char [16]'
+|-RecordDecl 0x10309eb40 <line:103:1, line:107:1> line:103:8 struct _opaque_pthread_t definition
+| |-FieldDecl 0x10309ebf0 <line:104:2, col:7> col:7 __sig 'long'
+| |-FieldDecl 0x10309ec60 <line:105:2, col:40> col:40 __cleanup_stack 'struct __darwin_pthread_handler_rec *'
+| `-FieldDecl 0x10309ed30 <line:106:2, col:32> col:7 __opaque 'char [8176]'
+|-TypedefDecl 0x10309edd0 <line:109:1, col:39> col:39 __darwin_pthread_attr_t 'struct _opaque_pthread_attr_t':'struct _opaque_pthread_attr_t'
+|-TypedefDecl 0x10309ee70 <line:110:1, col:39> col:39 __darwin_pthread_cond_t 'struct _opaque_pthread_cond_t':'struct _opaque_pthread_cond_t'
+|-TypedefDecl 0x10309ef10 <line:111:1, col:43> col:43 __darwin_pthread_condattr_t 'struct _opaque_pthread_condattr_t':'struct _opaque_pthread_condattr_t'
+|-TypedefDecl 0x10309ef70 <line:112:1, col:23> col:23 __darwin_pthread_key_t 'unsigned long'
+|-TypedefDecl 0x10309f020 <line:113:1, col:40> col:40 __darwin_pthread_mutex_t 'struct _opaque_pthread_mutex_t':'struct _opaque_pthread_mutex_t'
+|-TypedefDecl 0x10309f0c0 <line:114:1, col:44> col:44 __darwin_pthread_mutexattr_t 'struct _opaque_pthread_mutexattr_t':'struct _opaque_pthread_mutexattr_t'
+|-TypedefDecl 0x10309f160 <line:115:1, col:39> col:39 __darwin_pthread_once_t 'struct _opaque_pthread_once_t':'struct _opaque_pthread_once_t'
+|-TypedefDecl 0x10309f200 <line:116:1, col:41> col:41 __darwin_pthread_rwlock_t 'struct _opaque_pthread_rwlock_t':'struct _opaque_pthread_rwlock_t'
+|-TypedefDecl 0x10309f2a0 <line:117:1, col:45> col:45 __darwin_pthread_rwlockattr_t 'struct _opaque_pthread_rwlockattr_t':'struct _opaque_pthread_rwlockattr_t'
+|-TypedefDecl 0x10309f3a0 <line:118:1, col:35> col:35 __darwin_pthread_t 'struct _opaque_pthread_t *'
+|-FunctionDecl 0x10309f500 </usr/include/libkern/i386/_OSByteOrder.h:34:36, line:51:1> line:46:1 _OSSwapInt16 '__uint16_t (__uint16_t)' static inline
+| |-ParmVarDecl 0x10309f400 <line:47:5, col:23> col:23 used _data '__uint16_t':'unsigned short'
+| `-CompoundStmt 0x10309f818 <line:49:1, line:51:1>
+|   `-ReturnStmt 0x10309f7f8 <line:50:5, col:54>
+|     `-ParenExpr 0x10309f7d8 <col:12, col:54> '__uint16_t':'unsigned short'
+|       `-CStyleCastExpr 0x10309f7b0 <col:13, col:53> '__uint16_t':'unsigned short' <IntegralCast>
+|         `-ParenExpr 0x10309f790 <col:25, col:53> 'int'
+|           `-BinaryOperator 0x10309f728 <col:26, col:52> 'int' '|'
+|             |-ParenExpr 0x10309f648 <col:26, col:37> 'int'
+|             | `-BinaryOperator 0x10309f620 <col:27, col:36> 'int' '<<'
+|             |   |-ImplicitCastExpr 0x10309f608 <col:27> 'int' <IntegralCast>
+|             |   | `-ImplicitCastExpr 0x10309f5f0 <col:27> '__uint16_t':'unsigned short' <LValueToRValue>
+|             |   |   `-DeclRefExpr 0x10309f5a8 <col:27> '__uint16_t':'unsigned short' lvalue ParmVar 0x10309f400 '_data' '__uint16_t':'unsigned short'
+|             |   `-IntegerLiteral 0x10309f5d0 <col:36> 'int' 8
+|             `-ParenExpr 0x10309f708 <col:41, col:52> 'int'
+|               `-BinaryOperator 0x10309f6e0 <col:42, col:51> 'int' '>>'
+|                 |-ImplicitCastExpr 0x10309f6c8 <col:42> 'int' <IntegralCast>
+|                 | `-ImplicitCastExpr 0x10309f6b0 <col:42> '__uint16_t':'unsigned short' <LValueToRValue>
+|                 |   `-DeclRefExpr 0x10309f668 <col:42> '__uint16_t':'unsigned short' lvalue ParmVar 0x10309f400 '_data' '__uint16_t':'unsigned short'
+|                 `-IntegerLiteral 0x10309f690 <col:51> 'int' 8
+|-FunctionDecl 0x10309f950 <line:34:36, line:65:1> line:55:1 _OSSwapInt32 '__uint32_t (__uint32_t)' static inline
+| |-ParmVarDecl 0x10309f850 <line:56:5, col:23> col:23 used _data '__uint32_t':'unsigned int'
+| `-CompoundStmt 0x10309fc58 <line:58:1, line:65:1>
+|   `-ReturnStmt 0x10309fc38 <line:60:5, col:35>
+|     `-CallExpr 0x10309fbf0 <col:12, col:35> 'unsigned int'
+|       |-ImplicitCastExpr 0x10309fbd8 <col:12> 'unsigned int (*)(unsigned int)' <BuiltinFnToFnPtr>
+|       | `-DeclRefExpr 0x10309fb58 <col:12> '<builtin fn type>' Function 0x10309fa00 '__builtin_bswap32' 'unsigned int (unsigned int)'
+|       `-ImplicitCastExpr 0x10309fc20 <col:30> '__uint32_t':'unsigned int' <LValueToRValue>
+|         `-DeclRefExpr 0x10309fb80 <col:30> '__uint32_t':'unsigned int' lvalue ParmVar 0x10309f850 '_data' '__uint32_t':'unsigned int'
+|-FunctionDecl 0x10309fa00 <col:12> col:12 implicit used __builtin_bswap32 'unsigned int (unsigned int)' extern
+| |-ParmVarDecl 0x10309faa0 <<invalid sloc>> <invalid sloc> 'unsigned int'
+| |-NoThrowAttr 0x10309fb00 <col:12> Implicit
+| `-ConstAttr 0x10309fb40 <col:12> Implicit
+|-FunctionDecl 0x10309fd90 <line:34:36, line:75:1> line:70:1 _OSSwapInt64 '__uint64_t (__uint64_t)' static inline
+| |-ParmVarDecl 0x10309fc90 <line:71:5, col:23> col:23 used _data '__uint64_t':'unsigned long long'
+| `-CompoundStmt 0x1030aa8a8 <line:73:1, line:75:1>
+|   `-ReturnStmt 0x1030aa888 <line:74:5, col:35>
+|     `-CallExpr 0x1030aa840 <col:12, col:35> 'unsigned long long'
+|       |-ImplicitCastExpr 0x1030aa828 <col:12> 'unsigned long long (*)(unsigned long long)' <BuiltinFnToFnPtr>
+|       | `-DeclRefExpr 0x10309ff98 <col:12> '<builtin fn type>' Function 0x10309fe40 '__builtin_bswap64' 'unsigned long long (unsigned long long)'
+|       `-ImplicitCastExpr 0x1030aa870 <col:30> '__uint64_t':'unsigned long long' <LValueToRValue>
+|         `-DeclRefExpr 0x10309ffc0 <col:30> '__uint64_t':'unsigned long long' lvalue ParmVar 0x10309fc90 '_data' '__uint64_t':'unsigned long long'
+|-FunctionDecl 0x10309fe40 <col:12> col:12 implicit used __builtin_bswap64 'unsigned long long (unsigned long long)' extern
+| |-ParmVarDecl 0x10309fee0 <<invalid sloc>> <invalid sloc> 'unsigned long long'
+| |-NoThrowAttr 0x10309ff40 <col:12> Implicit
+| `-ConstAttr 0x10309ff80 <col:12> Implicit
+|-TypedefDecl 0x1030aa8e0 </usr/include/sys/types.h:84:1, col:24> col:24 u_char 'unsigned char'
+|-TypedefDecl 0x1030aa940 <line:85:1, col:25> col:25 u_short 'unsigned short'
+|-TypedefDecl 0x1030aa9a0 <line:86:1, col:23> col:23 u_int 'unsigned int'
+|-TypedefDecl 0x1030aaa00 <line:88:1, col:24> col:24 u_long 'unsigned long'
+|-TypedefDecl 0x1030aaa60 <line:91:1, col:25> col:25 ushort 'unsigned short'
+|-TypedefDecl 0x1030aaac0 <line:92:1, col:23> col:23 uint 'unsigned int'
+|-TypedefDecl 0x1030aab20 <line:95:1, col:20> col:20 u_quad_t 'u_int64_t':'unsigned long long'
+|-TypedefDecl 0x1030aab80 <line:96:1, col:19> col:19 quad_t 'int64_t':'long long'
+|-TypedefDecl 0x1030aac60 <line:97:1, col:19> col:19 qaddr_t 'quad_t *'
+|-TypedefDecl 0x1030aacf0 <line:99:1, col:18> col:18 caddr_t 'char *'
+|-TypedefDecl 0x1030aad70 <line:100:1, col:19> col:19 daddr_t 'int32_t':'int'
+|-TypedefDecl 0x1030aadf0 </usr/include/sys/_types/_dev_t.h:30:1, col:31> col:31 dev_t '__darwin_dev_t':'int'
+|-TypedefDecl 0x1030aae70 </usr/include/sys/types.h:104:1, col:20> col:20 fixpt_t 'u_int32_t':'unsigned int'
+|-TypedefDecl 0x1030aaef0 </usr/include/sys/_types/_blkcnt_t.h:30:1, col:34> col:34 blkcnt_t '__darwin_blkcnt_t':'long long'
+|-TypedefDecl 0x1030aaf70 </usr/include/sys/_types/_blksize_t.h:30:1, col:35> col:35 blksize_t '__darwin_blksize_t':'int'
+|-TypedefDecl 0x1030aaff0 </usr/include/sys/_types/_gid_t.h:30:1, col:24> col:24 gid_t '__darwin_gid_t':'unsigned int'
+|-TypedefDecl 0x1030ab050 </usr/include/sys/_types/_in_addr_t.h:30:1, col:20> col:20 in_addr_t '__uint32_t':'unsigned int'
+|-TypedefDecl 0x1030ab0b0 </usr/include/sys/_types/_in_port_t.h:30:1, col:21> col:21 in_port_t '__uint16_t':'unsigned short'
+|-TypedefDecl 0x1030ab130 </usr/include/sys/_types/_ino_t.h:30:1, col:25> col:25 ino_t '__darwin_ino_t':'unsigned long long'
+|-TypedefDecl 0x1030ab190 </usr/include/sys/_types/_ino64_t.h:30:1, col:33> col:33 ino64_t '__darwin_ino64_t':'unsigned long long'
+|-TypedefDecl 0x1030ab1f0 </usr/include/sys/_types/_key_t.h:30:1, col:26> col:26 key_t '__int32_t':'int'
+|-TypedefDecl 0x1030ab270 </usr/include/sys/_types/_mode_t.h:30:1, col:26> col:26 mode_t '__darwin_mode_t':'unsigned short'
+|-TypedefDecl 0x1030ab2d0 </usr/include/sys/_types/_nlink_t.h:30:1, col:27> col:27 nlink_t '__uint16_t':'unsigned short'
+|-TypedefDecl 0x1030ab350 </usr/include/sys/_types/_id_t.h:30:1, col:23> col:23 id_t '__darwin_id_t':'unsigned int'
+|-TypedefDecl 0x1030ab3d0 </usr/include/sys/_types/_pid_t.h:30:1, col:31> col:31 pid_t '__darwin_pid_t':'int'
+|-TypedefDecl 0x1030ab450 </usr/include/sys/_types/_off_t.h:30:1, col:25> col:25 off_t '__darwin_off_t':'long long'
+|-TypedefDecl 0x1030ab4b0 </usr/include/sys/types.h:124:1, col:19> col:19 segsz_t 'int32_t':'int'
+|-TypedefDecl 0x1030ab510 <line:125:1, col:19> col:19 swblk_t 'int32_t':'int'
+|-TypedefDecl 0x1030ab590 </usr/include/sys/_types/_uid_t.h:30:1, col:31> col:31 uid_t '__darwin_uid_t':'unsigned int'
+|-TypedefDecl 0x1030ab610 </usr/include/sys/_types/_clock_t.h:30:1, col:33> col:33 clock_t '__darwin_clock_t':'unsigned long'
+|-TypedefDecl 0x1030ab690 </usr/include/sys/_types/_ssize_t.h:30:1, col:33> col:33 ssize_t '__darwin_ssize_t':'long'
+|-TypedefDecl 0x1030ab710 </usr/include/sys/_types/_time_t.h:30:1, col:26> col:26 time_t '__darwin_time_t':'long'
+|-TypedefDecl 0x1030ab790 </usr/include/sys/_types/_useconds_t.h:30:1, col:29> col:29 useconds_t '__darwin_useconds_t':'unsigned int'
+|-TypedefDecl 0x10400b210 </usr/include/sys/_types/_suseconds_t.h:30:1, col:30> col:30 suseconds_t '__darwin_suseconds_t':'int'
+|-TypedefDecl 0x10400b290 </usr/include/sys/_types/_rsize_t.h:30:1, col:32> col:32 rsize_t '__darwin_size_t':'unsigned long'
+|-TypedefDecl 0x10400b2f0 </usr/include/sys/_types/_errno_t.h:30:1, col:32> col:32 errno_t 'int'
+|-RecordDecl 0x10400b340 </usr/include/sys/_types/_fd_def.h:46:9, line:48:1> line:46:16 struct fd_set definition
+| `-FieldDecl 0x10400ba20 <line:47:2, col:76> col:12 referenced fds_bits '__int32_t [32]'
+|-TypedefDecl 0x10400bac0 <line:46:1, line:48:3> col:3 fd_set 'struct fd_set':'struct fd_set'
+|-FunctionDecl 0x10400bd20 <line:52:1, line:56:1> line:53:1 __darwin_fd_isset 'int (int, const struct fd_set *)' static inline
+| |-ParmVarDecl 0x10400bb30 <col:19, col:23> col:23 used _n 'int'
+| |-ParmVarDecl 0x10400bc10 <col:27, col:48> col:48 used _p 'const struct fd_set *'
+| `-CompoundStmt 0x104014550 <line:54:1, line:56:1>
+|   `-ReturnStmt 0x104014530 <line:55:2, col:117>
+|     `-ParenExpr 0x104014510 <col:9, col:117> 'int'
+|       `-BinaryOperator 0x1040144e8 <col:10, col:116> 'int' '&'
+|         |-ImplicitCastExpr 0x1040144d0 <col:10, col:57> '__int32_t':'int' <LValueToRValue>
+|         | `-ArraySubscriptExpr 0x10400c040 <col:10, col:57> 'const __int32_t':'const int' lvalue
+|         |   |-ImplicitCastExpr 0x10400c028 <col:10, col:14> 'const __int32_t *' <ArrayToPointerDecay>
+|         |   | `-MemberExpr 0x10400be10 <col:10, col:14> '__int32_t const[32]' lvalue ->fds_bits 0x10400ba20
+|         |   |   `-ImplicitCastExpr 0x10400bdf8 <col:10> 'const struct fd_set *' <LValueToRValue>
+|         |   |     `-DeclRefExpr 0x10400bdd0 <col:10> 'const struct fd_set *' lvalue ParmVar 0x10400bc10 '_p' 'const struct fd_set *'
+|         |   `-BinaryOperator 0x10400bf68 <col:23, line:42:60> 'unsigned long' '/'
+|         |     |-CStyleCastExpr 0x10400be90 <line:55:23, col:38> 'unsigned long' <IntegralCast>
+|         |     | `-ImplicitCastExpr 0x10400be78 <col:38> 'int' <LValueToRValue>
+|         |     |   `-DeclRefExpr 0x10400be40 <col:38> 'int' lvalue ParmVar 0x10400bb30 '_n' 'int'
+|         |     `-ParenExpr 0x10400bf48 <line:42:26, col:60> 'unsigned long'
+|         |       `-BinaryOperator 0x10400bf20 <col:27, line:41:24> 'unsigned long' '*'
+|         |         |-UnaryExprOrTypeTraitExpr 0x10400bec8 <line:42:27, col:43> 'unsigned long' sizeof '__int32_t':'int'
+|         |         `-ImplicitCastExpr 0x10400bf08 <line:41:24> 'unsigned long' <IntegralCast>
+|         |           `-IntegerLiteral 0x10400bee8 <col:24> 'int' 8
+|         `-ParenExpr 0x1040144b0 <line:55:61, col:116> '__int32_t':'int'
+|           `-CStyleCastExpr 0x104014488 <col:62, col:115> '__int32_t':'int' <NoOp>
+|             `-ParenExpr 0x104014468 <col:73, col:115> 'int'
+|               `-BinaryOperator 0x104014400 <col:74, col:114> 'int' '<<'
+|                 |-IntegerLiteral 0x10400c068 <col:74> 'int' 1
+|                 `-ParenExpr 0x10400c1d8 <col:77, col:114> 'unsigned long'
+|                   `-BinaryOperator 0x10400c1b0 <col:78, line:42:60> 'unsigned long' '%'
+|                     |-CStyleCastExpr 0x10400c0d8 <line:55:78, col:93> 'unsigned long' <IntegralCast>
+|                     | `-ImplicitCastExpr 0x10400c0c0 <col:93> 'int' <LValueToRValue>
+|                     |   `-DeclRefExpr 0x10400c088 <col:93> 'int' lvalue ParmVar 0x10400bb30 '_n' 'int'
+|                     `-ParenExpr 0x10400c190 <line:42:26, col:60> 'unsigned long'
+|                       `-BinaryOperator 0x10400c168 <col:27, line:41:24> 'unsigned long' '*'
+|                         |-UnaryExprOrTypeTraitExpr 0x10400c110 <line:42:27, col:43> 'unsigned long' sizeof '__int32_t':'int'
+|                         `-ImplicitCastExpr 0x10400c150 <line:41:24> 'unsigned long' <IntegralCast>
+|                           `-IntegerLiteral 0x10400c130 <col:24> 'int' 8
+|-TypedefDecl 0x104014580 </usr/include/sys/types.h:185:1, col:19> col:19 fd_mask '__int32_t':'int'
+|-TypedefDecl 0x104014600 </usr/include/sys/_pthread/_pthread_attr_t.h:30:1, col:33> col:33 pthread_attr_t '__darwin_pthread_attr_t':'struct _opaque_pthread_attr_t'
+|-TypedefDecl 0x104014680 </usr/include/sys/_pthread/_pthread_cond_t.h:30:1, col:33> col:33 pthread_cond_t '__darwin_pthread_cond_t':'struct _opaque_pthread_cond_t'
+|-TypedefDecl 0x104014700 </usr/include/sys/_pthread/_pthread_condattr_t.h:30:1, col:37> col:37 pthread_condattr_t '__darwin_pthread_condattr_t':'struct _opaque_pthread_condattr_t'
+|-TypedefDecl 0x104014780 </usr/include/sys/_pthread/_pthread_mutex_t.h:30:1, col:34> col:34 pthread_mutex_t '__darwin_pthread_mutex_t':'struct _opaque_pthread_mutex_t'
+|-TypedefDecl 0x104014800 </usr/include/sys/_pthread/_pthread_mutexattr_t.h:30:1, col:38> col:38 pthread_mutexattr_t '__darwin_pthread_mutexattr_t':'struct _opaque_pthread_mutexattr_t'
+|-TypedefDecl 0x104014880 </usr/include/sys/_pthread/_pthread_once_t.h:30:1, col:33> col:33 pthread_once_t '__darwin_pthread_once_t':'struct _opaque_pthread_once_t'
+|-TypedefDecl 0x104014900 </usr/include/sys/_pthread/_pthread_rwlock_t.h:30:1, col:35> col:35 pthread_rwlock_t '__darwin_pthread_rwlock_t':'struct _opaque_pthread_rwlock_t'
+|-TypedefDecl 0x104014980 </usr/include/sys/_pthread/_pthread_rwlockattr_t.h:30:1, col:39> col:39 pthread_rwlockattr_t '__darwin_pthread_rwlockattr_t':'struct _opaque_pthread_rwlockattr_t'
+|-TypedefDecl 0x104014a00 </usr/include/sys/_pthread/_pthread_t.h:30:1, col:28> col:28 pthread_t '__darwin_pthread_t':'struct _opaque_pthread_t *'
+|-TypedefDecl 0x104014a80 </usr/include/sys/_pthread/_pthread_key_t.h:30:1, col:32> col:32 pthread_key_t '__darwin_pthread_key_t':'unsigned long'
+|-TypedefDecl 0x104014b00 </usr/include/sys/_types/_fsblkcnt_t.h:30:1, col:30> col:30 fsblkcnt_t '__darwin_fsblkcnt_t':'unsigned int'
+|-TypedefDecl 0x104014b80 </usr/include/sys/_types/_fsfilcnt_t.h:30:1, col:30> col:30 fsfilcnt_t '__darwin_fsfilcnt_t':'unsigned int'
+|-TypedefDecl 0x104014c00 <./obsolete/protypes.h:68:1, col:18> col:18 uint64 'PRUint64':'unsigned long long'
+|-TypedefDecl 0x104014c80 <line:77:1, col:18> col:18 uint32 'PRUint32':'unsigned int'
+|-TypedefDecl 0x104014ce0 <line:88:1, col:18> col:18 uint16 'PRUint16':'unsigned short'
+|-TypedefDecl 0x104014d40 <line:96:1, col:17> col:17 uint8 'PRUint8':'unsigned char'
+|-TypedefDecl 0x104014da0 <line:104:1, col:17> col:17 int64 'PRInt64':'long long'
+|-TypedefDecl 0x104014e00 <line:114:1, col:17> col:17 int32 'PRInt32':'int'
+|-TypedefDecl 0x104014e80 <line:126:1, col:17> col:17 int16 'PRInt16':'short'
+|-TypedefDecl 0x104014f00 <line:135:1, col:16> col:16 int8 'PRInt8':'signed char'
+|-TypedefDecl 0x104014f80 <line:138:1, col:19> col:19 float64 'PRFloat64':'double'
+|-TypedefDecl 0x104015000 <line:139:1, col:20> col:20 uptrdiff_t 'PRUptrdiff':'unsigned long'
+|-TypedefDecl 0x104015080 <line:140:1, col:17> col:17 uprword_t 'PRUword':'unsigned long'
+`-TypedefDecl 0x104015100 <line:141:1, col:16> col:16 prword_t 'PRWord':'long'
