@@ -2,11 +2,12 @@ class String
   def type_to_identifier
     self.sub(/\s*(struct|enum)\s*/, '').
       sub(/\s*const\s*/, '').
-      gsub(/\*|&|\(|\)|,/,
+      gsub(/\*|&|\(|\)|,|(::)/,
         '*' => ' PTR ',
         '&' => ' REF ',
         '(' => ' LPAREN ', ')' => ' RPAREN ',
-        ',' => 'COMMA'
+        ',' => 'COMMA',
+        '::' => '_'
       ).
       split(/\s+/).
       join('_')
@@ -201,7 +202,7 @@ def generate_bindings
     to_gen = $classes.values.reject { |c| c['is_template'] }
     to_gen.each do |the_class|
       the_class.instance_eval do
-        File.open("#{$output_dir}/src/mruby_#{the_class['name'].sub('::', '_')}.cpp", "w") do |file|
+        File.open("#{$output_dir}/src/mruby_#{the_class['name'].type_to_identifier}.cpp", "w") do |file|
           file.puts(class_erb.result binding)
         end
       end
