@@ -1,6 +1,6 @@
 /*
  * apr_skiplistnode
- * Defined in file apr_skiplist.h @ line 63
+ * Defined in file apr_skiplist.h @ line 65
  */
 
 /*
@@ -45,7 +45,7 @@ mrb_APR_AprSkiplistnode_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprSkiplistnode.disown only accepts objects of type APR::AprSkiplistnode");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprSkiplistnode.belongs_to_ruby only accepts objects of type APR::AprSkiplistnode");
     return mrb_nil_value();
   }
 

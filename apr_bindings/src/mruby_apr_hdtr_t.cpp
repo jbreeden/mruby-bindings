@@ -45,7 +45,7 @@ mrb_APR_AprHdtrT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprHdtrT.disown only accepts objects of type APR::AprHdtrT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprHdtrT.belongs_to_ruby only accepts objects of type APR::AprHdtrT");
     return mrb_nil_value();
   }
 
@@ -71,7 +71,7 @@ mrb_APR_AprHdtrT_get_headers(mrb_state* mrb, mrb_value self) {
 
   struct iovec * native_field = native_self->headers;
 
-  mrb_value ruby_field = TODO_mruby_box_struct_iovec_PTR(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_iovec_PTR(mrb, native_field);
 
   return ruby_field;
 }
@@ -89,9 +89,9 @@ mrb_APR_AprHdtrT_set_headers(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_struct_iovec_PTR(ruby_field);
+  TODO_type_check_iovec_PTR(ruby_field);
 
-  struct iovec * native_field = TODO_mruby_unbox_struct_iovec_PTR(ruby_field);
+  struct iovec * native_field = TODO_mruby_unbox_iovec_PTR(ruby_field);
 
   native_self->headers = native_field;
 
@@ -156,7 +156,7 @@ mrb_APR_AprHdtrT_get_trailers(mrb_state* mrb, mrb_value self) {
 
   struct iovec * native_field = native_self->trailers;
 
-  mrb_value ruby_field = TODO_mruby_box_struct_iovec_PTR(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_iovec_PTR(mrb, native_field);
 
   return ruby_field;
 }
@@ -174,9 +174,9 @@ mrb_APR_AprHdtrT_set_trailers(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_struct_iovec_PTR(ruby_field);
+  TODO_type_check_iovec_PTR(ruby_field);
 
-  struct iovec * native_field = TODO_mruby_unbox_struct_iovec_PTR(ruby_field);
+  struct iovec * native_field = TODO_mruby_unbox_iovec_PTR(ruby_field);
 
   native_self->trailers = native_field;
 

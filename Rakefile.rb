@@ -1,9 +1,8 @@
 $apr_dir = File.expand_path "headers/apr"
-$cef_dir = File.expand_path "headers/cef"
-$nspr_dir = File.expand_path "headers/nspr"
+$sqlite_dir = File.expand_path "headers/sqlite3"
 
 def generate_bindings(gem_name, module_name, output_dir)
-  IO.popen("ruby mruby_bindings.rb #{gem_name} #{module_name} #{output_dir}", 'w') do |io|
+  IO.popen("ruby mruby_bindings.rb -f -g #{gem_name} -m #{module_name} -o #{output_dir}", 'w') do |io|
     File.open('declarations.json', 'r') do |file|
       while line = file.gets
         io.puts line
@@ -23,26 +22,16 @@ namespace :scrape do
         sh "clang2json -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
       end
     else
-      Dir["/usr/local/apr/include/apr-2/*.h"].each do |header|
+      Dir["/usr/local/apr/include/apr-1/*.h"].each do |header|
         sh "clang2json -x c++ -I #{$apr_dir} -I #{$apr_dir}/win #{header} >> declarations.json"
       end
     end
   end
 
-  desc "Generate ldjson file for cef headers"
-  task :cef do
+  desc "Generate ldjson file for SQLite headers"
+  task :sqlite do
     File.delete "declarations.json" if File.exists? 'declarations.json'
-    Dir["#{$cef_dir}/*.h"].each do |header|
-      sh "clang2json -x c++ -I #{$cef_dir}  #{header} >> declarations.json"
-    end
-  end
-
-  desc "Generate ldjson file for NSPR headers"
-  task :nspr do
-    File.delete "declarations.json" if File.exists? 'declarations.json'
-    Dir["#{$nspr_dir}/nspr/*.h"].each do |header|
-      sh "clang2json -I #{$nspr_dir} #{header} >> declarations.json"
-    end
+    sh "clang2json -I #{$sqlite_dir} #{$sqlite_dir}/sqlite3.h >> declarations.json"
   end
 end
 
@@ -52,29 +41,8 @@ namespace :bindings do
     generate_bindings('mruby-apr', 'APR', 'apr_bindings')
   end
 
-  desc "Generates bindings for CEF"
-  task :cef => ['scrape:cef'] do
-    generate_bindings('mruby-cef', 'Cef', 'cef_bindings')
-  end
-
   desc "Generates bindings for nspr"
-  task :nspr => ['scrape:nspr'] do
-    generate_bindings('mruby-nspr', 'NSPR', 'nspr_bindings')
-  end
-end
-
-namespace :mruby do
-  desc "Build the mruby bundled with lamina"
-  task :build do
-    Dir.chdir "mruby" do
-      sh "ruby minirake"
-    end
-  end
-
-  desc "Clean the mruby bundled with lamina"
-  task :clean do
-    Dir.chdir "mruby" do
-      sh "ruby minirake clean"
-    end
+  task :sqlite => ['scrape:sqlite'] do
+    generate_bindings('mruby-sqlite3', 'SQLite', 'sqlite_bindings')
   end
 end

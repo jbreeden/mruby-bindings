@@ -45,7 +45,7 @@ mrb_APR_AprOsSockInfoT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprOsSockInfoT.disown only accepts objects of type APR::AprOsSockInfoT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprOsSockInfoT.belongs_to_ruby only accepts objects of type APR::AprOsSockInfoT");
     return mrb_nil_value();
   }
 
@@ -110,7 +110,7 @@ mrb_APR_AprOsSockInfoT_get_local(mrb_state* mrb, mrb_value self) {
 
   struct sockaddr * native_field = native_self->local;
 
-  mrb_value ruby_field = TODO_mruby_box_struct_sockaddr_PTR(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_sockaddr_PTR(mrb, native_field);
 
   return ruby_field;
 }
@@ -128,9 +128,9 @@ mrb_APR_AprOsSockInfoT_set_local(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_struct_sockaddr_PTR(ruby_field);
+  TODO_type_check_sockaddr_PTR(ruby_field);
 
-  struct sockaddr * native_field = TODO_mruby_unbox_struct_sockaddr_PTR(ruby_field);
+  struct sockaddr * native_field = TODO_mruby_unbox_sockaddr_PTR(ruby_field);
 
   native_self->local = native_field;
 
@@ -149,7 +149,7 @@ mrb_APR_AprOsSockInfoT_get_remote(mrb_state* mrb, mrb_value self) {
 
   struct sockaddr * native_field = native_self->remote;
 
-  mrb_value ruby_field = TODO_mruby_box_struct_sockaddr_PTR(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_sockaddr_PTR(mrb, native_field);
 
   return ruby_field;
 }
@@ -167,9 +167,9 @@ mrb_APR_AprOsSockInfoT_set_remote(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_struct_sockaddr_PTR(ruby_field);
+  TODO_type_check_sockaddr_PTR(ruby_field);
 
-  struct sockaddr * native_field = TODO_mruby_unbox_struct_sockaddr_PTR(ruby_field);
+  struct sockaddr * native_field = TODO_mruby_unbox_sockaddr_PTR(ruby_field);
 
   native_self->remote = native_field;
 

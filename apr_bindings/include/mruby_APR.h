@@ -19,12 +19,15 @@
 #define AprFinfoT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprFinfoT")
 #define AprGetoptOptionT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprGetoptOptionT")
 #define AprGetoptT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprGetoptT")
+#define AprGlobalMutexT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprGlobalMutexT")
 #define AprHashIndexT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprHashIndexT")
 #define AprHashT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprHashT")
 #define AprHdtrT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprHdtrT")
 #define AprIpsubnetT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprIpsubnetT")
 #define AprMemnodeT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprMemnodeT")
 #define AprMmapT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprMmapT")
+#define AprOsGlobalMutexT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprOsGlobalMutexT")
+#define AprOsProcMutexT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprOsProcMutexT")
 #define AprOsSockInfoT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprOsSockInfoT")
 #define AprOtherChildRecT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprOtherChildRecT")
 #define AprPollcbT_class(mrb) mrb_class_get_under(mrb, APR_module(mrb), "AprPollcbT")
@@ -141,6 +144,9 @@
 #define BIND_AprGetoptT_skip_end_FIELD FALSE
 #define BIND_AprGetoptT_skip_start_FIELD FALSE
 
+#define BIND_AprGlobalMutexT_TYPE TRUE
+#define BIND_AprGlobalMutexT_INITIALIZE FALSE
+
 #define BIND_AprHashIndexT_TYPE TRUE
 #define BIND_AprHashIndexT_INITIALIZE FALSE
 
@@ -170,13 +176,19 @@
 #define BIND_AprMmapT_INITIALIZE FALSE
 #define BIND_AprMmapT_cntxt_FIELD FALSE
 #define BIND_AprMmapT_link_FIELD FALSE
-#define BIND_AprMmapT_mhandle_FIELD FALSE
 #define BIND_AprMmapT_mm_FIELD FALSE
-#define BIND_AprMmapT_mv_FIELD FALSE
-#define BIND_AprMmapT_poffset_FIELD FALSE
-#define BIND_AprMmapT_psize_FIELD FALSE
-#define BIND_AprMmapT_pstart_FIELD FALSE
 #define BIND_AprMmapT_size_FIELD FALSE
+
+#define BIND_AprOsGlobalMutexT_TYPE TRUE
+#define BIND_AprOsGlobalMutexT_INITIALIZE FALSE
+#define BIND_AprOsGlobalMutexT_pool_FIELD FALSE
+#define BIND_AprOsGlobalMutexT_proc_mutex_FIELD FALSE
+#define BIND_AprOsGlobalMutexT_thread_mutex_FIELD FALSE
+
+#define BIND_AprOsProcMutexT_TYPE TRUE
+#define BIND_AprOsProcMutexT_INITIALIZE FALSE
+#define BIND_AprOsProcMutexT_crossproc_FIELD FALSE
+#define BIND_AprOsProcMutexT_intraproc_FIELD FALSE
 
 #define BIND_AprOsSockInfoT_TYPE TRUE
 #define BIND_AprOsSockInfoT_INITIALIZE FALSE
@@ -214,9 +226,7 @@
 #define BIND_AprProcT_TYPE TRUE
 #define BIND_AprProcT_INITIALIZE FALSE
 #define BIND_AprProcT_err_FIELD FALSE
-#define BIND_AprProcT_hproc_FIELD FALSE
 #define BIND_AprProcT_in_FIELD FALSE
-#define BIND_AprProcT_invoked_FIELD FALSE
 #define BIND_AprProcT_out_FIELD FALSE
 #define BIND_AprProcT_pid_FIELD FALSE
 
@@ -444,9 +454,16 @@
 #define BIND_apr_getopt_init_FUNCTION FALSE
 #define BIND_apr_getopt_long_FUNCTION FALSE
 #define BIND_apr_getservbyname_FUNCTION FALSE
-#define BIND_apr_gid_compare_FUNCTION FALSE
 #define BIND_apr_gid_get_FUNCTION FALSE
 #define BIND_apr_gid_name_get_FUNCTION FALSE
+#define BIND_apr_global_mutex_child_init_FUNCTION FALSE
+#define BIND_apr_global_mutex_create_FUNCTION FALSE
+#define BIND_apr_global_mutex_destroy_FUNCTION FALSE
+#define BIND_apr_global_mutex_lock_FUNCTION FALSE
+#define BIND_apr_global_mutex_lockfile_FUNCTION FALSE
+#define BIND_apr_global_mutex_name_FUNCTION FALSE
+#define BIND_apr_global_mutex_trylock_FUNCTION FALSE
+#define BIND_apr_global_mutex_unlock_FUNCTION FALSE
 #define BIND_apr_hash_clear_FUNCTION FALSE
 #define BIND_apr_hash_copy_FUNCTION FALSE
 #define BIND_apr_hash_count_FUNCTION FALSE
@@ -491,6 +508,7 @@
 #define BIND_apr_os_exp_time_put_FUNCTION FALSE
 #define BIND_apr_os_file_get_FUNCTION FALSE
 #define BIND_apr_os_file_put_FUNCTION FALSE
+#define BIND_apr_os_global_mutex_get_FUNCTION FALSE
 #define BIND_apr_os_imp_time_get_FUNCTION FALSE
 #define BIND_apr_os_imp_time_put_FUNCTION FALSE
 #define BIND_apr_os_locale_encoding_FUNCTION FALSE
@@ -569,6 +587,7 @@
 #define BIND_apr_pool_userdata_setn_FUNCTION FALSE
 #define BIND_apr_proc_create_FUNCTION FALSE
 #define BIND_apr_proc_detach_FUNCTION FALSE
+#define BIND_apr_proc_fork_FUNCTION FALSE
 #define BIND_apr_proc_kill_FUNCTION FALSE
 #define BIND_apr_proc_mutex_child_init_FUNCTION FALSE
 #define BIND_apr_proc_mutex_cleanup_FUNCTION FALSE
@@ -599,6 +618,7 @@
 #define BIND_apr_procattr_error_check_set_FUNCTION FALSE
 #define BIND_apr_procattr_group_set_FUNCTION FALSE
 #define BIND_apr_procattr_io_set_FUNCTION FALSE
+#define BIND_apr_procattr_limit_set_FUNCTION FALSE
 #define BIND_apr_procattr_user_set_FUNCTION FALSE
 #define BIND_apr_psprintf_FUNCTION FALSE
 #define BIND_apr_pstrcat_FUNCTION FALSE
@@ -620,6 +640,7 @@
 #define BIND_apr_random_secure_ready_FUNCTION FALSE
 #define BIND_apr_random_standard_new_FUNCTION FALSE
 #define BIND_apr_rfc822_date_FUNCTION FALSE
+#define BIND_apr_setup_signal_thread_FUNCTION FALSE
 #define BIND_apr_shm_attach_FUNCTION FALSE
 #define BIND_apr_shm_attach_ex_FUNCTION FALSE
 #define BIND_apr_shm_baseaddr_get_FUNCTION FALSE
@@ -629,9 +650,11 @@
 #define BIND_apr_shm_detach_FUNCTION FALSE
 #define BIND_apr_shm_remove_FUNCTION FALSE
 #define BIND_apr_shm_size_get_FUNCTION FALSE
+#define BIND_apr_signal_FUNCTION FALSE
 #define BIND_apr_signal_block_FUNCTION FALSE
 #define BIND_apr_signal_description_get_FUNCTION FALSE
 #define BIND_apr_signal_init_FUNCTION FALSE
+#define BIND_apr_signal_thread_FUNCTION FALSE
 #define BIND_apr_signal_unblock_FUNCTION FALSE
 #define BIND_apr_skiplist_add_index_FUNCTION FALSE
 #define BIND_apr_skiplist_alloc_FUNCTION FALSE
@@ -761,7 +784,6 @@
 #define BIND_apr_time_exp_tz_FUNCTION FALSE
 #define BIND_apr_time_now_FUNCTION FALSE
 #define BIND_apr_tokenize_to_argv_FUNCTION FALSE
-#define BIND_apr_uid_compare_FUNCTION FALSE
 #define BIND_apr_uid_current_FUNCTION FALSE
 #define BIND_apr_uid_get_FUNCTION FALSE
 #define BIND_apr_uid_homepath_get_FUNCTION FALSE
@@ -783,6 +805,10 @@
  * classes and functions for which bindings have
  * been generated. If any of these are not needed
  * they should be commented out.
+ *
+ * TODO: ONLY the filename is inserted here automatically.
+ *       If the file is not directly on the include path,
+ *       you will need to prepend the relative path.
  */
 
 #include <stdlib.h>
@@ -866,6 +892,9 @@ void mrb_APR_AprGetoptOptionT_init(mrb_state* mrb);
 #if BIND_AprGetoptT_TYPE
 void mrb_APR_AprGetoptT_init(mrb_state* mrb);
 #endif
+#if BIND_AprGlobalMutexT_TYPE
+void mrb_APR_AprGlobalMutexT_init(mrb_state* mrb);
+#endif
 #if BIND_AprHashIndexT_TYPE
 void mrb_APR_AprHashIndexT_init(mrb_state* mrb);
 #endif
@@ -883,6 +912,12 @@ void mrb_APR_AprMemnodeT_init(mrb_state* mrb);
 #endif
 #if BIND_AprMmapT_TYPE
 void mrb_APR_AprMmapT_init(mrb_state* mrb);
+#endif
+#if BIND_AprOsGlobalMutexT_TYPE
+void mrb_APR_AprOsGlobalMutexT_init(mrb_state* mrb);
+#endif
+#if BIND_AprOsProcMutexT_TYPE
+void mrb_APR_AprOsProcMutexT_init(mrb_state* mrb);
 #endif
 #if BIND_AprOsSockInfoT_TYPE
 void mrb_APR_AprOsSockInfoT_init(mrb_state* mrb);
@@ -1155,6 +1190,23 @@ apr_getopt_t *
 mruby_unbox_apr_getopt_t(mrb_value boxed);
 #endif
 
+#if BIND_AprGlobalMutexT_TYPE
+mrb_value
+mruby_box_apr_global_mutex_t(mrb_state* mrb, apr_global_mutex_t *unboxed);
+
+mrb_value
+mruby_giftwrap_apr_global_mutex_t(mrb_state* mrb, apr_global_mutex_t *unboxed);
+
+void
+mruby_set_apr_global_mutex_t_data_ptr(mrb_value obj, apr_global_mutex_t *unboxed);
+
+void
+mruby_gift_apr_global_mutex_t_data_ptr(mrb_value obj, apr_global_mutex_t *unboxed);
+
+apr_global_mutex_t *
+mruby_unbox_apr_global_mutex_t(mrb_value boxed);
+#endif
+
 #if BIND_AprHashIndexT_TYPE
 mrb_value
 mruby_box_apr_hash_index_t(mrb_state* mrb, apr_hash_index_t *unboxed);
@@ -1255,6 +1307,40 @@ mruby_gift_apr_mmap_t_data_ptr(mrb_value obj, apr_mmap_t *unboxed);
 
 apr_mmap_t *
 mruby_unbox_apr_mmap_t(mrb_value boxed);
+#endif
+
+#if BIND_AprOsGlobalMutexT_TYPE
+mrb_value
+mruby_box_apr_os_global_mutex_t(mrb_state* mrb, apr_os_global_mutex_t *unboxed);
+
+mrb_value
+mruby_giftwrap_apr_os_global_mutex_t(mrb_state* mrb, apr_os_global_mutex_t *unboxed);
+
+void
+mruby_set_apr_os_global_mutex_t_data_ptr(mrb_value obj, apr_os_global_mutex_t *unboxed);
+
+void
+mruby_gift_apr_os_global_mutex_t_data_ptr(mrb_value obj, apr_os_global_mutex_t *unboxed);
+
+apr_os_global_mutex_t *
+mruby_unbox_apr_os_global_mutex_t(mrb_value boxed);
+#endif
+
+#if BIND_AprOsProcMutexT_TYPE
+mrb_value
+mruby_box_apr_os_proc_mutex_t(mrb_state* mrb, apr_os_proc_mutex_t *unboxed);
+
+mrb_value
+mruby_giftwrap_apr_os_proc_mutex_t(mrb_state* mrb, apr_os_proc_mutex_t *unboxed);
+
+void
+mruby_set_apr_os_proc_mutex_t_data_ptr(mrb_value obj, apr_os_proc_mutex_t *unboxed);
+
+void
+mruby_gift_apr_os_proc_mutex_t_data_ptr(mrb_value obj, apr_os_proc_mutex_t *unboxed);
+
+apr_os_proc_mutex_t *
+mruby_unbox_apr_os_proc_mutex_t(mrb_value boxed);
 #endif
 
 #if BIND_AprOsSockInfoT_TYPE

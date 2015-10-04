@@ -45,7 +45,7 @@ mrb_APR_AprSockaddrT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprSockaddrT.disown only accepts objects of type APR::AprSockaddrT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprSockaddrT.belongs_to_ruby only accepts objects of type APR::AprSockaddrT");
     return mrb_nil_value();
   }
 
@@ -292,11 +292,7 @@ mrb_APR_AprSockaddrT_get_salen(mrb_state* mrb, mrb_value self) {
 
   apr_socklen_t native_field = native_self->salen;
 
-  if (native_field > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value ruby_field = mrb_fixnum_value(native_field);
+  mrb_value ruby_field = TODO_mruby_box_apr_socklen_t(mrb, native_field);
 
   return ruby_field;
 }
@@ -314,12 +310,9 @@ mrb_APR_AprSockaddrT_set_salen(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_apr_socklen_t(ruby_field);
 
-  int native_field = mrb_fixnum(ruby_field);
+  apr_socklen_t native_field = TODO_mruby_unbox_apr_socklen_t(ruby_field);
 
   native_self->salen = native_field;
 
@@ -503,15 +496,15 @@ mrb_APR_AprSockaddrT_set_next(mrb_state* mrb, mrb_value self) {
 #if BIND_AprSockaddrT_sa_FIELD
 /* get_sa
  *
- * Return Type: union (anonymous union at C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5)
+ * Return Type: union (anonymous union at /usr/local/apr/include/apr-1/apr_network_io.h:238:5)
  */
 mrb_value
 mrb_APR_AprSockaddrT_get_sa(mrb_state* mrb, mrb_value self) {
   apr_sockaddr_t * native_self = mruby_unbox_apr_sockaddr_t(self);
 
-  union (anonymous union at C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5) native_field = native_self->sa;
+  union (anonymous union at /usr/local/apr/include/apr-1/apr_network_io.h:238:5) native_field = native_self->sa;
 
-  mrb_value ruby_field = TODO_mruby_box_union_LPAREN_anonymous_union_at_C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5_RPAREN(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_union_LPAREN_anonymous_union_at_/usr/local/apr/include/apr-1/apr_network_io.h:238:5_RPAREN(mrb, native_field);
 
   return ruby_field;
 }
@@ -519,7 +512,7 @@ mrb_APR_AprSockaddrT_get_sa(mrb_state* mrb, mrb_value self) {
 /* set_sa
  *
  * Parameters:
- * - value: union (anonymous union at C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5)
+ * - value: union (anonymous union at /usr/local/apr/include/apr-1/apr_network_io.h:238:5)
  */
 mrb_value
 mrb_APR_AprSockaddrT_set_sa(mrb_state* mrb, mrb_value self) {
@@ -529,9 +522,9 @@ mrb_APR_AprSockaddrT_set_sa(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_union_LPAREN_anonymous_union_at_C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5_RPAREN(ruby_field);
+  TODO_type_check_union_LPAREN_anonymous_union_at_/usr/local/apr/include/apr-1/apr_network_io.h:238:5_RPAREN(ruby_field);
 
-  union (anonymous union at C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5) native_field = TODO_mruby_unbox_union_LPAREN_anonymous_union_at_C:/projects/mruby-bindings/headers/apr/apr_network_io.h:238:5_RPAREN(ruby_field);
+  union (anonymous union at /usr/local/apr/include/apr-1/apr_network_io.h:238:5) native_field = TODO_mruby_unbox_union_LPAREN_anonymous_union_at_/usr/local/apr/include/apr-1/apr_network_io.h:238:5_RPAREN(ruby_field);
 
   native_self->sa = native_field;
 

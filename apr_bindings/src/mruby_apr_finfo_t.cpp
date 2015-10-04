@@ -45,7 +45,7 @@ mrb_APR_AprFinfoT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.disown only accepts objects of type APR::AprFinfoT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprFinfoT.belongs_to_ruby only accepts objects of type APR::AprFinfoT");
     return mrb_nil_value();
   }
 
@@ -439,7 +439,7 @@ mrb_APR_AprFinfoT_get_size(mrb_state* mrb, mrb_value self) {
 
   apr_off_t native_field = native_self->size;
 
-  mrb_value ruby_field = TODO_mruby_box_long_long(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_apr_off_t(mrb, native_field);
 
   return ruby_field;
 }
@@ -457,9 +457,9 @@ mrb_APR_AprFinfoT_set_size(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_long_long(ruby_field);
+  TODO_type_check_apr_off_t(ruby_field);
 
-  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
+  apr_off_t native_field = TODO_mruby_unbox_apr_off_t(ruby_field);
 
   native_self->size = native_field;
 
@@ -478,7 +478,7 @@ mrb_APR_AprFinfoT_get_csize(mrb_state* mrb, mrb_value self) {
 
   apr_off_t native_field = native_self->csize;
 
-  mrb_value ruby_field = TODO_mruby_box_long_long(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_apr_off_t(mrb, native_field);
 
   return ruby_field;
 }
@@ -496,9 +496,9 @@ mrb_APR_AprFinfoT_set_csize(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_long_long(ruby_field);
+  TODO_type_check_apr_off_t(ruby_field);
 
-  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
+  apr_off_t native_field = TODO_mruby_unbox_apr_off_t(ruby_field);
 
   native_self->csize = native_field;
 

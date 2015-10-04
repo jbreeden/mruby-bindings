@@ -9,12 +9,11 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
    * conversions used here are of the correct type.
    */
 
+#ifdef __STDC_CONSTANT_MACROS
+  /* Ignoring macro with no expansion: __STDC_CONSTANT_MACROS */
+#endif
 #ifdef _APR_FNMATCH_H_
   /* Ignoring macro with no expansion: _APR_FNMATCH_H_ */
-#endif
-#ifdef _WIN32_WINNT
-  /* _WIN32_WINNT assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "_WIN32_WINNT", mrb_fixnum_value(_WIN32_WINNT));
 #endif
 #ifdef APR_ALIGN
   /* Ignoring function-like macro: APR_ALIGN(size, boundary) */
@@ -122,8 +121,7 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* Ignoring function-like macro: APR_DECLARE(type) */
 #endif
 #ifdef APR_DECLARE_DATA
-  /* APR_DECLARE_DATA assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "APR_DECLARE_DATA", mrb_fixnum_value(APR_DECLARE_DATA));
+  /* Ignoring macro with no expansion: APR_DECLARE_DATA */
 #endif
 #ifdef APR_DECLARE_INHERIT_SET
   /* Ignoring function-like macro: APR_DECLARE_INHERIT_SET(type) */
@@ -759,48 +757,11 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* APR_GEXECUTE assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_GEXECUTE", mrb_fixnum_value(APR_GEXECUTE));
 #endif
-#ifdef apr_global_mutex_child_init
-  /* apr_global_mutex_child_init assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_child_init", mrb_fixnum_value(apr_global_mutex_child_init));
-#endif
-#ifdef apr_global_mutex_create
-  /* apr_global_mutex_create assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_create", mrb_fixnum_value(apr_global_mutex_create));
-#endif
-#ifdef apr_global_mutex_destroy
-  /* apr_global_mutex_destroy assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_destroy", mrb_fixnum_value(apr_global_mutex_destroy));
+#ifdef apr_gid_compare
+  /* Ignoring function-like macro: apr_gid_compare(left, right) */
 #endif
 #ifdef APR_GLOBAL_MUTEX_H
   /* Ignoring macro with no expansion: APR_GLOBAL_MUTEX_H */
-#endif
-#ifdef apr_global_mutex_lock
-  /* apr_global_mutex_lock assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_lock", mrb_fixnum_value(apr_global_mutex_lock));
-#endif
-#ifdef apr_global_mutex_lockfile
-  /* apr_global_mutex_lockfile assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_lockfile", mrb_fixnum_value(apr_global_mutex_lockfile));
-#endif
-#ifdef apr_global_mutex_name
-  /* apr_global_mutex_name assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_name", mrb_fixnum_value(apr_global_mutex_name));
-#endif
-#ifdef apr_global_mutex_pool_get
-  /* apr_global_mutex_pool_get assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_pool_get", mrb_fixnum_value(apr_global_mutex_pool_get));
-#endif
-#ifdef apr_global_mutex_t
-  /* apr_global_mutex_t assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_t", mrb_fixnum_value(apr_global_mutex_t));
-#endif
-#ifdef apr_global_mutex_trylock
-  /* apr_global_mutex_trylock assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_trylock", mrb_fixnum_value(apr_global_mutex_trylock));
-#endif
-#ifdef apr_global_mutex_unlock
-  /* apr_global_mutex_unlock assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_global_mutex_unlock", mrb_fixnum_value(apr_global_mutex_unlock));
 #endif
 #ifdef APR_GREAD
   /* APR_GREAD assumed to be an integer value */
@@ -944,10 +905,6 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* APR_HAVE_GETRLIMIT assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_GETRLIMIT", mrb_fixnum_value(APR_HAVE_GETRLIMIT));
 #endif
-#ifdef APR_HAVE_ICONV
-  /* APR_HAVE_ICONV assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_ICONV", mrb_fixnum_value(APR_HAVE_ICONV));
-#endif
 #ifdef APR_HAVE_IN_ADDR
   /* APR_HAVE_IN_ADDR assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_IN_ADDR", mrb_fixnum_value(APR_HAVE_IN_ADDR));
@@ -1076,10 +1033,6 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* APR_HAVE_STDARG_H assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_STDARG_H", mrb_fixnum_value(APR_HAVE_STDARG_H));
 #endif
-#ifdef APR_HAVE_STDDEF_H
-  /* APR_HAVE_STDDEF_H assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_STDDEF_H", mrb_fixnum_value(APR_HAVE_STDDEF_H));
-#endif
 #ifdef APR_HAVE_STDINT_H
   /* APR_HAVE_STDINT_H assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_STDINT_H", mrb_fixnum_value(APR_HAVE_STDINT_H));
@@ -1183,6 +1136,14 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
 #ifdef APR_HAVE_UNISTD_H
   /* APR_HAVE_UNISTD_H assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_UNISTD_H", mrb_fixnum_value(APR_HAVE_UNISTD_H));
+#endif
+#ifdef APR_HAVE_WINDOWS_H
+  /* APR_HAVE_WINDOWS_H assumed to be an integer value */
+  mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_WINDOWS_H", mrb_fixnum_value(APR_HAVE_WINDOWS_H));
+#endif
+#ifdef APR_HAVE_WINSOCK2_H
+  /* APR_HAVE_WINSOCK2_H assumed to be an integer value */
+  mrb_define_const(mrb, APR_module(mrb), "APR_HAVE_WINSOCK2_H", mrb_fixnum_value(APR_HAVE_WINSOCK2_H));
 #endif
 #ifdef APR_INADDR_NONE
   /* APR_INADDR_NONE assumed to be an integer value */
@@ -1454,14 +1415,6 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
 #ifdef APR_OS_ERRSPACE_SIZE
   /* APR_OS_ERRSPACE_SIZE assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_OS_ERRSPACE_SIZE", mrb_fixnum_value(APR_OS_ERRSPACE_SIZE));
-#endif
-#ifdef apr_os_global_mutex_get
-  /* apr_os_global_mutex_get assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_os_global_mutex_get", mrb_fixnum_value(apr_os_global_mutex_get));
-#endif
-#ifdef apr_os_global_mutex_t
-  /* apr_os_global_mutex_t assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "apr_os_global_mutex_t", mrb_fixnum_value(apr_os_global_mutex_t));
 #endif
 #ifdef APR_OS_START_CANONERR
   /* APR_OS_START_CANONERR assumed to be an integer value */
@@ -1782,9 +1735,6 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* APR_SHM_NS_LOCAL assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_SHM_NS_LOCAL", mrb_fixnum_value(APR_SHM_NS_LOCAL));
 #endif
-#ifdef apr_signal
-  /* Ignoring function-like macro: apr_signal(a, b) */
-#endif
 #ifdef APR_SIGNAL_H
   /* Ignoring macro with no expansion: APR_SIGNAL_H */
 #endif
@@ -2059,9 +2009,6 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
 #ifdef APR_STATUS_IS_TIMEUP
   /* Ignoring function-like macro: APR_STATUS_IS_TIMEUP(s) */
 #endif
-#ifdef APR_STATUS_IS_TIMEUP
-  /* Ignoring function-like macro: APR_STATUS_IS_TIMEUP(s) */
-#endif
 #ifdef APR_STRINGIFY
   /* Ignoring function-like macro: APR_STRINGIFY(n) */
 #endif
@@ -2104,14 +2051,14 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   mrb_define_const(mrb, APR_module(mrb), "APR_TCP_NOPUSH", mrb_fixnum_value(APR_TCP_NOPUSH));
 #endif
 #ifdef APR_TCP_NOPUSH_FLAG
-  /* Ignoring macro with no expansion: APR_TCP_NOPUSH_FLAG */
+  /* APR_TCP_NOPUSH_FLAG assumed to be an integer value */
+  mrb_define_const(mrb, APR_module(mrb), "APR_TCP_NOPUSH_FLAG", mrb_fixnum_value(APR_TCP_NOPUSH_FLAG));
 #endif
 #ifdef APR_THREAD_COND_H
   /* Ignoring macro with no expansion: APR_THREAD_COND_H */
 #endif
 #ifdef APR_THREAD_FUNC
-  /* APR_THREAD_FUNC assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "APR_THREAD_FUNC", mrb_fixnum_value(APR_THREAD_FUNC));
+  /* Ignoring macro with no expansion: APR_THREAD_FUNC */
 #endif
 #ifdef APR_THREAD_MUTEX_DEFAULT
   /* APR_THREAD_MUTEX_DEFAULT assumed to be an integer value */
@@ -2185,6 +2132,9 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
 #ifdef APR_UEXECUTE
   /* APR_UEXECUTE assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_UEXECUTE", mrb_fixnum_value(APR_UEXECUTE));
+#endif
+#ifdef apr_uid_compare
+  /* Ignoring function-like macro: apr_uid_compare(left, right) */
 #endif
 #ifdef APR_UINT16_MAX
   /* APR_UINT16_MAX assumed to be an integer value */
@@ -2306,6 +2256,10 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* APR_VERSION_STRING_CSV assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APR_VERSION_STRING_CSV", mrb_fixnum_value(APR_VERSION_STRING_CSV));
 #endif
+#ifdef apr_wait_t
+  /* apr_wait_t assumed to be an integer value */
+  mrb_define_const(mrb, APR_module(mrb), "apr_wait_t", mrb_fixnum_value(apr_wait_t));
+#endif
 #ifdef APR_WANT_IOVEC
   /* Ignoring macro with no expansion: APR_WANT_IOVEC */
 #endif
@@ -2353,45 +2307,16 @@ mruby_APR_define_macro_constants(mrb_state* mrb) {
   /* APRMAXHOSTLEN assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "APRMAXHOSTLEN", mrb_fixnum_value(APRMAXHOSTLEN));
 #endif
+#ifdef FALSE
+  /* FALSE assumed to be an integer value */
+  mrb_define_const(mrb, APR_module(mrb), "FALSE", mrb_fixnum_value(FALSE));
+#endif
 #ifdef HUGE_STRING_LEN
   /* HUGE_STRING_LEN assumed to be an integer value */
   mrb_define_const(mrb, APR_module(mrb), "HUGE_STRING_LEN", mrb_fixnum_value(HUGE_STRING_LEN));
 #endif
-#ifdef IN6_IS_ADDR_V4MAPPED
-  /* Ignoring function-like macro: IN6_IS_ADDR_V4MAPPED(a) */
-#endif
-#ifdef NOIME
-  /* Ignoring macro with no expansion: NOIME */
-#endif
-#ifdef NOMCX
-  /* Ignoring macro with no expansion: NOMCX */
-#endif
-#ifdef NOUSER
-  /* Ignoring macro with no expansion: NOUSER */
-#endif
-#ifdef STDERR_FILENO
-  /* STDERR_FILENO assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "STDERR_FILENO", mrb_fixnum_value(STDERR_FILENO));
-#endif
-#ifdef STDIN_FILENO
-  /* STDIN_FILENO assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "STDIN_FILENO", mrb_fixnum_value(STDIN_FILENO));
-#endif
-#ifdef STDOUT_FILENO
-  /* STDOUT_FILENO assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "STDOUT_FILENO", mrb_fixnum_value(STDOUT_FILENO));
-#endif
-#ifdef strcasecmp
-  /* Ignoring function-like macro: strcasecmp(s1, s2) */
-#endif
-#ifdef strncasecmp
-  /* Ignoring function-like macro: strncasecmp(s1, s2, n) */
-#endif
-#ifdef SW_HIDE
-  /* SW_HIDE assumed to be an integer value */
-  mrb_define_const(mrb, APR_module(mrb), "SW_HIDE", mrb_fixnum_value(SW_HIDE));
-#endif
-#ifdef WIN32_LEAN_AND_MEAN
-  /* Ignoring macro with no expansion: WIN32_LEAN_AND_MEAN */
+#ifdef TRUE
+  /* TRUE assumed to be an integer value */
+  mrb_define_const(mrb, APR_module(mrb), "TRUE", mrb_fixnum_value(TRUE));
 #endif
 }

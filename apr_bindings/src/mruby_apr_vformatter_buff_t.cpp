@@ -45,7 +45,7 @@ mrb_APR_AprVformatterBuffT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprVformatterBuffT.disown only accepts objects of type APR::AprVformatterBuffT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprVformatterBuffT.belongs_to_ruby only accepts objects of type APR::AprVformatterBuffT");
     return mrb_nil_value();
   }
 

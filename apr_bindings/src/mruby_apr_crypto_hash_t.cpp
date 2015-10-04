@@ -45,7 +45,7 @@ mrb_APR_AprCryptoHashT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprCryptoHashT.disown only accepts objects of type APR::AprCryptoHashT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprCryptoHashT.belongs_to_ruby only accepts objects of type APR::AprCryptoHashT");
     return mrb_nil_value();
   }
 
@@ -188,11 +188,7 @@ mrb_APR_AprCryptoHashT_get_size(mrb_state* mrb, mrb_value self) {
 
   apr_size_t native_field = native_self->size;
 
-  if (native_field > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value ruby_field = mrb_fixnum_value(native_field);
+  mrb_value ruby_field = TODO_mruby_box_apr_size_t(mrb, native_field);
 
   return ruby_field;
 }
@@ -210,12 +206,9 @@ mrb_APR_AprCryptoHashT_set_size(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_apr_size_t(ruby_field);
 
-  int native_field = mrb_fixnum(ruby_field);
+  apr_size_t native_field = TODO_mruby_unbox_apr_size_t(ruby_field);
 
   native_self->size = native_field;
 

@@ -45,7 +45,7 @@ mrb_APR_AprProcT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprProcT.disown only accepts objects of type APR::AprProcT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprProcT.belongs_to_ruby only accepts objects of type APR::AprProcT");
     return mrb_nil_value();
   }
 
@@ -225,92 +225,6 @@ mrb_APR_AprProcT_set_err(mrb_state* mrb, mrb_value self) {
 }
 #endif
 
-#if BIND_AprProcT_invoked_FIELD
-/* get_invoked
- *
- * Return Type: char *
- */
-mrb_value
-mrb_APR_AprProcT_get_invoked(mrb_state* mrb, mrb_value self) {
-  apr_proc_t * native_self = mruby_unbox_apr_proc_t(self);
-
-  char * native_field = native_self->invoked;
-
-  mrb_value ruby_field = mrb_str_new_cstr(mrb, native_field);
-
-  return ruby_field;
-}
-
-/* set_invoked
- *
- * Parameters:
- * - value: char *
- */
-mrb_value
-mrb_APR_AprProcT_set_invoked(mrb_state* mrb, mrb_value self) {
-  apr_proc_t * native_self = mruby_unbox_apr_proc_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->string_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-    return mrb_nil_value();
-  }
-
-  /* WARNING: Allocating new memory to create 'char *' from 'const char *'.
-   *          Please verify that this memory is cleaned up correctly.
-   *
-   *          Has this been verified? [No]
-   */
-  char * native_field = strdup(mrb_string_value_cstr(mrb, &ruby_field));
-
-  native_self->invoked = native_field;
-
-  return ruby_field;
-}
-#endif
-
-#if BIND_AprProcT_hproc_FIELD
-/* get_hproc
- *
- * Return Type: HANDLE
- */
-mrb_value
-mrb_APR_AprProcT_get_hproc(mrb_state* mrb, mrb_value self) {
-  apr_proc_t * native_self = mruby_unbox_apr_proc_t(self);
-
-  HANDLE native_field = native_self->hproc;
-
-  mrb_value ruby_field = TODO_mruby_box_HANDLE(mrb, native_field);
-
-  return ruby_field;
-}
-
-/* set_hproc
- *
- * Parameters:
- * - value: HANDLE
- */
-mrb_value
-mrb_APR_AprProcT_set_hproc(mrb_state* mrb, mrb_value self) {
-  apr_proc_t * native_self = mruby_unbox_apr_proc_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_HANDLE(ruby_field);
-
-  HANDLE native_field = TODO_mruby_unbox_HANDLE(ruby_field);
-
-  native_self->hproc = native_field;
-
-  return ruby_field;
-}
-#endif
-
 
 void mrb_APR_AprProcT_init(mrb_state* mrb) {
   RClass* AprProcT_class = mrb_define_class_under(mrb, APR_module(mrb), "AprProcT", mrb->object_class);
@@ -340,14 +254,6 @@ void mrb_APR_AprProcT_init(mrb_state* mrb) {
 #if BIND_AprProcT_err_FIELD
   mrb_define_method(mrb, AprProcT_class, "err", mrb_APR_AprProcT_get_err, MRB_ARGS_ARG(0, 0));
   mrb_define_method(mrb, AprProcT_class, "err=", mrb_APR_AprProcT_set_err, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprProcT_invoked_FIELD
-  mrb_define_method(mrb, AprProcT_class, "invoked", mrb_APR_AprProcT_get_invoked, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprProcT_class, "invoked=", mrb_APR_AprProcT_set_invoked, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprProcT_hproc_FIELD
-  mrb_define_method(mrb, AprProcT_class, "hproc", mrb_APR_AprProcT_get_hproc, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprProcT_class, "hproc=", mrb_APR_AprProcT_set_hproc, MRB_ARGS_ARG(1, 0));
 #endif
 
 }

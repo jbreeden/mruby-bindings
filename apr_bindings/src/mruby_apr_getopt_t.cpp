@@ -45,7 +45,7 @@ mrb_APR_AprGetoptT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprGetoptT.disown only accepts objects of type APR::AprGetoptT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprGetoptT.belongs_to_ruby only accepts objects of type APR::AprGetoptT");
     return mrb_nil_value();
   }
 
@@ -375,7 +375,7 @@ mrb_APR_AprGetoptT_get_argv(mrb_state* mrb, mrb_value self) {
 
   const char ** native_field = native_self->argv;
 
-  mrb_value ruby_field = TODO_mruby_box_const_char_PTR_PTR(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box_char_PTR_PTR(mrb, native_field);
 
   return ruby_field;
 }
@@ -393,9 +393,9 @@ mrb_APR_AprGetoptT_set_argv(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_const_char_PTR_PTR(ruby_field);
+  TODO_type_check_char_PTR_PTR(ruby_field);
 
-  const char ** native_field = TODO_mruby_unbox_const_char_PTR_PTR(ruby_field);
+  const char ** native_field = TODO_mruby_unbox_char_PTR_PTR(ruby_field);
 
   native_self->argv = native_field;
 

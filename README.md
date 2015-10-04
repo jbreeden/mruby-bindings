@@ -5,10 +5,29 @@ Generates MRuby bindings from C Header files via libclang
 [clang2json](https://github.com/jbreeden/clang2json)
 
 # Usage
-TODO: I'll fill this out after I've done more testing and solidified the output format.
-Currently using it to generate bindings for dependencies of the [lamina](https://github.com/jbreeden/lamina) project.
-This include Apache's APR, nanomsg, and maybe some CEF stuff. The new bindings will replace the limited hand-written
-bindings that are currently used.
+
+Just pipe the output of `clang2json` to the `mruby_bindings.rb` script and supply a few parameters.
+
+```
+clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAME -o OUTPUT_DIR [-f]
+
+  -g, -gem
+    The name to use for this mrbgems. Should be mruby-something
+    per the mrbgems recommendation. This will be used to generate
+    the appropriate mrb_YOUR_GEM_NAME_gem_init functions, for example.
+
+  -m, --module
+    The name to use for the generated module. This is the module under which
+    all macros, functions, classes, etc. generated from the C headers will
+    be defined in Ruby land.
+
+  -o, --output
+    The output directory. This is where the generated source code will be saved.
+
+  -f
+    If the output directory exists, mruby-bindings will refuse to overwrite it
+    by default. Use -f to force the overwrite.
+```
 
 # Details
 

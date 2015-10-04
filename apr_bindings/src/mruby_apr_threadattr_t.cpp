@@ -45,7 +45,7 @@ mrb_APR_AprThreadattrT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprThreadattrT.disown only accepts objects of type APR::AprThreadattrT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprThreadattrT.belongs_to_ruby only accepts objects of type APR::AprThreadattrT");
     return mrb_nil_value();
   }
 

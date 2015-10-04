@@ -45,7 +45,7 @@ mrb_APR_AprMmapT_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_object);
 
   if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprMmapT.disown only accepts objects of type APR::AprMmapT");
+    mrb_raise(mrb, E_TYPE_ERROR, "APR::AprMmapT.belongs_to_ruby only accepts objects of type APR::AprMmapT");
     return mrb_nil_value();
   }
 
@@ -102,208 +102,6 @@ mrb_APR_AprMmapT_set_cntxt(mrb_state* mrb, mrb_value self) {
 }
 #endif
 
-#if BIND_AprMmapT_mhandle_FIELD
-/* get_mhandle
- *
- * Return Type: HANDLE
- */
-mrb_value
-mrb_APR_AprMmapT_get_mhandle(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-
-  HANDLE native_field = native_self->mhandle;
-
-  mrb_value ruby_field = TODO_mruby_box_HANDLE(mrb, native_field);
-
-  return ruby_field;
-}
-
-/* set_mhandle
- *
- * Parameters:
- * - value: HANDLE
- */
-mrb_value
-mrb_APR_AprMmapT_set_mhandle(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_HANDLE(ruby_field);
-
-  HANDLE native_field = TODO_mruby_unbox_HANDLE(ruby_field);
-
-  native_self->mhandle = native_field;
-
-  return ruby_field;
-}
-#endif
-
-#if BIND_AprMmapT_mv_FIELD
-/* get_mv
- *
- * Return Type: void *
- */
-mrb_value
-mrb_APR_AprMmapT_get_mv(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-
-  void * native_field = native_self->mv;
-
-  mrb_value ruby_field = TODO_mruby_box_void_PTR(mrb, native_field);
-
-  return ruby_field;
-}
-
-/* set_mv
- *
- * Parameters:
- * - value: void *
- */
-mrb_value
-mrb_APR_AprMmapT_set_mv(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_void_PTR(ruby_field);
-
-  void * native_field = TODO_mruby_unbox_void_PTR(ruby_field);
-
-  native_self->mv = native_field;
-
-  return ruby_field;
-}
-#endif
-
-#if BIND_AprMmapT_pstart_FIELD
-/* get_pstart
- *
- * Return Type: apr_off_t
- */
-mrb_value
-mrb_APR_AprMmapT_get_pstart(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-
-  apr_off_t native_field = native_self->pstart;
-
-  mrb_value ruby_field = TODO_mruby_box_long_long(mrb, native_field);
-
-  return ruby_field;
-}
-
-/* set_pstart
- *
- * Parameters:
- * - value: apr_off_t
- */
-mrb_value
-mrb_APR_AprMmapT_set_pstart(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_long_long(ruby_field);
-
-  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
-
-  native_self->pstart = native_field;
-
-  return ruby_field;
-}
-#endif
-
-#if BIND_AprMmapT_psize_FIELD
-/* get_psize
- *
- * Return Type: apr_size_t
- */
-mrb_value
-mrb_APR_AprMmapT_get_psize(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-
-  apr_size_t native_field = native_self->psize;
-
-  if (native_field > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value ruby_field = mrb_fixnum_value(native_field);
-
-  return ruby_field;
-}
-
-/* set_psize
- *
- * Parameters:
- * - value: apr_size_t
- */
-mrb_value
-mrb_APR_AprMmapT_set_psize(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
-
-  int native_field = mrb_fixnum(ruby_field);
-
-  native_self->psize = native_field;
-
-  return ruby_field;
-}
-#endif
-
-#if BIND_AprMmapT_poffset_FIELD
-/* get_poffset
- *
- * Return Type: apr_off_t
- */
-mrb_value
-mrb_APR_AprMmapT_get_poffset(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-
-  apr_off_t native_field = native_self->poffset;
-
-  mrb_value ruby_field = TODO_mruby_box_long_long(mrb, native_field);
-
-  return ruby_field;
-}
-
-/* set_poffset
- *
- * Parameters:
- * - value: apr_off_t
- */
-mrb_value
-mrb_APR_AprMmapT_set_poffset(mrb_state* mrb, mrb_value self) {
-  apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
-  mrb_value ruby_field;
-
-  mrb_get_args(mrb, "o", &ruby_field);
-
-  /* type checking */
-  TODO_type_check_long_long(ruby_field);
-
-  long long native_field = TODO_mruby_unbox_long_long(ruby_field);
-
-  native_self->poffset = native_field;
-
-  return ruby_field;
-}
-#endif
-
 #if BIND_AprMmapT_mm_FIELD
 /* get_mm
  *
@@ -354,11 +152,7 @@ mrb_APR_AprMmapT_get_size(mrb_state* mrb, mrb_value self) {
 
   apr_size_t native_field = native_self->size;
 
-  if (native_field > MRB_INT_MAX) {
-    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-    return mrb_nil_value();
-  }
-  mrb_value ruby_field = mrb_fixnum_value(native_field);
+  mrb_value ruby_field = TODO_mruby_box_apr_size_t(mrb, native_field);
 
   return ruby_field;
 }
@@ -376,12 +170,9 @@ mrb_APR_AprMmapT_set_size(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
-    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-    return mrb_nil_value();
-  }
+  TODO_type_check_apr_size_t(ruby_field);
 
-  int native_field = mrb_fixnum(ruby_field);
+  apr_size_t native_field = TODO_mruby_unbox_apr_size_t(ruby_field);
 
   native_self->size = native_field;
 
@@ -392,15 +183,15 @@ mrb_APR_AprMmapT_set_size(mrb_state* mrb, mrb_value self) {
 #if BIND_AprMmapT_link_FIELD
 /* get_link
  *
- * Return Type: struct (anonymous struct at C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5)
+ * Return Type: struct (anonymous struct at /usr/local/apr/include/apr-1/apr_mmap.h:85:5)
  */
 mrb_value
 mrb_APR_AprMmapT_get_link(mrb_state* mrb, mrb_value self) {
   apr_mmap_t * native_self = mruby_unbox_apr_mmap_t(self);
 
-  struct (anonymous struct at C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5) native_field = native_self->link;
+  struct (anonymous struct at /usr/local/apr/include/apr-1/apr_mmap.h:85:5) native_field = native_self->link;
 
-  mrb_value ruby_field = TODO_mruby_box_struct_LPAREN_anonymous_struct_at_C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5_RPAREN(mrb, native_field);
+  mrb_value ruby_field = TODO_mruby_box__LPAREN_anonymous_struct_at_/usr/local/apr/include/apr-1/apr_mmap.h:85:5_RPAREN(mrb, native_field);
 
   return ruby_field;
 }
@@ -408,7 +199,7 @@ mrb_APR_AprMmapT_get_link(mrb_state* mrb, mrb_value self) {
 /* set_link
  *
  * Parameters:
- * - value: struct (anonymous struct at C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5)
+ * - value: struct (anonymous struct at /usr/local/apr/include/apr-1/apr_mmap.h:85:5)
  */
 mrb_value
 mrb_APR_AprMmapT_set_link(mrb_state* mrb, mrb_value self) {
@@ -418,9 +209,9 @@ mrb_APR_AprMmapT_set_link(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_struct_LPAREN_anonymous_struct_at_C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5_RPAREN(ruby_field);
+  TODO_type_check__LPAREN_anonymous_struct_at_/usr/local/apr/include/apr-1/apr_mmap.h:85:5_RPAREN(ruby_field);
 
-  struct (anonymous struct at C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5) native_field = TODO_mruby_unbox_struct_LPAREN_anonymous_struct_at_C:/projects/mruby-bindings/headers/apr/apr_mmap.h:85:5_RPAREN(ruby_field);
+  struct (anonymous struct at /usr/local/apr/include/apr-1/apr_mmap.h:85:5) native_field = TODO_mruby_unbox__LPAREN_anonymous_struct_at_/usr/local/apr/include/apr-1/apr_mmap.h:85:5_RPAREN(ruby_field);
 
   native_self->link = native_field;
 
@@ -445,26 +236,6 @@ void mrb_APR_AprMmapT_init(mrb_state* mrb) {
 #if BIND_AprMmapT_cntxt_FIELD
   mrb_define_method(mrb, AprMmapT_class, "cntxt", mrb_APR_AprMmapT_get_cntxt, MRB_ARGS_ARG(0, 0));
   mrb_define_method(mrb, AprMmapT_class, "cntxt=", mrb_APR_AprMmapT_set_cntxt, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprMmapT_mhandle_FIELD
-  mrb_define_method(mrb, AprMmapT_class, "mhandle", mrb_APR_AprMmapT_get_mhandle, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprMmapT_class, "mhandle=", mrb_APR_AprMmapT_set_mhandle, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprMmapT_mv_FIELD
-  mrb_define_method(mrb, AprMmapT_class, "mv", mrb_APR_AprMmapT_get_mv, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprMmapT_class, "mv=", mrb_APR_AprMmapT_set_mv, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprMmapT_pstart_FIELD
-  mrb_define_method(mrb, AprMmapT_class, "pstart", mrb_APR_AprMmapT_get_pstart, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprMmapT_class, "pstart=", mrb_APR_AprMmapT_set_pstart, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprMmapT_psize_FIELD
-  mrb_define_method(mrb, AprMmapT_class, "psize", mrb_APR_AprMmapT_get_psize, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprMmapT_class, "psize=", mrb_APR_AprMmapT_set_psize, MRB_ARGS_ARG(1, 0));
-#endif
-#if BIND_AprMmapT_poffset_FIELD
-  mrb_define_method(mrb, AprMmapT_class, "poffset", mrb_APR_AprMmapT_get_poffset, MRB_ARGS_ARG(0, 0));
-  mrb_define_method(mrb, AprMmapT_class, "poffset=", mrb_APR_AprMmapT_set_poffset, MRB_ARGS_ARG(1, 0));
 #endif
 #if BIND_AprMmapT_mm_FIELD
   mrb_define_method(mrb, AprMmapT_class, "mm", mrb_APR_AprMmapT_get_mm, MRB_ARGS_ARG(0, 0));

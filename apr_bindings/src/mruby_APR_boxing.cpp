@@ -1,8 +1,7 @@
 /*
  * TODO: Update includes
  */
-
-#include "mruby_APR.h"
+ #include "mruby_APR.h"
 
 
 #if BIND_AprAllocatorT_TYPE
@@ -545,6 +544,66 @@ mruby_unbox_apr_getopt_t(mrb_value boxed) {
 }
 #endif
 
+#if BIND_AprGlobalMutexT_TYPE
+/*
+ * Boxing implementation for apr_global_mutex_t
+ */
+
+static void free_apr_global_mutex_t(mrb_state* mrb, void* ptr) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)ptr;
+  if (box->belongs_to_ruby) {
+    /* TODO: free is the default. Should be changed if a type-specific
+     *       destructor is provided for this type.
+     */
+    if (box->obj != NULL) {
+      free(box->obj);
+      box->obj = NULL;
+    }
+  }
+}
+
+static const mrb_data_type apr_global_mutex_t_data_type = {
+   "apr_global_mutex_t", free_apr_global_mutex_t
+};
+
+mrb_value
+mruby_box_apr_global_mutex_t(mrb_state* mrb, apr_global_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprGlobalMutexT_class(mrb), &apr_global_mutex_t_data_type, box));
+}
+
+mrb_value
+mruby_giftwrap_apr_global_mutex_t(mrb_state* mrb, apr_global_mutex_t *unboxed) {
+   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+   box->belongs_to_ruby = TRUE;
+   box->obj = unboxed;
+   return mrb_obj_value(Data_Wrap_Struct(mrb, AprGlobalMutexT_class(mrb), &apr_global_mutex_t_data_type, box));
+}
+
+void
+mruby_set_apr_global_mutex_t_data_ptr(mrb_value obj, apr_global_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &apr_global_mutex_t_data_type);
+}
+
+void
+mruby_gift_apr_global_mutex_t_data_ptr(mrb_value obj, apr_global_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = TRUE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &apr_global_mutex_t_data_type);
+}
+
+apr_global_mutex_t *
+mruby_unbox_apr_global_mutex_t(mrb_value boxed) {
+  return (apr_global_mutex_t *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
+}
+#endif
+
 #if BIND_AprHashIndexT_TYPE
 /*
  * Boxing implementation for apr_hash_index_t
@@ -902,6 +961,126 @@ mruby_gift_apr_mmap_t_data_ptr(mrb_value obj, apr_mmap_t *unboxed) {
 apr_mmap_t *
 mruby_unbox_apr_mmap_t(mrb_value boxed) {
   return (apr_mmap_t *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
+}
+#endif
+
+#if BIND_AprOsGlobalMutexT_TYPE
+/*
+ * Boxing implementation for apr_os_global_mutex_t
+ */
+
+static void free_apr_os_global_mutex_t(mrb_state* mrb, void* ptr) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)ptr;
+  if (box->belongs_to_ruby) {
+    /* TODO: free is the default. Should be changed if a type-specific
+     *       destructor is provided for this type.
+     */
+    if (box->obj != NULL) {
+      free(box->obj);
+      box->obj = NULL;
+    }
+  }
+}
+
+static const mrb_data_type apr_os_global_mutex_t_data_type = {
+   "apr_os_global_mutex_t", free_apr_os_global_mutex_t
+};
+
+mrb_value
+mruby_box_apr_os_global_mutex_t(mrb_state* mrb, apr_os_global_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprOsGlobalMutexT_class(mrb), &apr_os_global_mutex_t_data_type, box));
+}
+
+mrb_value
+mruby_giftwrap_apr_os_global_mutex_t(mrb_state* mrb, apr_os_global_mutex_t *unboxed) {
+   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+   box->belongs_to_ruby = TRUE;
+   box->obj = unboxed;
+   return mrb_obj_value(Data_Wrap_Struct(mrb, AprOsGlobalMutexT_class(mrb), &apr_os_global_mutex_t_data_type, box));
+}
+
+void
+mruby_set_apr_os_global_mutex_t_data_ptr(mrb_value obj, apr_os_global_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &apr_os_global_mutex_t_data_type);
+}
+
+void
+mruby_gift_apr_os_global_mutex_t_data_ptr(mrb_value obj, apr_os_global_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = TRUE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &apr_os_global_mutex_t_data_type);
+}
+
+apr_os_global_mutex_t *
+mruby_unbox_apr_os_global_mutex_t(mrb_value boxed) {
+  return (apr_os_global_mutex_t *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
+}
+#endif
+
+#if BIND_AprOsProcMutexT_TYPE
+/*
+ * Boxing implementation for apr_os_proc_mutex_t
+ */
+
+static void free_apr_os_proc_mutex_t(mrb_state* mrb, void* ptr) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)ptr;
+  if (box->belongs_to_ruby) {
+    /* TODO: free is the default. Should be changed if a type-specific
+     *       destructor is provided for this type.
+     */
+    if (box->obj != NULL) {
+      free(box->obj);
+      box->obj = NULL;
+    }
+  }
+}
+
+static const mrb_data_type apr_os_proc_mutex_t_data_type = {
+   "apr_os_proc_mutex_t", free_apr_os_proc_mutex_t
+};
+
+mrb_value
+mruby_box_apr_os_proc_mutex_t(mrb_state* mrb, apr_os_proc_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  return mrb_obj_value(Data_Wrap_Struct(mrb, AprOsProcMutexT_class(mrb), &apr_os_proc_mutex_t_data_type, box));
+}
+
+mrb_value
+mruby_giftwrap_apr_os_proc_mutex_t(mrb_state* mrb, apr_os_proc_mutex_t *unboxed) {
+   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+   box->belongs_to_ruby = TRUE;
+   box->obj = unboxed;
+   return mrb_obj_value(Data_Wrap_Struct(mrb, AprOsProcMutexT_class(mrb), &apr_os_proc_mutex_t_data_type, box));
+}
+
+void
+mruby_set_apr_os_proc_mutex_t_data_ptr(mrb_value obj, apr_os_proc_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = FALSE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &apr_os_proc_mutex_t_data_type);
+}
+
+void
+mruby_gift_apr_os_proc_mutex_t_data_ptr(mrb_value obj, apr_os_proc_mutex_t *unboxed) {
+  mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
+  box->belongs_to_ruby = TRUE;
+  box->obj = unboxed;
+  mrb_data_init(obj, box, &apr_os_proc_mutex_t_data_type);
+}
+
+apr_os_proc_mutex_t *
+mruby_unbox_apr_os_proc_mutex_t(mrb_value boxed) {
+  return (apr_os_proc_mutex_t *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
 }
 #endif
 

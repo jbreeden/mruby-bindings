@@ -21,20 +21,62 @@ class String
   end
 end
 
+require_relative "./yargs.rb"
 require 'fileutils'
 require 'json'
 require 'erb'
 require 'pp'
 require_relative './ctypes'
 
+USAGE = <<EOS
+clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAME -o OUTPUT_DIR [-f]
+
+  -g, -gem
+    The name to use for this mrbgems. Should be mruby-something
+    per the mrbgems recommendation. This will be used to generate
+    the appropriate mrb_YOUR_GEM_NAME_gem_init functions, for example.
+
+  -m, --module
+    The name to use for the generated module. This is the module under which
+    all macros, functions, classes, etc. generated from the C headers will
+    be defined in Ruby land.
+
+  -o, --output
+    The output directory. This is where the generated source code will be saved.
+
+  -f
+    If the output directory exists, mruby-bindings will refuse to overwrite it
+    by default. Use -f to force the overwrite.
+EOS
+
 # TODO:
 # Validate gem name is all leters and hyphens
 # Validate module name is a valid ruby module identifier
 # Print usage message for invalid inputs
+yargs = Yargs.new(ARGV)
+$gem_name = yargs.value(:g, :gem, 'gem-name')
+$module_name = yargs.value(:m, :module, 'module-name')
+$output_dir = yargs.value(
+  :o, :output, :dir, :directory, 'output-dir', 'output-directory'
+) || 'bindings'
+$force = yargs.flag(:f, :force)
 
-$gem_name = ARGV[0]
-$module_name = ARGV[1]
-$output_dir = ARGV[2] || 'bindings'
+unless $gem_name
+  $stderr.puts "Must specify the gem name `-g YOUR_GEM_NAME`\n\n"
+  $stderr.puts USAGE
+  exit 1
+end
+
+unless $module_name
+  $stderr.puts "Must specify the module name `-m YOUR_MODULE_NAME`\n\n"
+  $stderr.puts USAGE
+  exit 1
+end
+
+if !$force && Dir.exists?($output_dir)
+  puts "Output directory (#{$output_dir}) exists. Use -f to force overwrite"
+  exit 1
+end
 
 FileUtils.rm_rf($output_dir) if Dir.exists?($output_dir)
 Dir.mkdir $output_dir
@@ -121,6 +163,10 @@ def make_declaration_tree
         $current_function['argc'] = 0
         $module_functions.push(datum)
       when "ParmDecl"
+        unless $current_function
+          $stderr.puts "WARNING: Param encountered outside of a method or function. This is probably a function pointer, which is not yet supported."
+          next
+        end
         $current_function['argc'] += 1
         $current_function['params'] ||= []
         $current_function['params'].push(datum)
@@ -191,12 +237,12 @@ def generate_bindings
   classes = $classes.values.sort_by { |c| c['name'].downcase }
   macros = $macros.sort_by { |m| m['name'].downcase }
 
-  boxing_erb = ERB.new(File.read('boxing_template.erb'), nil, "-")
-  class_erb = ERB.new(File.read('class_template.erb'), nil, "-")
-  module_erb = ERB.new(File.read('module_template.erb'), nil, "-")
-  enums_erb = ERB.new(File.read('enums_template.erb'), nil, "-")
-  header_erb = ERB.new(File.read('header_template.erb'), nil, "-")
-  macros_erb = ERB.new(File.read('macros_template.erb'), nil, "-")
+  boxing_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/boxing_template.erb"), nil, "-")
+  class_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/class_template.erb"), nil, "-")
+  module_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/module_template.erb"), nil, "-")
+  enums_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/enums_template.erb"), nil, "-")
+  header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/header_template.erb"), nil, "-")
+  macros_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/macros_template.erb"), nil, "-")
 
   if $classes.any?
     to_gen = $classes.values.reject { |c| c['is_template'] }
