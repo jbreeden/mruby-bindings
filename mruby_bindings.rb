@@ -16,7 +16,7 @@ class String
   def type_name_to_rb
     self.sub(/(struct|enum)\s*/, '').
       split('_').
-      map { |token| "#{token[0].upcase}#{token[1..(token.length)] if token.length > 1}" }.
+      map { |token| "#{token[0].upcase if token.length > 0}#{token[1..(token.length)] if token.length > 1}" }.
       join('')
   end
 end

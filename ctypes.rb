@@ -27,6 +27,7 @@ module CTypes
 
   class << self
     def define(*type_names, &block)
+      type_names = type_names.flatten
       type_names.each do |type_name|
         definition = Definition.new(type_name)
         @types[type_name] = definition
@@ -113,7 +114,19 @@ EOF
   end
 end
 
-CTypes.define('int', 'unsigned int') do
+def CTypes.any_constness_and_sign(*types)
+  result = types.dup
+  result << types.map { |type| "const #{type}" }
+  result << types.map { |type| "unsigned #{type}" }
+  result << types.map { |type| "const unsigned #{type}" }
+  result << types.map { |type| "unsigned const #{type}" }
+  result << types.map { |type| "singed #{type}" }
+  result << types.map { |type| "singed const #{type}" }
+  result << types.map { |type| "const singed #{type}" }
+  result
+end
+
+CTypes.define(CTypes.any_constness_and_sign('short', 'long', 'int', 'long long')) do
   boxing_fn.name = 'mrb_fixnum_value'
   boxing_fn.invocation_template = <<EOF
 if (%{box} > MRB_INT_MAX) {
@@ -134,9 +147,9 @@ if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->fixnum_class)) {
 EOF
 end
 
-CTypes.define('float', 'double') do
+CTypes.define(CTypes.any_constness_and_sign('float', 'double')) do
   boxing_fn.name = 'mrb_float_value'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(%{box});"
+  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
 
   unboxing_fn.name = 'mrb_float'
   unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(%{unbox});"
@@ -149,7 +162,7 @@ if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->float_class)) {
 EOF
 end
 
-CTypes.define('bool') do
+CTypes.define(CTypes.any_constness_and_sign('bool')) do
   boxing_fn.name = 'mrb_bool_value'
   boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(%{box});"
 
@@ -218,6 +231,21 @@ CTypes.define('string') do
 
   unboxing_fn.name = 'mrb_string_value_cstr'
   unboxing_fn.invocation_template = "#{type_name} %{as} = (#{type_name}) #{unboxing_fn.name}(mrb, &%{unbox});"
+
+  self.type_check = <<EOF
+if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
+  mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+  return mrb_nil_value();
+}
+EOF
+end
+
+CTypes.define(CTypes.any_constness_and_sign('char')) do
+  boxing_fn.name = 'mrb_str_new'
+  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, &%{box}, 1);"
+
+  unboxing_fn.name = 'mrb_string_value_ptr'
+  unboxing_fn.invocation_template = "#{type_name} %{as} = *#{unboxing_fn.name}(mrb, &%{unbox});"
 
   self.type_check = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
