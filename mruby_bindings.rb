@@ -87,7 +87,7 @@ Dir.mkdir "#{$output_dir}/src"
 # TODO: Use one hash based on usrs for indexing, then all collections should be arrays
 $current_function = nil
 $classes = {} # Includes structs
-$module_functions = []
+$module_functions = {}
 $enums = {}
 $macros = []
 
@@ -161,7 +161,7 @@ def make_declaration_tree
         datum['params'] ||= []
         $current_function = datum
         $current_function['argc'] = 0
-        $module_functions.push(datum)
+        $module_functions[datum['usr']] = datum
       when "ParmDecl"
         unless $current_function
           $stderr.puts "WARNING: Param encountered outside of a method or function. This is probably a function pointer, which is not yet supported."
@@ -202,7 +202,7 @@ def annotate_declarations
   # - Add boxing/unboxing functions to any known param types
   # - Add boxing/unboxing functions to any known return types
   # - Add names for anonymous parameters
-  $module_functions.concat($classes.values.flat_map { |c| c['member_functions']}).each do |func|
+  $module_functions.values.concat($classes.values.flat_map { |c| c['member_functions']}).each do |func|
     CTypes.learn_data_type(func['return_type'])
     func['params'].each_with_index do |param, i|
       if param['name'] == ''
@@ -232,7 +232,7 @@ def generate_bindings
   # Setting up locals for the templates
   gem_name = $gem_name
   module_name = $module_name
-  module_functions = $module_functions.sort_by { |f| f['name'].downcase }
+  module_functions = $module_functions.values.sort_by { |f| f['name'].downcase }
   enums = $enums.values.sort_by { |e| e['name'].downcase }
   classes = $classes.values.sort_by { |c| c['name'].downcase }
   macros = $macros.sort_by { |m| m['name'].downcase }
