@@ -245,7 +245,7 @@ CTypes.define(CTypes.any_constness_and_sign('char')) do
   boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, &%{box}, 1);"
 
   unboxing_fn.name = 'mrb_string_value_ptr'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = *#{unboxing_fn.name}(mrb, &%{unbox});"
+  unboxing_fn.invocation_template = "#{type_name} %{as} = *#{unboxing_fn.name}(mrb, %{unbox});"
 
   self.type_check = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
