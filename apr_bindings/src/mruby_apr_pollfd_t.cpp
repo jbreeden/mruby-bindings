@@ -152,7 +152,11 @@ mrb_APR_AprPollfdT_get_reqevents(mrb_state* mrb, mrb_value self) {
 
   apr_int16_t native_field = native_self->reqevents;
 
-  mrb_value ruby_field = TODO_mruby_box_apr_int16_t(mrb, native_field);
+  if (native_field > MRB_INT_MAX) {
+    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+    return mrb_nil_value();
+  }
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
 
   return ruby_field;
 }
@@ -170,9 +174,12 @@ mrb_APR_AprPollfdT_set_reqevents(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_apr_int16_t(ruby_field);
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
-  apr_int16_t native_field = TODO_mruby_unbox_apr_int16_t(ruby_field);
+  short native_field = mrb_fixnum(ruby_field);
 
   native_self->reqevents = native_field;
 
@@ -191,7 +198,11 @@ mrb_APR_AprPollfdT_get_rtnevents(mrb_state* mrb, mrb_value self) {
 
   apr_int16_t native_field = native_self->rtnevents;
 
-  mrb_value ruby_field = TODO_mruby_box_apr_int16_t(mrb, native_field);
+  if (native_field > MRB_INT_MAX) {
+    mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
+    return mrb_nil_value();
+  }
+  mrb_value ruby_field = mrb_fixnum_value(native_field);
 
   return ruby_field;
 }
@@ -209,9 +220,12 @@ mrb_APR_AprPollfdT_set_rtnevents(mrb_state* mrb, mrb_value self) {
   mrb_get_args(mrb, "o", &ruby_field);
 
   /* type checking */
-  TODO_type_check_apr_int16_t(ruby_field);
+  if (!mrb_obj_is_kind_of(mrb, ruby_field, mrb->fixnum_class)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
+    return mrb_nil_value();
+  }
 
-  apr_int16_t native_field = TODO_mruby_unbox_apr_int16_t(ruby_field);
+  short native_field = mrb_fixnum(ruby_field);
 
   native_self->rtnevents = native_field;
 
