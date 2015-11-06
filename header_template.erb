@@ -26,10 +26,11 @@
  *
  * Key:
  *
- * BIND_{type name}_TYPE                     : Should we bind the class at all?
- * BIND_{type name}_INITIALIZE               : If the class is bound, should we also bind initialize to malloc a new instance on `new`?
- * BIND_{type name}_{field name}_FIELD       : If the class is bound, should we also bind this field?
- * BIND_{type name}_{function name}_FUNCTION : If the class is bound, should we also bind this member function?
+ * BIND_{type name}_TYPE                      : Should we bind the class at all?
+ * BIND_{type name}_INITIALIZE                : If the class is bound, should we also bind initialize to malloc a new instance on `new`?
+ * BIND_{type name}_{field name}_FIELD_READER : If the class is bound, should we also bind a reader for this field?
+ * BIND_{type name}_{field name}_FIELD_WRITER : If the class is bound, should we also bind a writer for this field?
+ * BIND_{type name}_{function name}_FUNCTION  : If the class is bound, should we also bind this member function?
  *
  * Fields & method are disabled by default so that bindings may be added and
  * tested incrementally. The generated bindings are a good start, but they
@@ -40,7 +41,8 @@
 #define BIND_<%= klass['ruby_name'] %>_TYPE TRUE
 #define BIND_<%= klass['ruby_name'] %>_INITIALIZE FALSE
 <%   klass['fields'].sort_by { |f| f['name'] }.each do |field| -%>
-#define BIND_<%= klass['ruby_name'] %>_<%= field['name'] %>_FIELD FALSE
+#define BIND_<%= klass['ruby_name'] %>_<%= field['name'] %>_FIELD_READER FALSE
+#define BIND_<%= klass['ruby_name'] %>_<%= field['name'] %>_FIELD_WRITER FALSE
 <%   end -%>
 <%   klass['member_functions'].sort_by { |f| f['name'] }.each do |function| -%>
 #define BIND_<%= klass['ruby_name'] %>_<%= function['name'] %>_FUNCTION FALSE

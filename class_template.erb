@@ -62,7 +62,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, 
  */
 
 <%   self['fields'].select { |f| f['access'] == 'public' }.each do |field| -%>
-#if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD
+#if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_READER
 /* get_<%= field['name'] %>
  *
  * Return Type: <%= field['type']['type_name'] %>
@@ -79,7 +79,9 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_sta
 
   return ruby_field;
 }
+#endif
 
+#if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_WRITER
 /* set_<%= field['name'] %>
  *
  * Parameters:
@@ -203,8 +205,10 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
    * Fields
    */
 <%   self['fields'].select { |f| f['access'] == 'public' }.each do |field| -%>
-#if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD
+#if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_READER
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= field['name'] %>", mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>, MRB_ARGS_ARG(0, 0));
+#endif
+#if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_WRITER
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= field['name'] %>=", mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>, MRB_ARGS_ARG(1, 0));
 #endif
 <%   end -%>
