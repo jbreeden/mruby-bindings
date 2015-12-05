@@ -31,6 +31,7 @@ static void free_<%= klass['name'].type_to_identifier %>(mrb_state* mrb, void* p
       box->obj = NULL;
     }
   }
+  free(box);
 }
 
 static const mrb_data_type <%= klass['name'].type_to_identifier %>_data_type = {
