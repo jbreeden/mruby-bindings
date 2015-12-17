@@ -27,6 +27,7 @@ require 'json'
 require 'erb'
 require 'pp'
 require_relative './ctypes'
+require_relative './builtin_ctypes'
 
 USAGE = <<EOS
 clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAME -o OUTPUT_DIR [-f]
@@ -40,9 +41,23 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
     The name to use for the generated module. This is the module under which
     all macros, functions, classes, etc. generated from the C headers will
     be defined in Ruby land.
+    
+  -e, --extension
+    The extension to use for source files. Default is 'c'. Use 'cpp' or similar
+    if generating bindings to C++ code.
+      
+  -i, --input=FILE
+    Input file. Default is STDIN
+    
+  -l FILE
+    Load a ruby file before processing. Useful for defining additional CTypes.
 
   -o, --output
     The output directory. This is where the generated source code will be saved.
+    Default is './bindings'
+  
+  -v, --verbose
+    Output extra comments in the generated bindings.
 
   -f
     If the output directory exists, mruby-bindings will refuse to overwrite it
@@ -53,13 +68,21 @@ EOS
 # Validate gem name is all leters and hyphens
 # Validate module name is a valid ruby module identifier
 # Print usage message for invalid inputs
-yargs = Yargs.new(ARGV)
+yargs = Yargs.new(ARGV, :consume)
 $gem_name = yargs.value(:g, :gem, 'gem-name')
 $module_name = yargs.value(:m, :module, 'module-name')
+$ext = yargs.value(:e, :extension) || 'c'
+$in = yargs.value(:i, :input)
+$in = $in.nil? ? $stdin : File.open($in, 'r')
 $output_dir = yargs.value(
   :o, :output, :dir, :directory, 'output-dir', 'output-directory'
 ) || 'bindings'
 $force = yargs.flag(:f, :force)
+$verbose = yargs.flag(:v, :verbose)
+
+while (file = yargs.value(:l))
+  load file
+end
 
 unless $gem_name
   $stderr.puts "Must specify the gem name `-g YOUR_GEM_NAME`\n\n"
@@ -91,15 +114,8 @@ $module_functions = {}
 $enums = {}
 $macros = []
 
-at_exit do
-  make_declaration_tree
-  annotate_declarations
-  print_diagnostics
-  generate_bindings
-end
-
 def make_declaration_tree
-  while line = $stdin.gets
+  while line = $in.gets
     begin
       datum = JSON.parse(line)
     rescue
@@ -213,21 +229,6 @@ def annotate_declarations
   end
 end
 
-def print_diagnostics
-  File.open('class_definitions.txt', 'w') do |file|
-    PP.pp $classes, file
-  end
-  File.open('function_definitions.txt', 'w') do |file|
-    PP.pp $module_functions, file
-  end
-  File.open('enum_definitions.txt', 'w') do |file|
-    PP.pp $enums, file
-  end
-  File.open('macro_definitions.txt', 'w') do |file|
-    PP.pp $macros, file
-  end
-end
-
 def generate_bindings
   # Setting up locals for the templates
   gem_name = $gem_name
@@ -237,43 +238,138 @@ def generate_bindings
   classes = $classes.values.sort_by { |c| c['name'].downcase }
   macros = $macros.sort_by { |m| m['name'].downcase }
 
-  boxing_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/boxing_template.erb"), nil, "-")
-  class_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/class_template.erb"), nil, "-")
-  module_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/module_template.erb"), nil, "-")
-  enums_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/enums_template.erb"), nil, "-")
-  header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/header_template.erb"), nil, "-")
-  macros_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/macros_template.erb"), nil, "-")
+  boxing_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/boxing_template.erb"), nil, "-")
+  class_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/class_template.erb"), nil, "-")
+  module_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/module_template.erb"), nil, "-")
+  enums_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/enums_template.erb"), nil, "-")
+  header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/header_template.erb"), nil, "-")
+  boxing_header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/boxing_header_template.erb"), nil, "-")
+  classes_header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/classes_header_template.erb"), nil, "-")
+  macros_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/macros_template.erb"), nil, "-")
 
   if $classes.any?
     to_gen = $classes.values.reject { |c| c['is_template'] }
     to_gen.each do |the_class|
       the_class.instance_eval do
-        File.open("#{$output_dir}/src/mruby_#{the_class['name'].type_to_identifier}.cpp", "w") do |file|
+        File.open("#{$output_dir}/src/mruby_#{the_class['name'].type_to_identifier}.#{$ext}", "w") do |file|
           file.puts(class_erb.result binding)
         end
       end
     end
-
-    File.open("#{$output_dir}/src/mruby_#{module_name}_boxing.cpp", "w") do |file|
+  
+    File.open("#{$output_dir}/src/mruby_#{module_name}_boxing.#{$ext}", "w") do |file|
       file.puts(boxing_erb.result binding)
     end
   end
-
+  
   if $enums.any?
     File.open("#{$output_dir}/mrblib/#{module_name}.rb", "w") do |file|
       file.puts(enums_erb.result binding)
     end
   end
-
-  File.open("#{$output_dir}/src/mruby_#{module_name}.cpp", "w") do |file|
+  
+  File.open("#{$output_dir}/src/mruby_#{module_name}.#{$ext}", "w") do |file|
     file.puts(module_erb.result binding)
   end
-
+  
   File.open("#{$output_dir}/include/mruby_#{module_name}.h", "w") do |file|
     file.puts(header_erb.result binding)
   end
-
-  File.open("#{$output_dir}/src/mruby_#{module_name}_macro_constants.cpp", "w") do |file|
+  
+  File.open("#{$output_dir}/include/mruby_#{module_name}_boxing.h", "w") do |file|
+    file.puts(boxing_header_erb.result binding)
+  end
+  
+  File.open("#{$output_dir}/include/mruby_#{module_name}_boxing.h", "w") do |file|
+    file.puts(boxing_header_erb.result binding)
+  end
+  
+  File.open("#{$output_dir}/include/mruby_#{module_name}_classes.h", "w") do |file|
+    file.puts(classes_header_erb.result binding)
+  end
+  
+  File.open("#{$output_dir}/src/mruby_#{module_name}_macro_constants.#{$ext}", "w") do |file|
     file.puts(macros_erb.result binding)
   end
+  
+  generate_functions_header
 end
+
+def generate_functions_header
+  File.open("#{$output_dir}/include/mruby_#{$module_name}_functions.h", 'w') do |out|
+    out.puts "#ifndef MRUBY_#{$module_name}_FUNCTIONS_HEADER"
+    out.puts "#define MRUBY_#{$module_name}_FUNCTIONS_HEADER"
+    out.puts
+    File.open("#{$output_dir}/src/mruby_#{$module_name}.#{$ext}", 'r') do |f|
+      this_fn_name = ''
+      todo = false
+      f.each_line do |line|
+        if line =~ /^#if BIND.*FUNCTION/
+          this_fn_name = line.split(' ')[1].strip
+          todo = false
+          next
+        end
+
+        if line =~ /TODO/
+          todo = [] unless todo # Convert to array from `false`
+          todo.push(line[/TODO([^\s(]*)/])
+        end
+
+        if line =~ /^#endif/ && !this_fn_name.empty?
+          if todo
+            out.puts "#define #{this_fn_name} FALSE"
+            if $verbose
+              out.puts "/* Couln't complete binding for #{this_fn_name.sub('BIND_', '').sub('_FUNCTION', '')}"
+              todo.uniq.sort.each do |todo_item|
+                out.puts "  - #{todo_item}"
+              end
+              out.puts "*/"
+            end
+          else
+            out.puts "#define #{this_fn_name} TRUE"
+          end
+          todo = false
+        end
+
+        if line =~ /gem_init/
+          break
+        end
+      end
+    end
+    out.puts "#endif"
+  end
+end
+
+def print_diagnostics
+  File.open('mruby_bindings_diagnostics/class_definitions.txt', 'w') do |file|
+    PP.pp $classes, file
+  end
+  File.open('mruby_bindings_diagnostics/function_definitions.txt', 'w') do |file|
+    PP.pp $module_functions, file
+  end
+  File.open('mruby_bindings_diagnostics/enum_definitions.txt', 'w') do |file|
+    PP.pp $enums, file
+  end
+  File.open('mruby_bindings_diagnostics/macro_definitions.txt', 'w') do |file|
+    PP.pp $macros, file
+  end
+end
+
+def print_todo
+  todos = []
+  File.open("#{$output_dir}/src/mruby_#{$module_name}.#{$ext}", "r") do |file|
+    file.each_line do |line|
+      todos.push(line[/TODO([^\s(]*)/]) if line.include? "TODO"
+    end
+  end
+  todos = todos.uniq.sort
+  File.open('mruby_bindings_diagnostics/todo.txt', 'w') { |f| f.write todos.join("\n") }
+end
+
+FileUtils.rm_rf 'mruby_bindings_diagnostics'
+Dir.mkdir('mruby_bindings_diagnostics')
+make_declaration_tree
+annotate_declarations
+print_diagnostics
+generate_bindings
+print_todo

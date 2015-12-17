@@ -1,13 +1,6 @@
-- Need to be more conservative with typedef resolution
-- Seriously need all duplicated references to a native type (in ruby land) to point to the same *ruby* object.
-    This is an issue when...
-    - A field is retrieved twice (since we're boxing every time)
-      This is difficult to manage because...
-      - C code may change the field, so we don't know when it stops being the same object.
-    - A native function returns the same object on multiple invocations (like a hash get called twice)
-    We could assume & warn, or maybe check the pointer address. Of course, pointer addresses may be reused.
-    We also don't know when a function call may free an object (such as apr_pool_destroy)
-- boxing functions should use class retrieving macros
+- Add format specifiers to skip unboxing
+- Add parameter type overrides `CParam[fn_name, arg_num/name] = CTypes['my_out_type']`
+- Generalize return from functions? (Make an array, return first if len == 1, else return array)
 
 Just Tips & Reminders
 ---------------------

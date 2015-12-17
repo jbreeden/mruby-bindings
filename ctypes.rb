@@ -9,19 +9,32 @@ module CTypes
       # see the defintion for "char *" below.
       :param_cleanup_template
   end
+end
 
+module CTypes
   class Definition
-    attr_accessor :type_name, :boxing_fn, :unboxing_fn, :type_check
+    attr_accessor :type_name, :boxing_fn, :unboxing_fn, :type_check, :out_param
 
     def initialize(type_name)
       self.type_name = type_name
+      self.out_param = false
       self.boxing_fn = BoxingFn.new
       boxing_fn.name = "TODO_mruby_box_#{type_name.type_to_identifier.split(' ').join('_')}"
       self.unboxing_fn = BoxingFn.new
       unboxing_fn.name = "TODO_mruby_unbox_#{type_name.type_to_identifier.split(' ').join('_')}"
     end
+    
+    def aliased_as(t_name)
+      dup = Definition.new(t_name)
+      dup.boxing_fn = self.boxing_fn
+      dup.unboxing_fn = self.unboxing_fn
+      dup.type_check = self.type_check
+      dup
+    end
   end
+end
 
+module CTypes
   @types = {}
   @typedefs = {}
 
@@ -40,16 +53,22 @@ module CTypes
     end
 
     def [](type_name)
-      # Resolve typedef chain to underlying type
-      # TODO: Full resolution may not always be desired.
-      #       Might want separate functions or an options
-      #       for direct accessvs resolved access.
+      # Resolve typedef chain to first known type
+      known_type = type_name
       loop {
-        break unless(@typedefs[type_name] && @types[@typedefs[type_name]])
-        type_name = @typedefs[type_name]
+        # Found a type definition... break!
+        break if @types[known_type] || known_type.nil?
+        
+        # Traverse the next level of typedefs
+        known_type = @typedefs[known_type]
       }
 
-      @types[type_name]
+      type = @types[known_type]
+      if known_type == type_name || type.nil?
+        return type
+      else
+        return type.aliased_as(type_name)
+      end
     end
 
     def learn_data_type(type)
@@ -112,145 +131,4 @@ EOF
     end
 
   end
-end
-
-def CTypes.any_constness_and_sign(*types)
-  result = types.dup
-  result << types.map { |type| "const #{type}" }
-  result << types.map { |type| "unsigned #{type}" }
-  result << types.map { |type| "const unsigned #{type}" }
-  result << types.map { |type| "unsigned const #{type}" }
-  result << types.map { |type| "singed #{type}" }
-  result << types.map { |type| "singed const #{type}" }
-  result << types.map { |type| "const singed #{type}" }
-  result
-end
-
-CTypes.define(CTypes.any_constness_and_sign('short', 'long', 'int', 'long long')) do
-  boxing_fn.name = 'mrb_fixnum_value'
-  boxing_fn.invocation_template = <<EOF
-if (%{box} > MRB_INT_MAX) {
-  mrb_raise(mrb, mrb->eStandardError_class, "MRuby cannot represent integers greater than MRB_INT_MAX");
-  return mrb_nil_value();
-}
-mrb_value %{as} = #{boxing_fn.name}(%{box});
-EOF
-
-  unboxing_fn.name = 'mrb_fixnum'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(%{unbox});"
-
-  self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->fixnum_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
-  return mrb_nil_value();
-}
-EOF
-end
-
-CTypes.define(CTypes.any_constness_and_sign('float', 'double')) do
-  boxing_fn.name = 'mrb_float_value'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
-
-  unboxing_fn.name = 'mrb_float'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(%{unbox});"
-
-  self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->float_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "Float expected");
-  return mrb_nil_value();
-}
-EOF
-end
-
-CTypes.define(CTypes.any_constness_and_sign('bool')) do
-  boxing_fn.name = 'mrb_bool_value'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(%{box});"
-
-  unboxing_fn.name = 'mrb_test'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(%{unbox});"
-
-  self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->true_class) && !mrb_obj_is_kind_of(mrb, %{value}, mrb->false_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "Boolean expected");
-  return mrb_nil_value();
-}
-EOF
-end
-
-CTypes.define('char *') do
-  boxing_fn.name = 'mrb_str_new_cstr'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
-
-  unboxing_fn.name = 'mrb_string_value_cstr'
-  unboxing_fn.invocation_template = <<EOF
-/* WARNING: Allocating new memory to create 'char *' from 'const char *'.
- *          Please verify that this memory is cleaned up correctly.
- *
- *          Has this been verified? [No]
- */
-#{type_name} %{as} = strdup(#{unboxing_fn.name}(mrb, &%{unbox}));
-EOF
-
-  unboxing_fn.param_cleanup_template = <<EOF
-/* WARNING: Assuming that the new string can be deallocated after the function call.
- *          Please verify that this is correct (the function does not save this parameter).
- *
- *          Has this been verified? [No]
- */
-free(%{clean});
-%{clean} = NULL;
-EOF
-
-self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-  return mrb_nil_value();
-}
-EOF
-
-end
-
-CTypes.define('const char *') do
-  boxing_fn.name = 'mrb_str_new_cstr'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
-
-  unboxing_fn.name = 'mrb_string_value_cstr'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(mrb, &%{unbox});"
-
-  self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-  return mrb_nil_value();
-}
-EOF
-end
-
-CTypes.define('string') do
-  boxing_fn.name = 'mrb_str_new_cstr'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box}.c_str());"
-
-  unboxing_fn.name = 'mrb_string_value_cstr'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = (#{type_name}) #{unboxing_fn.name}(mrb, &%{unbox});"
-
-  self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-  return mrb_nil_value();
-}
-EOF
-end
-
-CTypes.define(CTypes.any_constness_and_sign('char')) do
-  boxing_fn.name = 'mrb_str_new'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, &%{box}, 1);"
-
-  unboxing_fn.name = 'mrb_string_value_ptr'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = *#{unboxing_fn.name}(mrb, %{unbox});"
-
-  self.type_check = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
-  mrb_raise(mrb, E_TYPE_ERROR, "String expected");
-  return mrb_nil_value();
-}
-EOF
 end
