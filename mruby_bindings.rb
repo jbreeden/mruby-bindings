@@ -28,10 +28,9 @@ require 'erb'
 require 'pp'
 require_relative './ctypes'
 require_relative './builtin_ctypes'
-require_relative './param_types'
 
 USAGE = <<EOS
-clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAME -o OUTPUT_DIR [-f]
+clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAME -o OUTPUT_DIR [OTHER_OPTIONS...]
 
   -g, -gem
     The name to use for this mrbgems. Should be mruby-something
