@@ -45,13 +45,13 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
       
       Invocation
       ----------
-      | clang2json OPTIONS | mruby_bindings -h ./my_includes.h OTHER_OPTIONS...
+      | clang2json OPTIONS | mruby_bindings --includes ./my_includes.h OTHER_OPTIONS...
       
   --skip=(macros|src|include|mrblib|boxing|mrbgem.rake)
     Skip generation of the indicated portion of the mrbgem.
     
-    If you've made manual changes to part of the generated bindings that you don't 
-    want to overwrite, this is the option for the job.
+    If you've made manual changes to part of the generated bindings that you 
+    don't want to overwrite, this is the option for the job.
     
     This shouldn't be needed often. It was only added to handle the macros case.
     Mruby-bindings has a hard time figuring out what macro expansions actually
@@ -59,18 +59,26 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
     manually tweak them (mostly commenting useless ones out). Afterwards, use
     `--skip macros` and they will no longer be generated.
     
-    WARNING: The output directory is cleared before generating bindings. So any
-    skipped portions simply won't exist. You should be copying the generated
-    bindings to another folder. Then, as required, you can regenerate the bindings,
-    and copy the result over your "master" files. In this way, the skipped portions
-    will not overwrite your manual changes. This is the basic loop you'll go
-    through - as you define additional CTypes other binding configurations - until
-    you get bindings that are complete & functional.
+    WARNING
+      The output directory is cleared before generating bindings.
+      
+      Any skipped portions simply won't exist. You should be copying the
+      generated bindings to another folder (call this new folder your "master"
+      files). As required, you can regenerate the bindings, and copy the result
+      over your "master" files. In this way, the skipped portions will not
+      overwrite your manual changes. This is the basic loop you'll go through -
+      as you define additional CTypes other binding configurations - until you
+      get bindings that are complete & functional.
     
-    RECOMMENDATION: When you first generate bindings, put them under version
-    control. Each time you add a CType or change a setting, check the diff
-    of the output to see the changes. Only then, once you've acheived the effect
-    you want, should you copy the generated code to your master files.
+    RECOMMENDATION
+      Use Rake. Define Rake tasks for running clang2json & mruby_bindings, as 
+      well as pulling the generated code to your master files.
+    
+    RECOMMENDATION
+      When you first generate bindings, put them under version
+      control. Each time you add a CType or change a setting, check the diff
+      of the output to see the changes. Only then, once you've acheived the 
+      effect you want, should you copy the generated code to your master files.
     
     May be specified multiple times.
     
