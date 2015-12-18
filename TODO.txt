@@ -1,6 +1,6 @@
-- Add format specifiers to skip unboxing
 - Add parameter type overrides `CParam[fn_name, arg_num/name] = CTypes['my_out_type']`
 - Generalize return from functions? (Make an array, return first if len == 1, else return array)
+- Pull all logic out of templates into the annotations function
 
 Just Tips & Reminders
 ---------------------

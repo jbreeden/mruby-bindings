@@ -10,13 +10,13 @@ extern "C" {
 
 <% module_functions.each do |function| -%>
 #if BIND_<%= function['name'] %>_FUNCTION
-#define <%= function['name'] %>_REQUIRED_ARGC <%= function['argc'] %>
+#define <%= function['name'] %>_REQUIRED_ARGC <%= function['in_params'].length %>
 #define <%= function['name'] %>_OPTIONAL_ARGC 0
 /* <%= function['name'] %>
  *
- * Parameters:<%= " None" unless function['params'].any? %>
-<% if function['params'].any? -%>
-<%   function['params'].each do |param| -%>
+ * Parameters:<%= " None" unless function['in_params'].any? %>
+<% if function['in_params'].any? -%>
+<%   function['in_params'].each do |param| -%>
  * - <%= param['name'] %>: <%= param['type']['type_name'] %>
 <%   end -%>
 <% end -%>
@@ -24,27 +24,41 @@ extern "C" {
  */
 mrb_value
 mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
+<%
+     to_unbox = function['in_params'].select { |p| p['ctype'].needs_unboxing? }
+     to_type_check = function['in_params'].select { |p| p['ctype'].needs_type_check? }
+-%>
+<% if function['out_count'] > 1 -%>
+  mrb_value results = mrb_ary_new(mrb);
+<% end -%>
 <%   if function['params'].any? -%>
 <%     function['params'].each do |param| -%>
-  mrb_value <%= param['name'] %>;
+<%       type = param['ctype'] -%>
+<%       type.declare_box(type.needs_unboxing? ? param['name'] : "native_#{param['name']}").each_line do |line| -%>
+  <%= line.sub("\n", '') %>
 <%     end -%>
+<%   end -%>
 
+<%   unless function['in_params'].empty? -%>
   /* Fetch the args */
-  mrb_get_args(mrb, "<%= 'o' * function['params'].length %>", <%= function['params'].map { |p| "&#{p['name']}" }.join(', ') %>);
+<%   format_specifiers = function['in_params'].map { |p| p['ctype'].format_specifier }.join('') -%>
+<%   get_args_argv =  function['in_params'].map { |p| "&#{p['ctype'].needs_unboxing? ? p['name'] : "native_#{p['name']}" }" }.join(', ') -%>
+  mrb_get_args(mrb, "<%= format_specifiers %>", <%= get_args_argv %>);
+<%   end -%>
 
-<%     if function['params'].any? %>
+<%     if to_type_check.any? -%>
   /* Type checking */
-<%       function['params'].each do |param| -%>
-<%         (CTypes[param['type']['type_name']].type_check % ({:value => param['name']})).each_line do |line| -%>
+<%       to_type_check.each do |param| -%>
+<%         (param['ctype'].type_check % ({:value => param['name']})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%         end -%>
 <%       end -%>
-<%     end -%>
 
-<%     if function['params'].any? %>
+<%     end -%>
+<%     if to_unbox.any? -%>
   /* Unbox parameters */
-<%       function['params'].each do |param| -%>
-<%         (CTypes[param['type']['type_name']].unboxing_fn.invocation_template % ({:unbox => param['name'], :as => "native_#{param['name']}"})).each_line do |line| -%>
+<%       to_unbox.each do |param| -%>
+<%         (param['ctype'].unboxing_fn.invocation_template % ({:unbox => param['name'], :as => "native_#{param['name']}"})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%         end -%>
 
@@ -52,27 +66,62 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%     end -%>
 <%   end -%>
   /* Invocation */
-  <%= function['return_type']['type_name'] == 'void' ? '' : "#{function['return_type']['type_name']} result = "  %><%= function['name'] %>(<%= function['params'].map { |p| "native_#{p['name']}" }.join(', ') %>);
+<% 
+     argv = function['params'].map { |p| p['ctype'].out_only? ? "&native_#{p['name']}" : "native_#{p['name']}" }.join(', ')
+-%>
+  <%= function['return_type']['type_name'] == 'void' ? '' : "#{function['return_type']['type_name']} native_return_value = "  %><%= function['name'] %>(<%= argv %>);
 
 <%   if function['return_type']['type_name'] != 'void' -%>
   /* Box the return value */
-<%     (CTypes[function['return_type']['type_name']].boxing_fn.invocation_template % ({:box => 'result', :as => 'return_value'})).each_line do |line| -%>
+<%     (function['ctype'].boxing_fn.invocation_template % ({box: 'native_return_value', as: 'return_value'})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%     end -%>
-
-<%   end -%>
-<%   function['params'].each do |param| -%>
-<%     if CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template -%>
-<%       (CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template % ({:clean => "native_#{param['name']}"})).each_line do |line| -%>
+<%     if function['ctype'].return_cleanup -%>
+<%       (function['ctype'].return_cleanup % {value: 'native_return_value'}).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%       end -%>
+<%     end -%>
+<%     if function['out_count'] > 1 -%>
+  mrb_ary_push(mrb, results, return_value);
+<%     end -%>
+  
+<%   end -%>
+<%   if function['out_params'].any? -%>
+  /* Box the out parameters */
+<%     function['out_params'].each do |out| -%>
+<%       (out['ctype'].boxing_fn.invocation_template % ({box: "native_#{out['name']}", as: "#{out['name']}"})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%       end -%>
+<%       if out['ctype'].return_cleanup -%>
+<%       (out['ctype'].return_cleanup % {value: "native_#{out['name']}"}).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%       end -%>
+<%       end -%>
+<%       if function['out_count'] > 1 -%>
+  mrb_ary_push(mrb, results, <%= "#{out['name']}" %>);
+<%       end -%>
+<%     end -%>
 
+<%   end -%>
+<%   if function['in_params'].any? { |p| p['ctype'].unboxing_fn.param_cleanup_template } -%>
+  /* Clean up temporary values from unboxing */
+<%     function['in_params'].each do |param| -%>
+<%       if param['ctype'].unboxing_fn.param_cleanup_template -%>
+<%         (param['ctype'].unboxing_fn.param_cleanup_template % ({value: "native_#{param['name']}"})).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%         end -%>
+
+<%       end -%>
 <%     end -%>
 <%   end -%>
-<%   if function['return_type']['type_name'] == 'void' -%>
+<%   if function['out_count'] == 0 -%>
   return mrb_nil_value();
-<%   else -%>
+<%   elsif function['out_count'] == 1 && !function['is_void'] -%>
   return return_value;
+<%   elsif function['out_count'] == 1 && function['is_void'] -%>
+  return <%= function['out_params'].first['name'] %>;
+<%   else -%>
+  return results;
 <%   end -%>
 }
 #endif
@@ -80,7 +129,7 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <% end -%>
 
 void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
-  RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name%>");
+  struct RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name%>");
   mruby_<%= module_name %>_define_macro_constants(mrb);
 
   /*

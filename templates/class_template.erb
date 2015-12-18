@@ -174,7 +174,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <%   end -%>
 <%   function['params'].each do |param| -%>
 <%     if CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template -%>
-<%       (CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template % ({:clean => "native_#{param['name']}"})).each_line do |line| -%>
+<%       (CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template % ({:value => "native_#{param['name']}"})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%       end -%>
 
@@ -191,7 +191,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <%   end -%>
 <% end -%>
 void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
-  RClass* <%= self['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= self['ruby_name'] %>", mrb->object_class);
+  struct RClass* <%= self['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= self['ruby_name'] %>", mrb->object_class);
   MRB_SET_INSTANCE_TT(<%= self['ruby_name'] %>_class, MRB_TT_DATA);
 
 #if BIND_<%= self['ruby_name'] %>_INITIALIZE

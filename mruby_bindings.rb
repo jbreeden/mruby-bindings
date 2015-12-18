@@ -28,6 +28,7 @@ require 'erb'
 require 'pp'
 require_relative './ctypes'
 require_relative './builtin_ctypes'
+require_relative './param_types'
 
 USAGE = <<EOS
 clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAME -o OUTPUT_DIR [-f]
@@ -48,6 +49,52 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
       
   -i, --input=FILE
     Input file. Default is STDIN
+    
+  --includes=FILE
+    By default, include statements are inserted for every header file encountered
+    in the type information from clang2json. These are naive, including only the
+    file names. Additionally, you often don't need to - or can't - actually include
+    them all when you compile the final gem. This option allows you to override
+    the list of include statements, by pointing to a file that you've setup
+    ahead of time.
+    
+    Example:
+    
+      my_includes.h
+      ----------------
+      | #include "my/file.h"
+      | #include "some/other/file.h"
+      
+      Invocation
+      ----------
+      | clang2json OPTIONS | mruby_bindings -h ./my_includes.h OTHER_OPTIONS...
+      
+  --skip=(macros|src|include|mrblib|boxing|mrbgem.rake)
+    Skip generation of the indicated portion of the mrbgem.
+    
+    If you've made manual changes to part of the generated bindings that you don't 
+    want to overwrite, this is the option for the job.
+    
+    This shouldn't be needed often. It was only added to handle the macros case.
+    Mruby-bindings has a hard time figuring out what macro expansions actually
+    are (strings? integers?). It tries its best, but you're going to have to
+    manually tweak them (mostly commenting useless ones out). Afterwards, use
+    `--skip macros` and they will no longer be generated.
+    
+    WARNING: The output directory is cleared before generating bindings. So any
+    skipped portions simply won't exist. You should be copying the generated
+    bindings to another folder. Then, as required, you can regenerate the bindings,
+    and copy the result over your "master" files. In this way, the skipped portions
+    will not overwrite your manual changes. This is the basic loop you'll go
+    through - as you define additional CTypes other binding configurations - until
+    you get bindings that are complete & functional.
+    
+    RECOMMENDATION: When you first generate bindings, put them under version
+    control. Each time you add a CType or change a setting, check the diff
+    of the output to see the changes. Only then, once you've acheived the effect
+    you want, should you copy the generated code to your master files.
+    
+    May be specified multiple times.
     
   -l FILE
     Load a ruby file before processing. Useful for defining additional CTypes.
@@ -74,11 +121,17 @@ $module_name = yargs.value(:m, :module, 'module-name')
 $ext = yargs.value(:e, :extension) || 'c'
 $in = yargs.value(:i, :input)
 $in = $in.nil? ? $stdin : File.open($in, 'r')
+$includes = yargs.value(:includes)
 $output_dir = yargs.value(
   :o, :output, :dir, :directory, 'output-dir', 'output-directory'
 ) || 'bindings'
 $force = yargs.flag(:f, :force)
 $verbose = yargs.flag(:v, :verbose)
+
+$skip = []
+while (skip = yargs.value(:skip))
+  $skip.push(skip)
+end
 
 while (file = yargs.value(:l))
   load file
@@ -145,10 +198,11 @@ def make_declaration_tree
       when "EnumDecl"
         # Ignore anonymous declarations
         # (They are named "anonymous something...")
-        next if datum['name'].include? ' '
+        next if datum['name'] =~ /anonymous\s/i
         enum = $enums[datum['usr']] || datum
         enum['constants'] ||= []
         $enums[datum['usr']] = enum
+        CTypes.learn_enum(enum['name'])
       when "EnumConstantDecl"
         enum = $enums[datum['member_of']]
         unless enum
@@ -202,7 +256,6 @@ def make_declaration_tree
   end
 end
 
-# TODO: This function name isn't really valid anymore
 def annotate_declarations
   $classes.each do |usr, klass|
     klass['ruby_name'] = klass['name'].type_name_to_rb
@@ -211,6 +264,7 @@ def annotate_declarations
   $classes.each do |usr, klass|
     klass['fields'].each do |field|
       CTypes.learn_data_type(field['type'])
+      field['ctype'] = CTypes[field['type']]
     end
   end
 
@@ -218,15 +272,38 @@ def annotate_declarations
   # - Add boxing/unboxing functions to any known param types
   # - Add boxing/unboxing functions to any known return types
   # - Add names for anonymous parameters
+  # - Associate parameters & return values with specified types
   $module_functions.values.concat($classes.values.flat_map { |c| c['member_functions']}).each do |func|
-    CTypes.learn_data_type(func['return_type'])
+    func['out_count'] = 0
+    if func['return_type']['type_name'] != 'void'
+      func['out_count'] += 1
+    else
+      func['is_void'] = true
+    end
+    func['ctype'] = CTypes.get_fn_return_type(func['name'])
+    func['ctype'] ||= CTypes.learn_data_type(func['return_type'])
+    func['in_params'] = []
+    func['out_params'] = []
     func['params'].each_with_index do |param, i|
       if param['name'] == ''
         param['name'] = "arg#{i + 1}"
       end
-      CTypes.learn_data_type(param['type'])
+      ctype = CTypes.get_fn_param_type(func['name'], param['name']) 
+      ctype ||= CTypes.learn_data_type(param['type'])
+      param['ctype'] = ctype
+      if ctype.out_only?
+        func['out_count'] += 1
+        func['out_params'].push(param)
+      else
+        func['in_params'].push(param)
+      end
     end
   end
+end
+
+def write_file(name, &block)
+  puts "Writing file: #{name}"
+  File.open(name, 'w', &block)
 end
 
 def generate_bindings
@@ -246,57 +323,74 @@ def generate_bindings
   boxing_header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/boxing_header_template.erb"), nil, "-")
   classes_header_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/classes_header_template.erb"), nil, "-")
   macros_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/macros_template.erb"), nil, "-")
+  mrbgem_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/mrbgem.rake.erb"), nil, "-")
 
-  if $classes.any?
-    to_gen = $classes.values.reject { |c| c['is_template'] }
-    to_gen.each do |the_class|
-      the_class.instance_eval do
-        File.open("#{$output_dir}/src/mruby_#{the_class['name'].type_to_identifier}.#{$ext}", "w") do |file|
-          file.puts(class_erb.result binding)
+  unless $skip.include?('src')
+    if $classes.any?
+      to_gen = $classes.values.reject { |c| c['is_template'] }
+      to_gen.each do |the_class|
+        the_class.instance_eval do
+          write_file("#{$output_dir}/src/mruby_#{the_class['name'].type_to_identifier}.#{$ext}") do |file|
+            file.puts(class_erb.result binding)
+          end
         end
       end
-    end
-  
-    File.open("#{$output_dir}/src/mruby_#{module_name}_boxing.#{$ext}", "w") do |file|
-      file.puts(boxing_erb.result binding)
-    end
-  end
-  
-  if $enums.any?
-    File.open("#{$output_dir}/mrblib/#{module_name}.rb", "w") do |file|
-      file.puts(enums_erb.result binding)
+    
+      write_file "#{$output_dir}/src/mruby_#{module_name}_boxing.#{$ext}" do |file|
+        file.puts(boxing_erb.result binding)
+      end
     end
   end
   
-  File.open("#{$output_dir}/src/mruby_#{module_name}.#{$ext}", "w") do |file|
-    file.puts(module_erb.result binding)
+  unless $skip.include?('mrblib')
+    if $enums.any?
+      write_file("#{$output_dir}/mrblib/#{module_name}.rb") do |file|
+        file.puts(enums_erb.result binding)
+      end
+    end
   end
   
-  File.open("#{$output_dir}/include/mruby_#{module_name}.h", "w") do |file|
-    file.puts(header_erb.result binding)
+  unless $skip.include?('src')
+    write_file("#{$output_dir}/src/mruby_#{module_name}.#{$ext}") do |file|
+      file.puts(module_erb.result binding)
+    end
   end
   
-  File.open("#{$output_dir}/include/mruby_#{module_name}_boxing.h", "w") do |file|
-    file.puts(boxing_header_erb.result binding)
+  unless $skip.include?('include')
+    write_file("#{$output_dir}/include/mruby_#{module_name}.h") do |file|
+      file.puts(header_erb.result binding)
+    end
   end
   
-  File.open("#{$output_dir}/include/mruby_#{module_name}_boxing.h", "w") do |file|
-    file.puts(boxing_header_erb.result binding)
+  unless $skip.include?('include') || $skip.include?('boxing')
+    write_file("#{$output_dir}/include/mruby_#{module_name}_boxing.h") do |file|
+      file.puts(boxing_header_erb.result binding)
+    end
   end
   
-  File.open("#{$output_dir}/include/mruby_#{module_name}_classes.h", "w") do |file|
-    file.puts(classes_header_erb.result binding)
+  unless $skip.include?('include')
+    write_file("#{$output_dir}/include/mruby_#{module_name}_classes.h") do |file|
+      file.puts(classes_header_erb.result binding)
+    end
   end
   
-  File.open("#{$output_dir}/src/mruby_#{module_name}_macro_constants.#{$ext}", "w") do |file|
-    file.puts(macros_erb.result binding)
+  unless $skip.include?('macros')
+    write_file("#{$output_dir}/src/mruby_#{module_name}_macro_constants.#{$ext}") do |file|
+      file.puts(macros_erb.result binding)
+    end
+  end
+  
+  unless $skip.include?('mrbgem.rake')
+    write_file("#{$output_dir}/mrbgem.rake") do |file|
+      file.puts(mrbgem_erb.result binding)
+    end
   end
   
   generate_functions_header
 end
 
 def generate_functions_header
-  File.open("#{$output_dir}/include/mruby_#{$module_name}_functions.h", 'w') do |out|
+  write_file("#{$output_dir}/include/mruby_#{$module_name}_functions.h") do |out|
     out.puts "#ifndef MRUBY_#{$module_name}_FUNCTIONS_HEADER"
     out.puts "#define MRUBY_#{$module_name}_FUNCTIONS_HEADER"
     out.puts

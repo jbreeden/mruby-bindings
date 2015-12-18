@@ -13,28 +13,94 @@ end
 
 module CTypes
   class Definition
-    attr_accessor :type_name, :boxing_fn, :unboxing_fn, :type_check, :out_param
+    attr_accessor :recv_type,
+      :format_specifier,
+      :type_name, 
+      :boxing_fn,
+      :unboxing_fn,
+      :type_check,
+      :return_cleanup
 
-    def initialize(type_name)
+    def initialize(type_name, &block)
       self.type_name = type_name
-      self.out_param = false
+      self.recv_type = "mrb_value"
+      self.format_specifier = "o"
       self.boxing_fn = BoxingFn.new
       boxing_fn.name = "TODO_mruby_box_#{type_name.type_to_identifier.split(' ').join('_')}"
       self.unboxing_fn = BoxingFn.new
       unboxing_fn.name = "TODO_mruby_unbox_#{type_name.type_to_identifier.split(' ').join('_')}"
+      self.instance_eval(&block) if block_given?
     end
     
     def aliased_as(t_name)
-      dup = Definition.new(t_name)
+      duplicate = self.dup
+      if duplicate.recv_type == self.type_name
+        duplicate.recv_type = t_name
+      end
+      duplicate.type_name = t_name
+      duplicate
+    end
+    
+    def dup
+      dup = Definition.new(type_name)
+      dup.recv_type = self.recv_type
+      dup.format_specifier = self.format_specifier
       dup.boxing_fn = self.boxing_fn
       dup.unboxing_fn = self.unboxing_fn
       dup.type_check = self.type_check
       dup
     end
+    
+    def declare_box(name)
+      if self.recv_type.end_with?('*')
+        "#{self.recv_type} #{name} = NULL;"
+      else
+        "#{self.recv_type} #{name};"
+      end
+    end
+    
+    def needs_unboxing?
+      if @needs_unboxing.nil?
+        !@out_only && self.format_specifier == 'o'
+      else
+        @needs_unboxing
+      end
+    end
+    
+    def needs_unboxing=(val)
+      @needs_unboxing = !!val
+    end
+    
+    def needs_type_check?
+      if @needs_type_check.nil?
+        self.needs_unboxing?
+      else
+        @needs_type_check
+      end
+    end
+    
+    def needs_type_check=(val)
+      @needs_type_check = !!val
+    end
+    
+    def out_only?
+      @out_only
+    end
+    
+    def out_only=(val)
+      @out_only = !!val
+    end
+    
+    def inspect
+      # Simple format for diagnostic output (keeps it cleaner)
+      "#<CType[#{type_name}]>"
+    end
   end
 end
 
 module CTypes
+  @param_types = {}
+  @return_types = {}
   @types = {}
   @typedefs = {}
 
@@ -42,17 +108,42 @@ module CTypes
     def define(*type_names, &block)
       type_names = type_names.flatten
       type_names.each do |type_name|
-        definition = Definition.new(type_name)
+        definition = Definition.new(type_name, &block)
         @types[type_name] = definition
-        definition.instance_eval &block
       end
     end
 
     def typedef(underlying_type, new_type)
       @typedefs[new_type] = underlying_type
     end
+    
+    def get_fn_param_type(fn, param)
+      @param_types[[fn, param]]
+    end
+    
+    def set_fn_param_type(fn, param, type)
+      @param_types[[fn, param]] = type
+    end
+    
+    def get_fn_return_type(fn)
+      @return_types[fn]
+    end
+    
+    def set_fn_return_type(fn, type)
+      @return_types[fn] = type
+    end
 
     def [](type_name)
+      if type_name.kind_of? Hash
+        if type_name['type_name']
+          type_name = type_name['type_name']
+        elsif type_name['type']
+          type_name = type_name['type']['type_name']
+        elsif type_name['return_type']
+          type_name = type_name['return_type']['type_name']
+        end
+      end
+      
       # Resolve typedef chain to first known type
       known_type = type_name
       loop {
@@ -67,13 +158,25 @@ module CTypes
       if known_type == type_name || type.nil?
         return type
       else
-        return type.aliased_as(type_name)
+        # memoize result
+        @types[type_name] = type.aliased_as(type_name)
+        return @types[type_name]
       end
+    end
+    
+    def []=(name, val)
+      @types[name] = val
+    end
+
+    def learn_enum(name)
+      @types[name] = @types['int'].aliased_as(name)
     end
 
     def learn_data_type(type)
       # Only need to learn a new type once
-      return if CTypes[type['type_name']]
+      if seen = CTypes[type['type_name']]
+        return seen
+      end
 
       CTypes.define(type['type_name']) do
         # We don't know the type, but we know the pointee type from a struct/class decl
@@ -128,6 +231,7 @@ TODO_type_check_#{type['type_name'].type_to_identifier}(%{value});
 EOF
         end
       end
+      CTypes[type['type_name']]
     end
 
   end

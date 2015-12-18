@@ -15,9 +15,6 @@
  *       you will need to prepend the relative path.
  */
 
-#include "mruby_<%= module_name %>_functions.h"
-#include "mruby_<%= module_name %>_classes.h"
-#include "mruby_<%= module_name %>_boxing.h"
 #include <stdlib.h>
 #include "mruby.h"
 #include "mruby/array.h"
@@ -26,17 +23,25 @@
 #include "mruby/string.h"
 #include "mruby/value.h"
 #include "mruby/variable.h"
-<%
-classes.map { |c|
-  File.basename(c['file'])
-  }.concat(module_functions.map { |f|
-    File.basename(f['file'])
-  }).concat(macros.map { |m|
-    File.basename(m['file'])
-  }).uniq.sort.each do |file|
+
+<% if $includes -%>
+<%= File.read($includes) %>
+<% else
+     classes.map { |c|
+       File.basename(c['file'])
+       }.concat(module_functions.map { |f|
+         File.basename(f['file'])
+       }).concat(macros.map { |m|
+         File.basename(m['file'])
+       }).uniq.sort.each do |file|
 -%>
 #include "<%= file %>"
+<%  end -%>
 <% end -%>
+
+#include "mruby_<%= module_name %>_functions.h"
+#include "mruby_<%= module_name %>_classes.h"
+#include "mruby_<%= module_name %>_boxing.h"
 
 /*
  * RClass Macros
