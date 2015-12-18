@@ -48,7 +48,8 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
       | clang2json OPTIONS | mruby_bindings --includes ./my_includes.h OTHER_OPTIONS...
       
   --skip=(macros|src|include|mrblib|boxing|mrbgem.rake)
-    Skip generation of the indicated portion of the mrbgem.
+    Skip generation of the indicated portion of the mrbgem. May be specified 
+    multiple times.
     
     If you've made manual changes to part of the generated bindings that you 
     don't want to overwrite, this is the option for the job.
@@ -79,8 +80,6 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
       control. Each time you add a CType or change a setting, check the diff
       of the output to see the changes. Only then, once you've acheived the 
       effect you want, should you copy the generated code to your master files.
-    
-    May be specified multiple times.
     
   -l FILE
     Load a ruby file before processing. Useful for defining additional CTypes.
