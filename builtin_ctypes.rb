@@ -18,6 +18,8 @@ CTypes.define('void') do
   self.ignore = true
 end
 
+CTypes.typedef('int', 'time_t')
+
 CTypes.define(CTypes.any_constness_and_sign('char', 'short', 'long', 'int', 'long long', 'size_t')) do
   self.recv_template = 'mrb_int %{value};'
   self.needs_unboxing = false
