@@ -1,6 +1,6 @@
-class String
-  def type_to_identifier
-    self.sub(/\s*(struct|enum)\s*/, '').
+module ID
+  def self.type_name_to_id(type)
+    type.sub(/\s*(struct|enum)\s*/, '').
       sub(/\s*const\s*/, '').
       gsub(/\*|&|\(|\)|,|(::)/,
         '*' => ' PTR ',
@@ -12,13 +12,25 @@ class String
       split(/\s+/).
       join('_')
   end
-
-  def type_name_to_rb
-    self.sub(/(struct|enum)\s*/, '').
+  
+  def self.type_name_to_rb_class(type)
+    type.sub(/(struct|enum)\s*/, '').
       split('_').
       map { |token| "#{token[0].upcase if token.length > 0}#{token[1..(token.length)] if token.length > 1}" }.
       join('')
   end
+  
+  # Just makes the first character of each `_` separated token is captialized
+  def self.to_rb_const(enum)
+    enum.split('_').map { |token| token[0].upcase + token[1..(token.length)] }.join('_')
+  end
+end
+
+module MacroBox
+  # Helping the macro type detection system.
+  # See use of MacroBox below
+  TRUE = true
+  FALSE = false
 end
 
 require_relative "./yargs.rb"
@@ -111,7 +123,7 @@ clang2json [CLANG_OPTIONS...] | ruby mruby_bindings.rb -g GEM_NAME -m MODULE_NAM
     Default is './bindings'
   
   -v, --verbose
-    Output extra comments in the generated bindings.
+    Output extra comments in the generated bindings, as well as console logs.
 
   -f
     If the output directory exists, mruby-bindings will refuse to overwrite it
@@ -175,6 +187,8 @@ $enums = {}
 $macros = []
 
 def make_declaration_tree
+  prev_datum = nil
+  prev_type = nil
   while line = $in.gets
     begin
       datum = JSON.parse(line)
@@ -185,7 +199,23 @@ def make_declaration_tree
     begin
       case datum["kind"]
       when "TypedefDecl"
-        CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
+        ###### This has implications when there are pointers to this type.
+        ###### The pointee_type_name also need to be adjusted.
+        ###### Disabling until that is worked out.
+        ## Handle common typedef idioms:
+        ## 1) Type is declared then typedefed for a friendly name 
+        ##    (typedef struct _my_struct my_struct).
+        ## 
+        ## NOTE: Anonymous types declared in the typedef are handled by clang2json
+        ## So `typedef struct { fields... } TypeName;` will yield a StructDecl node
+        ## with the name set to TypeName already.
+        # if prev_type &&
+        #      prev_type['usr'] == datum['underlying_type']['type_usr'] &&
+        #      prev_type['name'] =~ /^(struct|enum) /
+        #   prev_type['name'] = datum['type']['type_name']
+        # else
+          CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
+        # end
       when "ClassDecl", "StructDecl"
         datum['name'] = datum['name']
         # Ignore anonymous declarations
@@ -195,6 +225,7 @@ def make_declaration_tree
         cxxClass['fields'] ||= []
         cxxClass['member_functions'] ||= []
         $classes[datum['usr']] = cxxClass
+        prev_type = cxxClass
       when "ClassTemplate"
         cxxClass = $classes[datum["usr"]] || datum
         cxxClass['fields'] ||= []
@@ -202,6 +233,7 @@ def make_declaration_tree
         # TODO: is_template is redundant, as kind == 'ClassTemplate'
         cxxClass['is_template'] = 'true'
         $classes[datum["usr"]] = cxxClass
+        prev_type = cxxClass
       when "EnumDecl"
         # Ignore anonymous declarations
         # (They are named "anonymous something...")
@@ -209,18 +241,18 @@ def make_declaration_tree
         enum = $enums[datum['usr']] || datum
         enum['constants'] ||= []
         $enums[datum['usr']] = enum
-        CTypes.learn_enum(enum['name'])
+        prev_type = cxxClass
       when "EnumConstantDecl"
         enum = $enums[datum['member_of']]
         unless enum
-          $stderr.puts "WARNING: Enum constant '#{datum['name']}' declared for unkown type '#{datum['member_of']}'"
+          $stderr.puts "WARNING: Enum constant '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
           next
         end
         enum['constants'].push(datum)
       when "CXXMethod"
         cxxClass = $classes[datum["member_of"]]
         unless cxxClass
-          $stderr.puts "WARNING: Method '#{datum['name']}' declared for unkown type '#{datum['member_of']}'"
+          $stderr.puts "WARNING: Method '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
           next
         end
         cxxClass['member_functions'].push(datum)
@@ -230,7 +262,7 @@ def make_declaration_tree
       when "FieldDecl"
         cxxClass = $classes[datum["member_of"]]
         unless cxxClass
-          $stderr.puts "WARNING: Field '#{datum['name']}' declared for unkown type '#{datum['member_of']}'"
+          $stderr.puts "WARNING: Field '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
           next
         end
         cxxClass["fields"].push(datum)
@@ -257,6 +289,7 @@ def make_declaration_tree
           datum['is_function_like'] = false
         end
       end
+      prev_datum = datum
     rescue StandardError => ex
       $stderr.puts "ERROR: #{ex} \n  (while processing #{datum})\n  Backtrace:\n  #{ex.backtrace.join("\n  ")}"
     end
@@ -264,8 +297,12 @@ def make_declaration_tree
 end
 
 def annotate_declarations
+  $enums.each do |usr, enum|
+    CTypes.learn_enum(enum['name'])
+  end
+  
   $classes.each do |usr, klass|
-    klass['ruby_name'] = klass['name'].type_name_to_rb
+    klass['ruby_name'] = ID.type_name_to_rb_class(klass['name'])
   end
 
   $classes.each do |usr, klass|
@@ -289,8 +326,11 @@ def annotate_declarations
     end
     func['ctype'] = CTypes.get_fn_return_type(func['name'])
     func['ctype'] ||= CTypes.learn_data_type(func['return_type'])
+    func['incomplete'] = true if func['ctype'].unknown?
+    
     func['in_params'] = []
     func['out_params'] = []
+    adjusted_params = []
     func['params'].each_with_index do |param, i|
       if param['name'] == ''
         param['name'] = "arg#{i + 1}"
@@ -298,6 +338,9 @@ def annotate_declarations
       ctype = CTypes.get_fn_param_type(func['name'], param['name']) 
       ctype ||= CTypes.learn_data_type(param['type'])
       param['ctype'] = ctype
+      func['incomplete'] = true if ctype.unknown?
+      next if ctype.ignore?
+      adjusted_params.push(param)
       if ctype.out_only?
         func['out_count'] += 1
         func['out_params'].push(param)
@@ -305,11 +348,12 @@ def annotate_declarations
         func['in_params'].push(param)
       end
     end
+    func['params'] = adjusted_params
   end
 end
 
 def write_file(name, &block)
-  puts "Writing file: #{name}"
+  puts "Writing file: #{name}" if $verbose
   File.open(name, 'w', &block)
 end
 
@@ -319,7 +363,7 @@ def generate_bindings
   module_name = $module_name
   module_functions = $module_functions.values.sort_by { |f| f['name'].downcase }
   enums = $enums.values.sort_by { |e| e['name'].downcase }
-  classes = $classes.values.sort_by { |c| c['name'].downcase }
+  classes = $classes.values.sort_by { |c| c['ruby_name'].downcase }
   macros = $macros.sort_by { |m| m['name'].downcase }
 
   boxing_erb = ERB.new(File.read("#{File.dirname(__FILE__)}/templates/boxing_template.erb"), nil, "-")
@@ -337,7 +381,7 @@ def generate_bindings
       to_gen = $classes.values.reject { |c| c['is_template'] }
       to_gen.each do |the_class|
         the_class.instance_eval do
-          write_file("#{$output_dir}/src/mruby_#{the_class['name'].type_to_identifier}.#{$ext}") do |file|
+          write_file("#{$output_dir}/src/mruby_#{ID.type_name_to_id(the_class['name'])}.#{$ext}") do |file|
             file.puts(class_erb.result binding)
           end
         end
@@ -375,12 +419,6 @@ def generate_bindings
     end
   end
   
-  unless $skip.include?('include')
-    write_file("#{$output_dir}/include/mruby_#{module_name}_classes.h") do |file|
-      file.puts(classes_header_erb.result binding)
-    end
-  end
-  
   unless $skip.include?('macros')
     write_file("#{$output_dir}/src/mruby_#{module_name}_macro_constants.#{$ext}") do |file|
       file.puts(macros_erb.result binding)
@@ -393,7 +431,10 @@ def generate_bindings
     end
   end
   
-  generate_functions_header
+  unless $skip.include?('include')
+    generate_functions_header
+    generate_classes_header
+  end
 end
 
 def generate_functions_header
@@ -412,7 +453,9 @@ def generate_functions_header
         end
 
         if line =~ /TODO/
-          todo = [] unless todo # Convert to array from `false`
+          # todo is set to false after each function is processed.
+          # So, create a new array to hold the todo's for the next function.
+          todo = [] unless todo
           todo.push(line[/TODO([^\s(]*)/])
         end
 
@@ -441,30 +484,104 @@ def generate_functions_header
   end
 end
 
-def print_diagnostics
-  File.open('mruby_bindings_diagnostics/class_definitions.txt', 'w') do |file|
-    PP.pp $classes, file
-  end
-  File.open('mruby_bindings_diagnostics/function_definitions.txt', 'w') do |file|
-    PP.pp $module_functions, file
-  end
-  File.open('mruby_bindings_diagnostics/enum_definitions.txt', 'w') do |file|
-    PP.pp $enums, file
-  end
-  File.open('mruby_bindings_diagnostics/macro_definitions.txt', 'w') do |file|
-    PP.pp $macros, file
+def generate_classes_header
+  write_file("#{$output_dir}/include/mruby_#{$module_name}_classes.h") do |out|
+    out.puts "#ifndef MRUBY_#{$module_name}_CLASSES_HEADER"
+    out.puts "#define MRUBY_#{$module_name}_CLASSES_HEADER"
+    out.puts
+    Dir["#{$output_dir}/src/*"].each do |f|
+      if (f == '.' ||
+          f == '..' ||
+          f == "#{$output_dir}/src/mruby_#{$module_name}.#{$ext}" ||
+          f == "#{$output_dir}/src/mruby_#{$module_name}_boxing.#{$ext}" ||
+          f == "#{$output_dir}/src/mruby_#{$module_name}_macro_constants.#{$ext}")
+        next
+      end
+      File.open(f, 'r') do |f|
+        this_fn_name = ''
+        this_fn_type = nil
+        todo = false
+        f.each_line do |line|
+          if type = line[/#if BIND_(.*)_TYPE$/, 1]
+            out.puts "#define BIND_#{type}_TYPE TRUE"
+            next
+          end
+          
+          if this_fn_type = line[/^#if BIND.*(FIELD_READER|FIELD_WRITER|FUNCTION)/, 1]
+            this_fn_name = line.split(' ')[1].strip
+            todo = false
+            next
+          end
+
+          if line =~ /TODO/
+            # todo is set to false after each function is processed.
+            # So, create a new array to hold the todo's for the next function.
+            todo = [] unless todo
+            todo.push(line[/TODO([^\s(]*)/])
+          end
+
+          if line =~ /^#endif/ && !this_fn_name.empty?
+            if todo
+              out.puts "#define #{this_fn_name} FALSE"
+              if $verbose
+                out.puts "/* Couln't complete binding for #{this_fn_name.sub('BIND_', '').sub(this_fn_type, '')}"
+                todo.uniq.sort.each do |todo_item|
+                  out.puts "  - #{todo_item}"
+                end
+                out.puts "*/"
+              end
+            else
+              out.puts "#define #{this_fn_name} TRUE"
+            end
+            todo = false
+          end
+
+          if line =~ /void.*mrb.*init\(/
+            break
+          end
+        end
+      end
+    end
+    out.puts "#endif"
   end
 end
 
-def print_todo
-  todos = []
-  File.open("#{$output_dir}/src/mruby_#{$module_name}.#{$ext}", "r") do |file|
-    file.each_line do |line|
-      todos.push(line[/TODO([^\s(]*)/]) if line.include? "TODO"
+def print_diagnostics
+  if $verbose
+    File.open('mruby_bindings_diagnostics/class_definitions.txt', 'w') do |file|
+      PP.pp $classes, file
+    end
+    File.open('mruby_bindings_diagnostics/function_definitions.txt', 'w') do |file|
+      PP.pp $module_functions, file
+    end
+    File.open('mruby_bindings_diagnostics/enum_definitions.txt', 'w') do |file|
+      PP.pp $enums, file
     end
   end
-  todos = todos.uniq.sort
-  File.open('mruby_bindings_diagnostics/todo.txt', 'w') { |f| f.write todos.join("\n") }
+  File.open('mruby_bindings_diagnostics/fn_types.rb', 'w') do |file|
+    $module_functions.values.sort_by { |f| f['name'].downcase }.each do |f|
+      if f['incomplete']
+        file.puts "# ## #{f['return_type']['type_name']} #{f['name']}(#{f['params'].map { |p| "#{p['type']['type_name']} #{p['name']}" }.join(', ')})"
+        if f['ctype'].unknown?
+          file.puts "# # Return value"
+          file.puts "# CTypes.set_fn_return_type('#{f['name']}', CTypes['???'])"
+        end
+        f['params'].each do |p|
+          if p['ctype'].unknown?
+            file.puts "# # Param: #{p['name']}"
+            file.puts "# CTypes.set_fn_param_type('#{f['name']}', '#{p['name']}', CTypes['???'])"
+          end
+        end
+        file.puts
+      end
+    end
+  end
+  File.open('mruby_bindings_diagnostics/macro_types.rb', 'w') do |file|
+    $macros.each do |m|
+      next unless m['has_expansion'] && CTypes.get_macro_type(m['name']).nil?
+      file.puts "# CTypes.set_macro_type('#{m['name']}', CTypes['???'])"
+    end
+  end
 end
 
 FileUtils.rm_rf 'mruby_bindings_diagnostics'
@@ -473,4 +590,3 @@ make_declaration_tree
 annotate_declarations
 print_diagnostics
 generate_bindings
-print_todo

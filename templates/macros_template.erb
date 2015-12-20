@@ -2,29 +2,16 @@
 
 void
 mruby_<%= module_name %>_define_macro_constants(mrb_state* mrb) {
-  /* WARNING
-   * Code generator does it's best to determine the type of the macro
-   * expansions, but mistakes will be made (as macros are just text,
-   * and may contain other macros). So, you'll need to verify the
-   * conversions used here are of the correct type.
-   */
-
 <% macros.each do |macro| -%>
+<% ctype = CTypes.get_macro_type(macro['name']) -%>
+<%   next if !ctype || ctype.ignore? -%>
 #ifdef <%= macro['name'] %>
-<%   if !macro['has_expansion'] -%>
-  /* Ignoring macro with no expansion: <%= macro['name'] %> */
-<%   elsif macro['is_function_like'] -%>
-  /* Ignoring function-like macro: <%= macro['name'] %>(<%= macro['argv'].join(', ') %>) */
-<%   elsif macro['text'].include? '"' -%>
-  /* <%= macro['name'] %> appears to be a string */
-  mrb_define_const(mrb, <%= module_name %>_module(mrb), "<%= macro['name'] %>", mrb_str_new_cstr(mrb, <%= macro['name'] %>));
-<%   elsif macro['text'] =~ /\.|(lLfF)$/ -%>
-  /* <%= macro['name'] %> appears to be a floating point number */
-  mrb_define_const(mrb, <%= module_name %>_module(mrb), "<%= macro['name'] %>", mrb_float_value(mrb, <%= macro['name'] %>));
-<%   else -%>
-  /* <%= macro['name'] %> assumed to be an integer value */
-  mrb_define_const(mrb, <%= module_name %>_module(mrb), "<%= macro['name'] %>", mrb_fixnum_value(<%= macro['name'] %>));
-<%   end -%>
+  do {
+<% ctype.box_lit(macro['name'], 'macro').each_line do |line| -%>
+    <%= line.sub("\n", '') %>
+<% end -%>
+    mrb_define_const(mrb, <%= module_name %>_module(mrb), "<%= macro['name'] %>", macro);
+  } while (0);
 #endif
 <% end -%>
 }

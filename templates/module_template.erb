@@ -27,6 +27,7 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%
      to_unbox = function['in_params'].select { |p| p['ctype'].needs_unboxing? }
      to_type_check = function['in_params'].select { |p| p['ctype'].needs_type_check? }
+     to_cleanup_unboxing = function['in_params'].select { |p| p['ctype'].needs_unboxing_cleanup? }
 -%>
 <% if function['out_count'] > 1 -%>
   mrb_value results = mrb_ary_new(mrb);
@@ -34,7 +35,7 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%   if function['params'].any? -%>
 <%     function['params'].each do |param| -%>
 <%       type = param['ctype'] -%>
-<%       type.declare_box(type.needs_unboxing? ? param['name'] : "native_#{param['name']}").each_line do |line| -%>
+<%       type.recv(param['name']).each_line do |line| -%>
   <%= line.sub("\n", '') %>
 <%     end -%>
 <%   end -%>
@@ -42,23 +43,23 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%   unless function['in_params'].empty? -%>
   /* Fetch the args */
 <%   format_specifiers = function['in_params'].map { |p| p['ctype'].format_specifier }.join('') -%>
-<%   get_args_argv =  function['in_params'].map { |p| "&#{p['ctype'].needs_unboxing? ? p['name'] : "native_#{p['name']}" }" }.join(', ') -%>
+<%   get_args_argv =  function['in_params'].map { |p| p['ctype'].get_args_argv(p['name']) }.flatten.join(', ') -%>
   mrb_get_args(mrb, "<%= format_specifiers %>", <%= get_args_argv %>);
 <%   end -%>
 
 <%     if to_type_check.any? -%>
   /* Type checking */
 <%       to_type_check.each do |param| -%>
-<%         (param['ctype'].type_check % ({:value => param['name']})).each_line do |line| -%>
+<%         (param['ctype'].type_check(param['name'])).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%         end -%>
 <%       end -%>
 
 <%     end -%>
 <%     if to_unbox.any? -%>
-  /* Unbox parameters */
 <%       to_unbox.each do |param| -%>
-<%         (param['ctype'].unboxing_fn.invocation_template % ({:unbox => param['name'], :as => "native_#{param['name']}"})).each_line do |line| -%>
+  /* Unbox param: <%= param['name'] %> */
+<%         param['ctype'].unbox(param['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%         end -%>
 
@@ -67,17 +68,17 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%   end -%>
   /* Invocation */
 <% 
-     argv = function['params'].map { |p| p['ctype'].out_only? ? "&native_#{p['name']}" : "native_#{p['name']}" }.join(', ')
+     argv = function['params'].map { |p| p['ctype'].invocation_argv(p['name']) }.flatten.join(', ')
 -%>
   <%= function['return_type']['type_name'] == 'void' ? '' : "#{function['return_type']['type_name']} native_return_value = "  %><%= function['name'] %>(<%= argv %>);
 
 <%   if function['return_type']['type_name'] != 'void' -%>
   /* Box the return value */
-<%     (function['ctype'].boxing_fn.invocation_template % ({box: 'native_return_value', as: 'return_value'})).each_line do |line| -%>
+<%     (function['ctype'].box_return('native_return_value', 'return_value')).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%     end -%>
-<%     if function['ctype'].return_cleanup -%>
-<%       (function['ctype'].return_cleanup % {value: 'native_return_value'}).each_line do |line| -%>
+<%     if function['ctype'].needs_boxing_cleanup? -%>
+<%       function['ctype'].cleanup_return('native_return_value').each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%       end -%>
 <%     end -%>
@@ -87,31 +88,34 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
   
 <%   end -%>
 <%   if function['out_params'].any? -%>
-  /* Box the out parameters */
 <%     function['out_params'].each do |out| -%>
-<%       (out['ctype'].boxing_fn.invocation_template % ({box: "native_#{out['name']}", as: "#{out['name']}"})).each_line do |line| -%>
+  /* Box out param: <%= out['name'] %> */
+<%       out['ctype'].box(out['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%       end -%>
-<%       if out['ctype'].return_cleanup -%>
-<%       (out['ctype'].return_cleanup % {value: "native_#{out['name']}"}).each_line do |line| -%>
+<%       if out['ctype'].needs_boxing_cleanup? -%>
+  /* Clean out param: <%= out['name'] %> */
+<%         out['ctype'].cleanup_out_param(out['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
-<%       end -%>
-<%       end -%>
-<%       if function['out_count'] > 1 -%>
-  mrb_ary_push(mrb, results, <%= "#{out['name']}" %>);
+<%         end -%>
 <%       end -%>
 <%     end -%>
 
 <%   end -%>
-<%   if function['in_params'].any? { |p| p['ctype'].unboxing_fn.param_cleanup_template } -%>
-  /* Clean up temporary values from unboxing */
-<%     function['in_params'].each do |param| -%>
-<%       if param['ctype'].unboxing_fn.param_cleanup_template -%>
-<%         (param['ctype'].unboxing_fn.param_cleanup_template % ({value: "native_#{param['name']}"})).each_line do |line| -%>
-  <%= line.sub("\n", "") %>
-<%         end -%>
+<%   if function['out_count'] > 1 && function['out_params'].any? -%>
+  /* Add out params to results */
+<%     function['out_params'].each do |out| -%>
+  mrb_ary_push(mrb, results, <%= "#{out['name']}" %>);
+<%     end -%>
 
+<%   end -%>
+<%   if to_cleanup_unboxing.any? -%>
+<%     to_cleanup_unboxing.each do |param| -%>
+  /* Clean in param: <%= param['name'] %> */
+<%       param['ctype'].cleanup_unboxing(param['name']).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
 <%       end -%>
+
 <%     end -%>
 <%   end -%>
 <%   if function['out_count'] == 0 -%>

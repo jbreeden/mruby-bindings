@@ -43,19 +43,19 @@ typedef struct mruby_to_native_ref_ {
 <% concrete_classes.each do |klass| -%>
 #if BIND_<%= klass['ruby_name'] %>_TYPE
 mrb_value
-mruby_box_<%= klass['name'].type_to_identifier %>(mrb_state* mrb, <%= klass['name'] %> *unboxed);
+mruby_box_<%= ID.type_name_to_id(klass['name']) %>(mrb_state* mrb, <%= klass['name'] %> *unboxed);
 
 mrb_value
-mruby_giftwrap_<%= klass['name'].type_to_identifier %>(mrb_state* mrb, <%= klass['name'] %> *unboxed);
+mruby_giftwrap_<%= ID.type_name_to_id(klass['name']) %>(mrb_state* mrb, <%= klass['name'] %> *unboxed);
 
 void
-mruby_set_<%= klass['name'].type_to_identifier %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed);
+mruby_set_<%= ID.type_name_to_id(klass['name']) %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed);
 
 void
-mruby_gift_<%= klass['name'].type_to_identifier %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed);
+mruby_gift_<%= ID.type_name_to_id(klass['name']) %>_data_ptr(mrb_value obj, <%= klass['name'] %> *unboxed);
 
 <%= klass['name'] %> *
-mruby_unbox_<%= klass['name'].type_to_identifier %>(mrb_value boxed);
+mruby_unbox_<%= ID.type_name_to_id(klass['name']) %>(mrb_value boxed);
 #endif
 
 <% end -%>

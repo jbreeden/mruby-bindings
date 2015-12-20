@@ -1,4 +1,3 @@
-
 def CTypes.any_constness_and_sign(*types)
   result = types.dup
   result << types.map { |type| "const #{type}" }
@@ -11,15 +10,22 @@ def CTypes.any_constness_and_sign(*types)
   result
 end
 
+CTypes.define('ignore') do
+  self.ignore = true
+end
+
+CTypes.define('void') do
+  self.ignore = true
+end
+
 CTypes.define(CTypes.any_constness_and_sign('char', 'short', 'long', 'int', 'long long', 'size_t')) do
-  self.recv_type = 'mrb_int'
+  self.recv_template = 'mrb_int %{value};'
   self.needs_unboxing = false
   self.needs_type_check = false
   self.format_specifier = 'i'
-  boxing_fn.name = 'mrb_fixnum_value'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(%{box});"
+  boxing_fn.invocation_template = "mrb_value %{as} = mrb_fixnum_value(%{box});"
   unboxing_fn.invocation_template = "#{type_name} %{as} = (#{type_name})%{unbox};"
-  self.type_check = <<EOF
+  self.type_check_template = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->fixnum_class)) {
   mrb_raise(mrb, E_TYPE_ERROR, "Fixnum expected");
   return mrb_nil_value();
@@ -28,15 +34,11 @@ EOF
 end
 
 CTypes.define(CTypes.any_constness_and_sign('float', 'double')) do
-  self.recv_type = type_name
+  self.recv_template = "mrb_float %{value};"
   self.format_specifier = 'f'
-  boxing_fn.name = 'mrb_float_value'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
-
-  unboxing_fn.name = 'mrb_float'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(%{unbox});"
-
-  self.type_check = <<EOF
+  boxing_fn.invocation_template = "mrb_value %{as} = mrb_float_value(mrb, %{box});"
+  unboxing_fn.invocation_template = "#{type_name} %{as} = mrb_float(%{unbox});"
+  self.type_check_template = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->float_class)) {
   mrb_raise(mrb, E_TYPE_ERROR, "Float expected");
   return mrb_nil_value();
@@ -45,15 +47,12 @@ EOF
 end
 
 CTypes.define(CTypes.any_constness_and_sign('bool')) do
-  self.recv_type = 'mrb_bool'
+  self.recv_template = 'mrb_bool %{value};'
   self.format_specifier = 'b'
-  boxing_fn.name = 'mrb_bool_value'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(%{box});"
-
-  unboxing_fn.name = 'mrb_test'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(%{unbox});"
-
-  self.type_check = <<EOF
+  self.needs_type_check = false
+  boxing_fn.invocation_template = "mrb_value %{as} = mrb_bool_value(%{box});"
+  unboxing_fn.invocation_template = "#{type_name} %{as} = mrb_test(%{unbox});"
+  self.type_check_template = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->true_class) && !mrb_obj_is_kind_of(mrb, %{value}, mrb->false_class)) {
   mrb_raise(mrb, E_TYPE_ERROR, "Boolean expected");
   return mrb_nil_value();
@@ -62,56 +61,69 @@ EOF
 end
 
 CTypes.define('char *') do
-  self.recv_type = type_name
+  self.recv_template = "char * %{value} = NULL;"
   self.format_specifier = 'z!'
-  self.needs_unboxing = true # Would be false since we set a format specifier, but we have to strdup
-  self.needs_type_check = false # Would be true since needs_unboxing
-  boxing_fn.name = 'mrb_str_new_cstr'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
+  self.needs_unboxing = true
+  self.needs_type_check = false
+  boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box});"
+  self.boxing_fn.cleanup_template = "free(%{value});"
 
-  unboxing_fn.name = 'mrb_string_value_cstr'
   unboxing_fn.invocation_template = <<EOF
-/* WARNING: Allocating new memory to create 'char *' from 'const char *'.
- *          Please verify that this memory is cleaned up correctly.
- *
- *          Has this been verified? [No]
- */
+/* WARNING: String is strdup'ed to avoid mutable reference to internal MRuby memory */
 #{type_name} %{as} = strdup(%{unbox});
 EOF
 
-  unboxing_fn.param_cleanup_template = <<EOF
-/* WARNING: Assuming that the new string can be deallocated after the function call.
- *          Please verify that this is correct (the function does not save this parameter).
- *
- *          Has this been verified? [No]
- */
+  unboxing_fn.cleanup_template = <<EOF
+/* WARNING: Assuming that the new string can be deallocated after the function call. */
 free(%{value});
 %{value} = NULL;
 EOF
 
-  self.return_cleanup = "free(%{value});"
-
   # TODO: Remove once the class_template is updated like the module_template
   #       to use format specifiers
-  self.type_check = <<EOF
+  self.type_check_template = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
   mrb_raise(mrb, E_TYPE_ERROR, "String expected");
   return mrb_nil_value();
 }
 EOF
 
+  self.field_swap_template = <<EOS
+if (NULL != %{old}) free(%{old});
+%{old} = %{new};
+EOS
 end
 
+# CTypes.define('char *') do
+#   self.recv_template = "mrb_value %{value};"
+#   self.format_specifier = 'S'
+#   self.needs_unboxing = true
+#   self.needs_type_check = false
+#   boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box});"
+#   unboxing_fn.invocation_template = <<EOF
+# #{type_name} %{as} = (char*)calloc(RSTRING_LEN(%{unbox}) + 1, sizeof(char));
+# memcpy(%{as}, RSTRING_PTR(%{unbox}), RSTRING_LEN(%{unbox}));
+# EOF
+# 
+#   unboxing_fn.cleanup_template = "free(%{value});"
+#   self.boxing_fn.cleanup_template = "free(%{value});"
+# 
+#   # TODO: Remove once the class_template is updated like the module_template
+#   #       to use format specifiers
+#   self.type_check_template = <<EOF
+# if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
+#   mrb_raise(mrb, E_TYPE_ERROR, "String expected");
+#   return mrb_nil_value();
+# }
+# EOF
+# end
+
 CTypes.define('const char *') do
-  self.recv_type = 'char *'
+  self.recv_template = 'char * %{value} = NULL;'
   self.format_specifier = 'z!'
-  boxing_fn.name = 'mrb_str_new_cstr'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box});"
-
-  unboxing_fn.name = 'mrb_string_value_cstr'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = #{unboxing_fn.name}(mrb, &%{unbox});"
-
-  self.type_check = <<EOF
+  boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box});"
+  unboxing_fn.invocation_template = "#{type_name} %{as} = mrb_string_value_cstr(mrb, &%{unbox});"
+  self.type_check_template = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
   mrb_raise(mrb, E_TYPE_ERROR, "String expected");
   return mrb_nil_value();
@@ -120,13 +132,9 @@ EOF
 end
 
 CTypes.define('string') do
-  boxing_fn.name = 'mrb_str_new_cstr'
-  boxing_fn.invocation_template = "mrb_value %{as} = #{boxing_fn.name}(mrb, %{box}.c_str());"
-
-  unboxing_fn.name = 'mrb_string_value_cstr'
-  unboxing_fn.invocation_template = "#{type_name} %{as} = (#{type_name}) #{unboxing_fn.name}(mrb, &%{unbox});"
-
-  self.type_check = <<EOF
+  boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box}.c_str());"
+  unboxing_fn.invocation_template = "#{type_name} %{as} = (#{type_name}) mrb_string_value_cstr(mrb, &%{unbox});"
+  self.type_check_template = <<EOF
 if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
   mrb_raise(mrb, E_TYPE_ERROR, "String expected");
   return mrb_nil_value();
@@ -135,7 +143,6 @@ EOF
 end
 
 CTypes.define('unused:pointer') do
-  self.recv_type = "mrb_value"
   self.needs_unboxing = true
   self.needs_type_check = false
   self.unboxing_fn.invocation_template = "void * %{as} = NULL; /* Unused parameter */"
@@ -143,22 +150,44 @@ end
 
 CTypes.define('out:int') do
   self.type_name = 'int'
-  self.recv_type = 'int'
+  self.recv_template = 'int %{value};'
+  self.invocation_arg_template = "&%{value}"
   self.out_only = true
   self.boxing_fn.invocation_template = "mrb_value %{as} = mrb_fixnum_value(%{box});"
 end
 
 CTypes.define('out:cstring') do
   self.type_name = 'char *'
-  self.recv_type = 'char *'
+  self.recv_template = 'char * %{value} = NULL;'
+  self.invocation_arg_template = "&%{value}"
   self.out_only = true
   self.boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box});"
-  self.return_cleanup = "free(%{value});"
+  self.boxing_fn.cleanup_template = "free(%{value});"
 end
 
+CTypes.define('out:char**,int*') do
+  self.type_name = "char *"
+  self.out_only = true
+  self.needs_unboxing = false
+  self.recv_template = <<EOS
+char * %{value} = NULL;
+int %{value}_length = 0;
+EOS
+  self.invocation_arg_template = "&%{value}, &%{value}_length"
+  self.boxing_fn.invocation_template = <<EOS
+mrb_value %{as};
+if (%{box} == NULL) {
+  %{as} = mrb_nil_value();
+} else {
+  %{as} = mrb_str_new(mrb, %{box}, %{box}_length);
+}
+EOS
+  self.boxing_fn.cleanup_template = "free(%{value});"
+end
+
+# argv / envp style arrays of c strings, terminated by a NULL string
 CTypes.define('nullterminated:cstring:array') do
   self.type_name = 'char **'
-  self.recv_type = 'mrb_value'
   self.format_specifier = 'A!'
   self.needs_unboxing = true
   self.needs_type_check = false
@@ -171,6 +200,17 @@ do {
     mrb_ary_push(mrb, %{as}, mrb_str_new_cstr(mrb, %{box}[i]));
     ++i;
   }
+} while (0);
+EOS
+
+  self.boxing_fn.cleanup_template = <<EOS
+do {
+  int i = 0;
+  while (%{value}[i] != NULL) {
+    free(%{value}[i]);
+    ++i;
+  }
+  free(%{value});
 } while (0);
 EOS
 
@@ -191,15 +231,5 @@ do {
 } while (0);
 EOS
 
-  self.unboxing_fn.param_cleanup_template = "if (%{value} != NULL) free(%{value});"
-  self.return_cleanup = <<EOS
-do {
-  int i = 0;
-  while (%{value}[i] != NULL) {
-    free(%{value}[i]);
-    ++i;
-  }
-  free(%{value});
-} while (0);
-EOS
+  self.unboxing_fn.cleanup_template = "if (%{value} != NULL) free(%{value});"
 end

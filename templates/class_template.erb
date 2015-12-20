@@ -3,10 +3,6 @@
  * Defined in file <%= File.basename self['file'] %> @ line <%= self['line'] %>
  */
 
-/*
- * TODO: INCLUDES
- */
-
 #include "mruby_<%= module_name %>.h"
 
 #if BIND_<%= self['ruby_name'] %>_TYPE
@@ -18,8 +14,9 @@
 #if BIND_<%= self['ruby_name'] %>_INITIALIZE
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_value self) {
-  <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)malloc(sizeof(<%= self['type']['type_name'] %>));
-  mruby_gift_<%= self['name'] %>_data_ptr(self, native_object);
+<% # TODO: Add CTypes.set_initializer as dual of CTypes.set_destructor -%>
+  <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)calloc(1, sizeof(<%= self['type']['type_name'] %>));
+  mruby_giftwrap_<%= ID.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
   return self;
 }
 #endif
@@ -69,15 +66,15 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, 
  */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_state* mrb, mrb_value self) {
-  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= self['type']['type_name'] %>(self);
+  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= ID.type_name_to_id(self['type']['type_name']) %>(self);
 
-  <%= field['type']['type_name'] %> native_field = native_self-><%= field['name'] %>;
+  <%= field['type']['type_name'] %> <%= field['ctype'].native_name(field['name']) %> = native_self-><%= field['name'] %>;
 
-<%    (CTypes[field['type']['type_name']].boxing_fn.invocation_template % ({:box => 'native_field', :as => 'ruby_field'})).each_line do |line| -%>
+<%    field['ctype'].box(field['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%    end -%>
 
-  return ruby_field;
+  return <%= field['ctype'].ruby_name(field['name']) %>;
 }
 #endif
 
@@ -89,23 +86,36 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_sta
  */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_state* mrb, mrb_value self) {
-  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= self['type']['type_name'] %>(self);
-  mrb_value ruby_field;
+  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= ID.type_name_to_id(self['type']['type_name']) %>(self);
+<%       field['ctype'].recv(field['name']).each_line do |line| -%>
+  <%= line.sub("\n", '') %>
+<%     end -%>
 
-  mrb_get_args(mrb, "o", &ruby_field);
+  mrb_get_args(mrb, "<%= field['ctype'].format_specifier %>", <%= field['ctype'].get_args_argv(field['name']) %>);
 
+<% if field['ctype'].needs_type_check? -%>
   /* type checking */
-<%  (CTypes[field['type']['type_name']].type_check % ({:value => 'ruby_field'})).each_line do |line| -%>
+<%    field['ctype'].type_check(field['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
+<%    end -%>
+
 <%  end -%>
-
-<%   (CTypes[field['type']['type_name']].unboxing_fn.invocation_template % ({:unbox => 'ruby_field', :as => 'native_field'})).each_line do |line| -%>
+<% if field['ctype'].needs_unboxing? -%>
+<%     field['ctype'].unbox(field['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
+<%     end -%>
+
 <%   end -%>
-
-  native_self-><%= field['name'] %> = native_field;
-
-  return ruby_field;
+<% field['ctype'].swap_fields("native_self->#{field['name']}", field['ctype'].native_name(field['name'])).each_line do |line| -%>
+  <%= line.sub("\n", '') %>
+<% end -%>
+  
+<% -%>
+<% # Note: Don't do the unboxing cleanup. The native value is definitely still referenced by the underlying struct -%>
+<% -%>
+  mrb_value value_as_mrb_value;
+  mrb_get_args(mrb, "o", &value_as_mrb_value);
+  return value_as_mrb_value;
 }
 #endif
 
@@ -146,7 +156,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <%     if function['params'].any? %>
   /* Type checking */
 <%       function['params'].each do |param| -%>
-<%         (CTypes[param['type']['type_name']].type_check % ({:value => param['name']})).each_line do |line| -%>
+<%         (CTypes[param['type']['type_name']].type_check_template % ({:value => param['name']})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%         end -%>
 <%       end -%>
@@ -173,8 +183,8 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 
 <%   end -%>
 <%   function['params'].each do |param| -%>
-<%     if CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template -%>
-<%       (CTypes[param['type']['type_name']].unboxing_fn.param_cleanup_template % ({:value => "native_#{param['name']}"})).each_line do |line| -%>
+<%     if CTypes[param['type']['type_name']].unboxing_fn.cleanup_template -%>
+<%       (CTypes[param['type']['type_name']].unboxing_fn.cleanup_template % ({:value => "native_#{param['name']}"})).each_line do |line| -%>
   <%= line.sub("\n", "") %>
 <%       end -%>
 

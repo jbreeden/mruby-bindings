@@ -1,10 +1,10 @@
 module <%= module_name %>
 <% enums.sort_by { |e| e['name'] }.each do |enum| -%>
 
-  module <%= enum['name'].split('_').map { |token| token.capitalize }.join('') %>
+  module <%= ID.to_rb_const(enum['name']) %>
 <%   constants = enum['constants'].uniq
      constants.each do |constant| -%>
-    <%= constant['name'].split('_').map { |token| token[0].upcase + token[1..(token.length)] }.join('_') %> = <%= constant['value'] %>
+    <%= ID.to_rb_const(constant['name']) %> = <%= constant['value'] %>
 <%   end -%>
   end
 <% end -%>
