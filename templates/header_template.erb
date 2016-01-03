@@ -24,8 +24,8 @@
 #include "mruby/value.h"
 #include "mruby/variable.h"
 
-<% if $includes -%>
-<%= File.read($includes) %>
+<% if conf[:includes] -%>
+<%= File.read(conf[:includes]) %>
 <% else
      classes.map { |c|
        File.basename(c['file'])

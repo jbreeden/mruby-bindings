@@ -1,0 +1,27 @@
+require 'mruby_bindings'
+
+def bail(msg, usage=nil)
+  $stderr.puts msg
+  if usage
+    $stderr.puts "\n"
+    $stderr.puts(usage)
+  end
+  exit 1
+end
+
+if ARGV.length < 1
+  bail('No command specified')
+end
+
+case (cmd = ARGV.shift)
+when 'merge'
+  MRubyBindings::Commands::Merge.run
+when 'generate'
+  MRubyBindings::Commands::Generate.run
+when 'init'
+  MRubyBindings::Commands::Init.run
+when 'enable-functions'
+  MRubyBindings::Commands::EnableFunctions.run
+else
+  bail("Unrecognized command: #{cmd}")
+end

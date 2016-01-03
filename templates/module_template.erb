@@ -1,14 +1,14 @@
-/*
- * TODO: INCLUDES
- */
-
 #include "mruby_<%= module_name %>.h"
+
+/* MRUBY_BINDING: custom_header */
+/* MRUBY_BINDING_END */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 <% module_functions.each do |function| -%>
+/* MRUBY_BINDING: <%= function['name'] %> */
 #if BIND_<%= function['name'] %>_FUNCTION
 #define <%= function['name'] %>_REQUIRED_ARGC <%= function['in_params'].length %>
 #define <%= function['name'] %>_OPTIONAL_ARGC 0
@@ -129,6 +129,7 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%   end -%>
 }
 #endif
+/* MRUBY_BINDING_END */
 
 <% end -%>
 
@@ -136,6 +137,7 @@ void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
   struct RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name%>");
   mruby_<%= module_name %>_define_macro_constants(mrb);
 
+/* MRUBY_BINDING: class_initializations */
   /*
    * Initialize class bindings
    */
@@ -144,7 +146,9 @@ void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
   mrb_<%= module_name %>_<%= klass['ruby_name'] %>_init(mrb);
 #endif
 <% end -%>
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: global_function_definitions */
   /*
    * Global Functions
    */
@@ -153,11 +157,16 @@ void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
   mrb_define_class_method(mrb, <%= module_name %>_module, "<%= function['name'] %>", mrb_<%= module_name %>_<%= function['name'] %>, MRB_ARGS_ARG(<%= function['name'] %>_REQUIRED_ARGC, <%= function['name'] %>_OPTIONAL_ARGC));
 #endif
 <% end -%>
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: custom_module_init */
+/* MRUBY_BINDING_END */
 
 }
 
 void mrb_<%= gem_name.gsub('-', '_') %>_gem_final(mrb_state* mrb){
-
+/* MRUBY_BINDING: custom_module_final */
+/* MRUBY_BINDING_END */
 }
 
 #ifdef __cplusplus

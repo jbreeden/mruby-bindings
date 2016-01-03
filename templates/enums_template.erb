@@ -1,10 +1,10 @@
 module <%= module_name %>
 <% enums.sort_by { |e| e['name'] }.each do |enum| -%>
 
-  module <%= ID.to_rb_const(enum['name']) %>
+  module <%= MRubyBindings.to_rb_const(enum['name'].sub('enum ', '')) %>
 <%   constants = enum['constants'].uniq
      constants.each do |constant| -%>
-    <%= ID.to_rb_const(constant['name']) %> = <%= constant['value'] %>
+    <%= MRubyBindings.to_rb_const(constant['name']) %> = <%= constant['value'] %>
 <%   end -%>
   end
 <% end -%>

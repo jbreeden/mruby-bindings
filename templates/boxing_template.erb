@@ -32,11 +32,6 @@
  * CTypes.set_destructor('struct GError', 'g_error_free')
  * ```
  */
- <%
-   # WARNING: This file should be probably be using CTypes to get function names.
-   #          If you define a CType by hand, it probably won't match up with these
-   #          generated functions.
- -%>
 #include "mruby_<%= module_name %>.h"
 
 <%
@@ -47,7 +42,8 @@
 
 <% concrete_classes.each do |klass| -%>
 <%   ctype = CTypes[klass['name']] -%>
-<%   class_id = ID.type_name_to_id(klass['name']) -%>
+<%   class_id = MRubyBindings.type_name_to_id(klass['name']) -%>
+/* MRUBY_BINDING: <%= klass['ruby_name'] %>_boxing */
 #if BIND_<%= klass['ruby_name'] %>_TYPE
 /*
  * Boxing implementation for <%= klass['name'] %>
@@ -105,5 +101,6 @@ mruby_unbox_<%= class_id %>(mrb_value boxed) {
   return (<%= klass['name'] %> *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
 }
 #endif
+/* MRUBY_BINDING_END */
 
 <% end -%>

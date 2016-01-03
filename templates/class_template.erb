@@ -7,20 +7,26 @@
 
 #if BIND_<%= self['ruby_name'] %>_TYPE
 
+/* MRUBY_BINDING: custom_header */
+/* MRUBY_BINDING_END */
+
 /*
  * Class Methods
  */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::initialize */
 #if BIND_<%= self['ruby_name'] %>_INITIALIZE
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_value self) {
 <% # TODO: Add CTypes.set_initializer as dual of CTypes.set_destructor -%>
   <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)calloc(1, sizeof(<%= self['type']['type_name'] %>));
-  mruby_giftwrap_<%= ID.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
+  mruby_giftwrap_<%= MRubyBindings.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
   return self;
 }
 #endif
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::initialize */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_disown(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_object;
@@ -35,7 +41,9 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_disown(mrb_state* mrb, mrb_value
 
   return mrb_nil_value();
 }
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::belongs_to_ruby */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_object;
@@ -52,6 +60,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, 
     return mrb_false_value();
   }
 }
+/* MRUBY_BINDING_END */
 
 <% if self['fields'].any? -%>
 /*
@@ -59,6 +68,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, 
  */
 
 <%   self['fields'].select { |f| f['access'] == 'public' }.each do |field| -%>
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::<%= field['name'] %>_reader */
 #if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_READER
 /* get_<%= field['name'] %>
  *
@@ -66,7 +76,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, 
  */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_state* mrb, mrb_value self) {
-  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= ID.type_name_to_id(self['type']['type_name']) %>(self);
+  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= MRubyBindings.type_name_to_id(self['type']['type_name']) %>(self);
 
   <%= field['type']['type_name'] %> <%= field['ctype'].native_name(field['name']) %> = native_self-><%= field['name'] %>;
 
@@ -77,7 +87,9 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_sta
   return <%= field['ctype'].ruby_name(field['name']) %>;
 }
 #endif
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::<%= field['name'] %>_writer */
 #if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_WRITER
 /* set_<%= field['name'] %>
  *
@@ -86,7 +98,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_sta
  */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_state* mrb, mrb_value self) {
-  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= ID.type_name_to_id(self['type']['type_name']) %>(self);
+  <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= MRubyBindings.type_name_to_id(self['type']['type_name']) %>(self);
 <%       field['ctype'].recv(field['name']).each_line do |line| -%>
   <%= line.sub("\n", '') %>
 <%     end -%>
@@ -118,6 +130,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
   return value_as_mrb_value;
 }
 #endif
+/* MRUBY_BINDING_END */
 
 <%   end -%>
 <% end -%>
@@ -128,6 +141,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
  */
 
 <%   self['member_functions'].select { |f| f['access'] == 'public' }.each do |function| -%>
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::<%= function['name'] %> */
 #if BIND_<%= self['ruby_name'] %>_<%= function['name'] %>_FUNCTION
 #define <%= self['ruby_name'] %>_<%= function['name'] %>_REQUIRED_ARGC <%= function['argc'] %>
 #define <%= self['ruby_name'] %>_<%= function['name'] %>_OPTIONAL_ARGC 0
@@ -197,19 +211,25 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <%   end -%>
 }
 #endif
+/* MRUBY_BINDING_END */
 
 <%   end -%>
 <% end -%>
 void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::class_definition */
   struct RClass* <%= self['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= self['ruby_name'] %>", mrb->object_class);
   MRB_SET_INSTANCE_TT(<%= self['ruby_name'] %>_class, MRB_TT_DATA);
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::class_method_definitions */
 #if BIND_<%= self['ruby_name'] %>_INITIALIZE
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "initialize", mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize, MRB_ARGS_NONE());
 #endif
   mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "disown", mrb_<%= module_name %>_<%= self['ruby_name'] %>_disown, MRB_ARGS_ARG(1, 0));
   mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "belongs_to_ruby?", mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby, MRB_ARGS_ARG(1, 0));
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::attr_definitions */
 <% if self['fields'].any? -%>
   /*
    * Fields
@@ -223,7 +243,9 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
 #endif
 <%   end -%>
 <% end -%>
+/* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::instance_method_definitions */
 <% if self['member_functions'].any? -%>
   /*
    * Member Functions
@@ -234,6 +256,7 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
 #endif
 <%   end -%>
 <% end -%>
+/* MRUBY_BINDING_END */
 }
 
 #endif
