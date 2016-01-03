@@ -1,13 +1,13 @@
 # mruby-bindings
 Generates MRuby bindings from C Header files via libclang
 
-TODO: mruby-bindings has been refactored into a Ruby Gem. The interface
-has changed, and the general workflow has been updated a lot. Need to update
-this readme.
+TODO: mruby-bindings has been refactored into a Ruby Gem. The interface has changed, and the general workflow has been updated a lot. Need to update this readme.
 
-See [mruby-glib](https://github.com/jbreeden/mruby-glib) for an example. The `rakelib/mruby-bindings.rake` file shows the basic commands for working with mruby-bindings. That file is generated automatically (the template is in the `templates/` folder of this repo). 
+See [mruby-glib](https://github.com/jbreeden/mruby-glib) for an example. The `rakelib/mruby-bindings.rake` file shows the basic commands for working with mruby-bindings. That file is generated automatically - the template is in the `templates/` folder of this repo - then customized for the specific project. 
 
-Some other gems were written with an older version of mruby-bindings.
+Some other gems were written with an older version of mruby-bindings. The generate code was quite a bit sloppier,
+and it was difficult to manage manual updates to the code while regenerating other portions. These issues have been addressed, but are not yet documented.
+
  - [mruby-apr](https://github.com/jbreeden/mruby-apr)
  - [mruby-sqlite](https://github.com/jbreeden/mruby-sqlite)
  - [mruby-sdl2](https://github.com/jbreeden/mruby-sdl2)
@@ -18,6 +18,8 @@ Some other gems were written with an older version of mruby-bindings.
 [clang2json](https://github.com/jbreeden/clang2json)
 
 # Usage
+
+TODO: This is slightly outdated.
 
 Just pipe the output of `clang2json` to the `mruby_bindings.rb` script and supply a few parameters.
 
