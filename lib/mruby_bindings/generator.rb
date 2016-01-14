@@ -42,23 +42,33 @@ class Generator
       begin
         case datum["kind"]
         when "TypedefDecl"
-          ###### This has implications when there are pointers to this type.
-          ###### The pointee_type_name also need to be adjusted.
-          ###### Disabling until that is worked out.
-          ## Handle common typedef idioms:
-          ## 1) Type is declared then typedefed for a friendly name 
-          ##    (typedef struct _my_struct my_struct).
-          ## 
-          ## NOTE: Anonymous types declared in the typedef are handled by clang2json
-          ## So `typedef struct { fields... } TypeName;` will yield a StructDecl node
-          ## with the name set to TypeName already.
-          # if prev_type &&
-          #      prev_type['usr'] == datum['underlying_type']['type_usr'] &&
-          #      prev_type['name'] =~ /^(struct|enum) /
-          #   prev_type['name'] = datum['type']['type_name']
-          # else
-            CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
-          # end
+          # Handle common typedef idioms:
+          #
+          # Struct is defined, with a name, within a typedef to a public name.
+          # Ex: `typedef struct _private_name { ... } public_name;`
+          #
+          # Struct is defined, then separately typedefed to a similar name,
+          # such that the new name contains the orginal name minus a leading/trailing
+          # character.
+          # Ex: `typedef struct _my_type { ... } my_type`
+          # Ex: `typedef struct my_type_s { ... } my_type_t`
+          underlying_type_match = datum['underlying_type']['type_name'].
+            sub('struct ', '').
+            sub('enum ', '')
+          underlying_type_match = underlying_type_match[1...(underlying_type_match.length - 1)].downcase
+          underlying_type = $classes[datum['underlying_type']['type_usr']]
+          
+          if (underlying_type && 
+              ( (underlying_type['file'] == datum['file'] && underlying_type['line'] == datum['line']) ||
+                datum['type']['type_name'].downcase.include?(underlying_type_match) ||
+                datum['type']['type_name'].downcase.include?(underlying_type_match)
+              )  
+             )
+            underlying_type['name'] = datum['type']['type_name']
+            underlying_type['type']['type_name'] = datum['type']['type_name']
+            $classes[datum['type']['type_usr']] = underlying_type
+          end
+          CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
         when "ClassDecl", "StructDecl"
           datum['name'] = datum['name']
           # Ignore anonymous declarations
@@ -159,7 +169,7 @@ class Generator
     # - Add boxing/unboxing functions to any known return types
     # - Add names for anonymous parameters
     # - Associate parameters & return values with specified types
-    $module_functions.values.concat($classes.values.flat_map { |c| c['member_functions']}).each do |func|
+    $module_functions.values.concat($classes.values.uniq.flat_map { |c| c['member_functions']}).each do |func|
       func['out_count'] = 0
       if func['return_type']['type_name'] != 'void'
         func['out_count'] += 1
@@ -208,7 +218,7 @@ class Generator
     module_name = conf[:module_name]
     module_functions = $module_functions.values.sort_by { |f| f['name'].downcase }
     enums = $enums.values.sort_by { |e| e['name'].downcase }
-    classes = $classes.values.sort_by { |c| c['ruby_name'].downcase }
+    classes = $classes.values.uniq.sort_by { |c| c['ruby_name'].downcase }
     macros = $macros.sort_by { |m| m['name'].downcase }
 
     boxing_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/boxing_template.erb"), nil, "-")
@@ -223,7 +233,7 @@ class Generator
 
     unless conf[:skip].include?('src')
       if $classes.any?
-        to_gen = $classes.values.reject { |c| c['is_template'] }
+        to_gen = $classes.values.uniq.reject { |c| c['is_template'] }
         to_gen.each do |the_class|
           write_file("#{conf[:output_dir]}/src/mruby_#{MRubyBindings.type_name_to_id(the_class['name'])}.#{conf[:ext]}") do |file|
             the_class.instance_eval do

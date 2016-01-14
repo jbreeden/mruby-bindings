@@ -37,7 +37,7 @@
 <%
   concrete_classes = classes
     .reject { |c| c['is_template'] }
-    .sort_by { |c| c['name']}
+    .sort_by { |c| c['name'] }
 -%>
 
 <% concrete_classes.each do |klass| -%>

@@ -364,11 +364,11 @@ EOF
 mrb_value %{as} = #{boxing_fn.name}(mrb, &%{box});
 EOF
           unboxing_fn.name = "mruby_unbox_#{MRubyBindings.type_name_to_id(type['type_name'])}"
-          unboxing_fn.invocation_template = "#{MRubyBindings.type_name_to_id(type['type_name'])} %{as} = *(#{unboxing_fn.name}(%{unbox}));"
+          unboxing_fn.invocation_template = "#{type['type_name']} %{as} = *(#{unboxing_fn.name}(%{unbox}));"
 
           self.type_check_template = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, #{MRubyBindings.type_name_to_id(type['type_name'])}_class(mrb))) {
-  mrb_raise(mrb, E_TYPE_ERROR, "#{MRubyBindings.type_name_to_id(type['type_name'])} expected");
+if (!mrb_obj_is_kind_of(mrb, %{value}, #{$classes[type['type_usr']]['ruby_name']}_class(mrb))) {
+  mrb_raise(mrb, E_TYPE_ERROR, "#{$classes[type['type_usr']]['ruby_name']} expected");
   return mrb_nil_value();
 }
 EOF
