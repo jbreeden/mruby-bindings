@@ -30,122 +30,129 @@ class Generator
   end
 
   def make_declaration_tree
-    prev_datum = nil
-    prev_type = nil
+    # Defer processing of typedefs until after all other types are known,
+    # so that renaming can be performed correctly.
+    typedefs = []
+    
     while line = conf[:input].gets
       begin
         datum = JSON.parse(line)
+        if datum['kind'] == 'TypedefDecl'
+          typedefs.push(datum)
+          next
+        end
       rescue
         $stderr.puts "Error parsing json: #{line}"
         next
       end
-      begin
-        case datum["kind"]
-        when "TypedefDecl"
-          # Handle common typedef idioms:
-          #
-          # Struct is defined, with a name, within a typedef to a public name.
-          # Ex: `typedef struct _private_name { ... } public_name;`
-          #
-          # Struct is defined, then separately typedefed to a similar name,
-          # such that the new name contains the orginal name minus a leading/trailing
-          # character.
-          # Ex: `typedef struct _my_type { ... } my_type`
-          # Ex: `typedef struct my_type_s { ... } my_type_t`
-          underlying_type_match = datum['underlying_type']['type_name'].
-            sub('struct ', '').
-            sub('enum ', '')
-          underlying_type_match = underlying_type_match[1...(underlying_type_match.length - 1)].downcase
-          underlying_type = $classes[datum['underlying_type']['type_usr']]
-          
-          if (underlying_type && 
-              ( (underlying_type['file'] == datum['file'] && underlying_type['line'] == datum['line']) ||
-                datum['type']['type_name'].downcase.include?(underlying_type_match) ||
-                datum['type']['type_name'].downcase.include?(underlying_type_match)
-              )  
-             )
-            underlying_type['name'] = datum['type']['type_name']
-            underlying_type['type']['type_name'] = datum['type']['type_name']
-            $classes[datum['type']['type_usr']] = underlying_type
-          end
-          CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
-        when "ClassDecl", "StructDecl"
-          datum['name'] = datum['name']
-          # Ignore anonymous declarations
-          # (They are named "anonymous SPACE something...")
-          next if datum['name'] =~ /anonymous\s/i
-          cxxClass = $classes[datum['usr']] || datum
-          cxxClass['fields'] ||= []
-          cxxClass['member_functions'] ||= []
-          $classes[datum['usr']] = cxxClass
-          prev_type = cxxClass
-        when "ClassTemplate"
-          cxxClass = $classes[datum["usr"]] || datum
-          cxxClass['fields'] ||= []
-          cxxClass['member_functions'] ||= []
-          # TODO: is_template is redundant, as kind == 'ClassTemplate'
-          cxxClass['is_template'] = 'true'
-          $classes[datum["usr"]] = cxxClass
-          prev_type = cxxClass
-        when "EnumDecl"
-          # Ignore anonymous declarations
-          # (They are named "anonymous something...")
-          next if datum['name'] =~ /anonymous\s/i
-          enum = $enums[datum['usr']] || datum
-          enum['constants'] ||= []
-          $enums[datum['usr']] = enum
-          prev_type = cxxClass
-        when "EnumConstantDecl"
-          enum = $enums[datum['member_of']]
-          unless enum
-            $stderr.puts "WARNING: Enum constant '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
-            next
-          end
-          enum['constants'].push(datum)
-        when "CXXMethod"
-          cxxClass = $classes[datum["member_of"]]
-          unless cxxClass
-            $stderr.puts "WARNING: Method '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
-            next
-          end
-          cxxClass['member_functions'].push(datum)
-          datum['params'] ||= []
-          $current_function = datum
-          $current_function['argc'] = 0
-        when "FieldDecl"
-          cxxClass = $classes[datum["member_of"]]
-          unless cxxClass
-            $stderr.puts "WARNING: Field '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
-            next
-          end
-          cxxClass["fields"].push(datum)
-        when "FunctionDecl"
-          datum['params'] ||= []
-          $current_function = datum
-          $current_function['argc'] = 0
-          $module_functions[datum['usr']] = datum
-        when "ParmDecl"
-          fn = $module_functions[datum['function']]
-          if fn
-            fn['argc'] += 1
-            fn['params'] ||= []
-            fn['params'].push(datum)
-          end
-        when "MacroDefinition"
-          $macros.push(datum)
-          datum['has_expansion'] = datum['text'] =~ /\s/
-          if datum['text'] =~ /^[a-zA-Z_0-9]+\(/
-            datum['is_function_like'] = true
-            datum['argv'] = datum['text'][/[^(]+\(([^)]*)\)/, 1].split(',').map { |a| a.strip }
-          else
-            datum['is_function_like'] = false
-          end
-        end
-        prev_datum = datum
-      rescue StandardError => ex
-        $stderr.puts "ERROR: #{ex} \n  (while processing #{datum})\n  Backtrace:\n  #{ex.backtrace.join("\n  ")}"
+      read_datum(datum)
+    end
+    
+    typedefs.each { |t| read_datum(t) }
+  end
+  
+  def read_datum(datum)
+    case datum["kind"]
+    when "TypedefDecl"
+      # Handle common typedef idioms:
+      #
+      # Struct is defined, with a name, within a typedef to a public name.
+      # Ex: `typedef struct _private_name { ... } public_name;`
+      #
+      # Struct is defined, then separately typedefed to a similar name,
+      # such that the new name contains the orginal name minus a leading/trailing
+      # character.
+      # Ex: `typedef struct _my_type { ... } my_type`
+      # Ex: `typedef struct my_type_s { ... } my_type_t`
+      underlying_type_match = datum['underlying_type']['type_name'].
+        sub('struct ', '').
+        sub('enum ', '')
+      underlying_type_match = underlying_type_match[1...(underlying_type_match.length - 1)].downcase
+      underlying_type = $classes[datum['underlying_type']['type_usr']]
+      
+      if (underlying_type && 
+          ( (underlying_type['file'] == datum['file'] && underlying_type['line'] == datum['line']) ||
+            datum['type']['type_name'].downcase.include?(underlying_type_match) ||
+            datum['type']['type_name'].downcase.include?(underlying_type_match)
+          )  
+         )
+        underlying_type['name'] = datum['type']['type_name']
+        underlying_type['type']['type_name'] = datum['type']['type_name']
+        
+        $classes[datum['type']['type_usr']] = underlying_type
+      end
+      CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
+    when "ClassDecl", "StructDecl"
+      # Ignore anonymous declarations
+      # (They are named "anonymous SPACE something...")
+      return nil if datum['name'] =~ /anonymous\s/i
+      cxxClass = $classes[datum['usr']] || datum
+      cxxClass['fields'] ||= []
+      cxxClass['member_functions'] ||= []
+      $classes[datum['usr']] = cxxClass
+    when "ClassTemplate"
+      cxxClass = $classes[datum["usr"]] || datum
+      cxxClass['fields'] ||= []
+      cxxClass['member_functions'] ||= []
+      # TODO: is_template is redundant, as kind == 'ClassTemplate'
+      cxxClass['is_template'] = 'true'
+      $classes[datum["usr"]] = cxxClass
+    when "EnumDecl"
+      # Ignore anonymous declarations
+      # (They are named "anonymous something...")
+      return nil if datum['name'] =~ /anonymous\s/i
+      enum = $enums[datum['usr']] || datum
+      enum['constants'] ||= []
+      $enums[datum['usr']] = enum
+    when "EnumConstantDecl"
+      enum = $enums[datum['member_of']]
+      unless enum
+        $stderr.puts "WARNING: Enum constant '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
+        return nil
+      end
+      enum['constants'].push(datum)
+    when "CXXMethod"
+      cxxClass = $classes[datum["member_of"]]
+      unless cxxClass
+        $stderr.puts "WARNING: Method '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
+        return nil
+      end
+      cxxClass['member_functions'].push(datum)
+      datum['params'] ||= []
+      $current_function = datum
+      $current_function['argc'] = 0
+    when "FieldDecl"
+      cxxClass = $classes[datum["member_of"]]
+      unless cxxClass
+        $stderr.puts "WARNING: Field '#{datum['name']}' declared for unknown type '#{datum['member_of']}'"
+        return nil
+      end
+      cxxClass["fields"].push(datum)
+    when "FunctionDecl"
+      datum['params'] ||= []
+      $current_function = datum
+      $current_function['argc'] = 0
+      $module_functions[datum['usr']] = datum
+    when "ParmDecl"
+      fn = $module_functions[datum['function']]
+      if fn
+        fn['argc'] += 1
+        fn['params'] ||= []
+        fn['params'].push(datum)
+      end
+    when "MacroDefinition"
+      $macros.push(datum)
+      datum['has_expansion'] = datum['text'] =~ /\s/
+      if datum['text'] =~ /^[a-zA-Z_0-9]+\(/
+        datum['is_function_like'] = true
+        datum['argv'] = datum['text'][/[^(]+\(([^)]*)\)/, 1].split(',').map { |a| a.strip }
+      else
+        datum['is_function_like'] = false
       end
     end
+    nil
+  rescue StandardError => ex
+    $stderr.puts "ERROR: #{ex} \n  (while processing #{datum})\n  Backtrace:\n  #{ex.backtrace.join("\n  ")}"
   end
 
   def annotate_declarations
@@ -336,7 +343,7 @@ class Generator
               if todo
                 out.puts "#define #{this_fn_name} FALSE"
                 if conf[:verbose]
-                  out.puts "/* Couln't complete binding for #{this_fn_name.sub('BIND_', '').sub(this_fn_type, '')}"
+                  out.puts "/* Couln't complete binding for #{this_fn_name.sub('BIND_', '').sub('_FUNCTION', '')}"
                   todo.uniq.sort.each do |todo_item|
                     out.puts "  - #{todo_item}"
                   end
