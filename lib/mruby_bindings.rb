@@ -9,11 +9,13 @@ require 'mruby_bindings/commands/init'
 require 'mruby_bindings/commands/enable_functions'
 require 'mruby_bindings/bindings_file'
 require 'mruby_bindings/ctypes'
+require 'mruby_bindings/ctypes_definition'
 require 'mruby_bindings/builtin_ctypes'
 require 'mruby_bindings/generator'
 require 'mruby_bindings/names'
 require 'mruby_bindings/merge'
 require 'mruby_bindings/functions_header_generator'
+require 'mruby_bindings/classes_header_generator'
 require 'mruby_bindings/yargs'
 
 module MRubyBindings

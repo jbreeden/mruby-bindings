@@ -33,6 +33,11 @@ class Merge
     ifile = BindingFile.open(source, 'r')
     FileUtils.cp(target, "#{tmpdir}/#{File.basename(target)}")
     prev = BindingFile.open("#{tmpdir}/#{File.basename(target)}", 'r')
+    if prev.no_clobber
+      ifile.close
+      prev.close
+      return nil
+    end
     ofile = File.open(target, 'w')
     while line = ifile.gets
       if (binding_name = line[START_BINDING_PATTERN, 1])
@@ -43,9 +48,15 @@ class Merge
           ifile.read_to_binding_end
         else
           sha, content = ifile.digest_binding
-          ofile.puts(line)
-          ofile.puts("/* sha: #{sha} */")
-          ofile.puts(content)
+          if content.empty?
+            ofile.puts(line)
+            ofile.puts("/* sha: user_defined */")
+            ofile.puts(content)
+          else
+            ofile.puts(line)
+            ofile.puts("/* sha: #{sha} */")
+            ofile.puts(content)
+          end
         end
       else
         ofile.puts(line)
@@ -54,6 +65,7 @@ class Merge
     ifile.close
     prev.close
     ofile.close
+    nil
   end
   
   def pull_new_file(source, target)
@@ -62,9 +74,15 @@ class Merge
     while line = ifile.gets
       if START_BINDING_PATTERN =~ line
         sha, content = ifile.digest_binding
-        ofile.puts(line)
-        ofile.puts("/* sha: #{sha} */")
-        ofile.puts(content)
+        if content.empty?
+          ofile.puts(line)
+          ofile.puts("/* sha: user_defined */")
+          ofile.puts(content)
+        else
+          ofile.puts(line)
+          ofile.puts("/* sha: #{sha} */")
+          ofile.puts(content)
+        end
       else
         ofile.puts(line)
       end

@@ -28,6 +28,7 @@ EOS
     ) || 'bindings'
     
     MRubyBindings::FunctionsHeaderGenerator.new(conf).run
+    MRubyBindings::ClassesHeaderGenerator.new(conf).run
   end
 
 end

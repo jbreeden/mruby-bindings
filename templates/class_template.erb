@@ -7,7 +7,7 @@
 
 #if BIND_<%= self['ruby_name'] %>_TYPE
 
-/* MRUBY_BINDING: custom_header */
+/* MRUBY_BINDING: header */
 /* MRUBY_BINDING_END */
 
 /*
@@ -19,14 +19,16 @@
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_value self) {
 <% # TODO: Add CTypes.set_initializer as dual of CTypes.set_destructor -%>
+/* TODO: Uncomment (and optionally replace) if an initializer is desired.
   <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)calloc(1, sizeof(<%= self['type']['type_name'] %>));
-  mruby_giftwrap_<%= MRubyBindings.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
+  mruby_gift_<%= MRubyBindings.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
   return self;
+*/
 }
 #endif
 /* MRUBY_BINDING_END */
 
-/* MRUBY_BINDING: <%= self['ruby_name'] %>::initialize */
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::disown */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_disown(mrb_state* mrb, mrb_value self) {
   mrb_value ruby_object;
@@ -216,9 +218,19 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <%   end -%>
 <% end -%>
 void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::class_init_header */
+  /* Don't double-init. */
+  static int initialized = 0;
+  if (initialized) return;
+  else initialized = 1;
+/* MRUBY_BINDING_END */
+
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::class_definition */
   struct RClass* <%= self['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= self['ruby_name'] %>", mrb->object_class);
   MRB_SET_INSTANCE_TT(<%= self['ruby_name'] %>_class, MRB_TT_DATA);
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::pre_class_method_definitions */
 /* MRUBY_BINDING_END */
 
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::class_method_definitions */
@@ -229,11 +241,14 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
   mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "belongs_to_ruby?", mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby, MRB_ARGS_ARG(1, 0));
 /* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::pre_attr_definitions */
+/* MRUBY_BINDING_END */
+
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::attr_definitions */
-<% if self['fields'].any? -%>
   /*
    * Fields
    */
+<% if self['fields'].any? -%>
 <%   self['fields'].select { |f| f['access'] == 'public' }.each do |field| -%>
 #if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_READER
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= field['name'] %>", mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>, MRB_ARGS_ARG(0, 0));
@@ -242,21 +257,33 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= field['name'] %>=", mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>, MRB_ARGS_ARG(1, 0));
 #endif
 <%   end -%>
+<% else -%>
+  /* None */
 <% end -%>
 /* MRUBY_BINDING_END */
 
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::pre_instance_method_definitions */
+/* MRUBY_BINDING_END */
+
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::instance_method_definitions */
-<% if self['member_functions'].any? -%>
   /*
    * Member Functions
    */
+<% if self['member_functions'].any? -%>
 <%   self['member_functions'].each do |function| -%>
 #if BIND_<%= self['ruby_name'] %>_<%= function['name'] %>_FUNCTION
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= function['name'] %>", mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>, <%= self['ruby_name'] %>_<%= function['name'] %>_REQUIRED_ARGC, <%= self['ruby_name'] %>_<%= function['name'] %>_OPTIONAL_ARGC));
 #endif
 <%   end -%>
+<% else -%>
+  /* None */
 <% end -%>
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::class_init_footer */
 /* MRUBY_BINDING_END */
 }
 
+/* MRUBY_BINDING: footer */
+/* MRUBY_BINDING_END */
 #endif

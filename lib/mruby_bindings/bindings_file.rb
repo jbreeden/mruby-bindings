@@ -2,6 +2,8 @@ module MRubyBindings
   class BindingFile < File
     require 'digest'
     
+    attr_reader :no_clobber
+    
     def initialize(*args, &block)
       super
       @put_back = nil
@@ -9,11 +11,15 @@ module MRubyBindings
       @bindings = {}
       @recorded_shas = {}
       @actual_shas = {}
+      @no_clobber = false
       analyze
     end
     
     def analyze
       while line = self.gets
+        if line.include?('MRUBY_BINDINGS_NO_CLOBBER')
+          @no_clobber = true
+        end
         if fn = line[START_BINDING_PATTERN, 1]
           next_line = self.gets
           sha = (next_line || '')[BINDING_SHA_PATTERN, 1]
@@ -26,6 +32,10 @@ module MRubyBindings
         end
       end
       self.rewind
+    end
+    
+    def digest_length
+      @digest.digest_length
     end
     
     def gets
@@ -43,7 +53,11 @@ module MRubyBindings
     end
     
     def binding_edited?(binding_name)
-      @recorded_shas[binding_name] != @actual_shas[binding_name]
+      if @recorded_shas[binding_name] == 'user_defined'
+        @bindings[binding_name] =~ /\S/
+      else
+        @recorded_shas[binding_name] != @actual_shas[binding_name]
+      end
     end
     
     def recorded_sha(binding_name)

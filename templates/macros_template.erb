@@ -1,7 +1,13 @@
 #include "mruby_<%= module_name %>.h"
 
+/* MRUBY_BINDING: header */
+/* MRUBY_BINDING_END */
+
 void
 mruby_<%= module_name %>_define_macro_constants(mrb_state* mrb) {
+/* MRUBY_BINDING: pre_macro_definitions */
+/* MRUBY_BINDING_END */
+
 <% macros.each do |macro| -%>
 <% ctype = CTypes.get_macro_type(macro['name']) -%>
 <%   next if !ctype || ctype.ignore? -%>
@@ -14,4 +20,10 @@ mruby_<%= module_name %>_define_macro_constants(mrb_state* mrb) {
   } while (0);
 #endif
 <% end -%>
+
+/* MRUBY_BINDING: post_macro_definitions */
+/* MRUBY_BINDING_END */
 }
+
+/* MRUBY_BINDING: footer */
+/* MRUBY_BINDING_END */

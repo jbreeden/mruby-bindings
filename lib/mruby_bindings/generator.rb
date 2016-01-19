@@ -234,7 +234,6 @@ class Generator
     enums_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/enums_template.erb"), nil, "-")
     header_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/header_template.erb"), nil, "-")
     boxing_header_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/boxing_header_template.erb"), nil, "-")
-    classes_header_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/classes_header_template.erb"), nil, "-")
     macros_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/macros_template.erb"), nil, "-")
     mrbgem_erb = ERB.new(File.read("#{MRubyBindings::TEMPLATE_DIR}/mrbgem.rake.erb"), nil, "-")
 
@@ -304,65 +303,7 @@ class Generator
   end
 
   def generate_classes_header
-    write_file("#{conf[:output_dir]}/include/mruby_#{conf[:module_name]}_classes.h") do |out|
-      out.puts "#ifndef MRUBY_#{conf[:module_name]}_CLASSES_HEADER"
-      out.puts "#define MRUBY_#{conf[:module_name]}_CLASSES_HEADER"
-      out.puts
-      Dir["#{conf[:output_dir]}/src/*"].each do |f|
-        if (f == '.' ||
-            f == '..' ||
-            f == "#{conf[:output_dir]}/src/mruby_#{conf[:module_name]}.#{conf[:ext]}" ||
-            f == "#{conf[:output_dir]}/src/mruby_#{conf[:module_name]}_boxing.#{conf[:ext]}" ||
-            f == "#{conf[:output_dir]}/src/mruby_#{conf[:module_name]}_macro_constants.#{conf[:ext]}")
-          next
-        end
-        File.open(f, 'r') do |f|
-          this_fn_name = ''
-          this_fn_type = nil
-          todo = false
-          f.each_line do |line|
-            if type = line[/#if BIND_(.*)_TYPE$/, 1]
-              out.puts "#define BIND_#{type}_TYPE TRUE"
-              next
-            end
-            
-            if this_fn_type = line[/^#if BIND.*(FIELD_READER|FIELD_WRITER|FUNCTION)/, 1]
-              this_fn_name = line.split(' ')[1].strip
-              todo = false
-              next
-            end
-
-            if line =~ /TODO/
-              # todo is set to false after each function is processed.
-              # So, create a new array to hold the todo's for the next function.
-              todo = [] unless todo
-              todo.push(line[/TODO([^\s(]*)/])
-            end
-
-            if line =~ /^#endif/ && !this_fn_name.empty?
-              if todo
-                out.puts "#define #{this_fn_name} FALSE"
-                if conf[:verbose]
-                  out.puts "/* Couln't complete binding for #{this_fn_name.sub('BIND_', '').sub('_FUNCTION', '')}"
-                  todo.uniq.sort.each do |todo_item|
-                    out.puts "  - #{todo_item}"
-                  end
-                  out.puts "*/"
-                end
-              else
-                out.puts "#define #{this_fn_name} TRUE"
-              end
-              todo = false
-            end
-
-            if line =~ /void.*mrb.*init\(/
-              break
-            end
-          end
-        end
-      end
-      out.puts "#endif"
-    end
+    ClassesHeaderGenerator.new(conf).run
   end
 
   def print_diagnostics

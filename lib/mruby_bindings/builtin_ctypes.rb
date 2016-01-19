@@ -64,12 +64,8 @@ if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->true_class) && !mrb_obj_is_kind_of(m
 EOF
 end
 
-CTypes.define('return:cstring') do
-  self.type_name = 'char *'
-  self.recv_template = 'char * %{value};'
-  self.boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box});"
-  self.boxing_fn.cleanup_template = "free(%{value});"
-end
+# String stuff that I'm not too sure about
+# ----------------------------------------
 
 CTypes.define('const char *') do
   self.recv_template = 'char * %{value} = NULL;'
@@ -93,6 +89,16 @@ if (!mrb_obj_is_kind_of(mrb, %{value}, mrb->string_class)) {
   return mrb_nil_value();
 }
 EOF
+end
+
+# Custom Semantic Types
+# ---------------------
+
+CTypes.define('return:cstring') do
+  self.type_name = 'char *'
+  self.recv_template = 'char * %{value};'
+  self.boxing_fn.invocation_template = "mrb_value %{as} = mrb_str_new_cstr(mrb, %{box});"
+  self.boxing_fn.cleanup_template = "free(%{value});"
 end
 
 CTypes.define('unused:pointer') do

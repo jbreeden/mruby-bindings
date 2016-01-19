@@ -15,10 +15,15 @@
  *       you will need to prepend the relative path.
  */
 
+/* MRUBY_BINDING: pre_includes */
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: includes */
 #include <stdlib.h>
 #include "mruby.h"
 #include "mruby/array.h"
 #include "mruby/class.h"
+#include "mruby/compile.h"
 #include "mruby/data.h"
 #include "mruby/string.h"
 #include "mruby/value.h"
@@ -42,6 +47,10 @@
 #include "mruby_<%= module_name %>_functions.h"
 #include "mruby_<%= module_name %>_classes.h"
 #include "mruby_<%= module_name %>_boxing.h"
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: post_includes */
+/* MRUBY_BINDING_END */
 
 /*
  * RClass Macros
@@ -50,24 +59,37 @@
  * Macros for retrieving the RClass*'s defined by this gem.
  */
 
+/* MRUBY_BINDING: pre_class_macros */
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: class_macros */
 #define <%= module_name %>_module(mrb) mrb_module_get(mrb, "<%= module_name %>")
 <% classes.each do |klass| -%>
 #define <%= klass['ruby_name'] %>_class(mrb) mrb_class_get_under(mrb, <%= module_name %>_module(mrb), "<%= klass['ruby_name'] %>")
 <% end -%>
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: post_class_macros */
+/* MRUBY_BINDING_END */
 
 /*
  * Class initialization function declarations
  * ------------------------------------------
- *
- * These declarations are controlled by the macros in the
- * "Class Bindings Options" section above.
  */
 
+/* MRUBY_BINDING: pre_class_init_decls */
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: pre_class_init_decls */
 <% classes.each do |klass| -%>
 #if BIND_<%= klass['ruby_name'] %>_TYPE
 void mrb_<%= module_name %>_<%= klass['ruby_name'] %>_init(mrb_state* mrb);
 #endif
 <% end -%>
+/* MRUBY_BINDING_END */
+
+/* MRUBY_BINDING: post_class_init_decls */
+/* MRUBY_BINDING_END */
 
 /*
  * Macro definition function declaration

@@ -34,12 +34,14 @@
  */
 #include "mruby_<%= module_name %>.h"
 
+/* MRUBY_BINDING: header */
+/* MRUBY_BINDING_END */
+
 <%
   concrete_classes = classes
     .reject { |c| c['is_template'] }
     .sort_by { |c| c['name'] }
 -%>
-
 <% concrete_classes.each do |klass| -%>
 <%   ctype = CTypes[klass['name']] -%>
 <%   class_id = MRubyBindings.type_name_to_id(klass['name']) -%>
@@ -104,3 +106,5 @@ mruby_unbox_<%= class_id %>(mrb_value boxed) {
 /* MRUBY_BINDING_END */
 
 <% end -%>
+/* MRUBY_BINDING: footer */
+/* MRUBY_BINDING_END */
