@@ -23,4 +23,28 @@ module MRubyBindings
   START_BINDING_PATTERN = /\/\* MRUBY_BINDING: (\S+) \*\//
   END_BINDING_PATTERN = /\/\* MRUBY_BINDING_END \*\//
   TEMPLATE_DIR = File.expand_path("#{File.dirname(__FILE__)}/../templates")
+  
+  def self.read_declarations(path, &block)
+    require 'json'
+    lib = Hash.new { |h, k| h[k] = [] }
+    File.read(path).each_line do |l|
+      decl = JSON.parse(l)
+      lib[decl['kind'] + 's'].push(decl)
+    end
+    block[lib]
+  end
+  
+  def self.view_declarations(decls)
+    decls.each do |decl|
+      File.open(decl['file'], 'r') do |f|
+        f.each_line.each_with_index do |l, i|
+          puts l if i >= (decl['line'].to_i - 50)
+          break if i >= decl['line'].to_i
+        end
+      end
+      $stdin.gets
+      5.times { puts }
+    end
+  end
+  
 end

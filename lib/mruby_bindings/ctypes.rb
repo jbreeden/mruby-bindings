@@ -1,9 +1,12 @@
 require 'mruby_bindings/names'
 
 module CTypes
+  
   @enabled_macros = {}
   @param_types = {}
   @return_types = {}
+  @fn_headers = {}
+  @fn_footers = {}
   @types = {}
   @typedefs = {}
   @destructors = Hash.new { |h, k| h[k] = 'free' }
@@ -40,6 +43,22 @@ module CTypes
       @param_types[[fn, param]] = type
     end
     
+    def get_fn_header(fn)
+      @fn_headers[fn]
+    end
+    
+    def set_fn_header(fn, header)
+      @fn_headers[fn] = header
+    end
+    
+    def get_fn_footer(fn)
+      @fn_footers[fn]
+    end
+    
+    def set_fn_footer(fn, footer)
+      @fn_footers[fn] = footer
+    end
+    
     def get_fn_return_type(fn)
       @return_types[fn]
     end
@@ -54,6 +73,33 @@ module CTypes
     
     def get_destructor(type)
       @destructors[type]
+    end
+    
+    def translate_type_names(&block)
+      raise ArgumentError.new("Block required") unless block_given?
+      @type_translator = block
+    end
+    
+    def type_translator
+      @type_translator ||= proc { |name| MRubyBindings.type_name_to_rb_class(name) }
+    end
+    
+    def translate_fn_names(&block)
+      raise ArgumentError.new("Block required") unless block_given?
+      @fn_translator = block
+    end
+    
+    def fn_translator
+      @fn_translator ||= proc { |name| name }
+    end
+    
+    def translate_enum_names(&block)
+      raise ArgumentError.new("Block required") unless block_given?
+      @enum_translator = block
+    end
+    
+    def enum_translator
+      @enum_translator ||= proc { |name| name }
     end
 
     def [](type_name)
@@ -95,6 +141,10 @@ module CTypes
       @types[name] = @types['int'].aliased_as(name)
     end
 
+    # mruby-bindings learns how to box/unbox types on demand, when a function
+    # parameter or return value is seen with the given type. If we've also
+    # seen a type declaration for this type, we'll have boxing/unboxing functions
+    # to call. Otherwise, insert some TODO stubs for the user to swap out.
     def learn_data_type(type)
       # Only need to learn a new type once
       if seen = CTypes[type['type_name']]

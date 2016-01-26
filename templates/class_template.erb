@@ -10,58 +10,17 @@
 /* MRUBY_BINDING: header */
 /* MRUBY_BINDING_END */
 
-/*
- * Class Methods
- */
-
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::initialize */
 #if BIND_<%= self['ruby_name'] %>_INITIALIZE
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_value self) {
 <% # TODO: Add CTypes.set_initializer as dual of CTypes.set_destructor -%>
-/* TODO: Uncomment (and optionally replace) if an initializer is desired.
+/* TODO: Remove this comment & run `mrbind enable-functions` if an initializer is desired. */
   <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)calloc(1, sizeof(<%= self['type']['type_name'] %>));
   mruby_gift_<%= MRubyBindings.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
   return self;
-*/
 }
 #endif
-/* MRUBY_BINDING_END */
-
-/* MRUBY_BINDING: <%= self['ruby_name'] %>::disown */
-mrb_value
-mrb_<%= module_name %>_<%= self['ruby_name'] %>_disown(mrb_state* mrb, mrb_value self) {
-  mrb_value ruby_object;
-  mrb_get_args(mrb, "o", &ruby_object);
-
-  if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "<%= module_name %>::<%= self['ruby_name'] %>.disown only accepts objects of type <%= module_name %>::<%= self['ruby_name'] %>");
-    return mrb_nil_value();
-  }
-
-  ((mruby_to_native_ref*)(DATA_PTR(ruby_object)))->belongs_to_ruby = FALSE;
-
-  return mrb_nil_value();
-}
-/* MRUBY_BINDING_END */
-
-/* MRUBY_BINDING: <%= self['ruby_name'] %>::belongs_to_ruby */
-mrb_value
-mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby(mrb_state* mrb, mrb_value self) {
-  mrb_value ruby_object;
-  mrb_get_args(mrb, "o", &ruby_object);
-
-  if (!mrb_obj_is_kind_of(mrb, ruby_object, mrb_class_ptr(self))) {
-    mrb_raise(mrb, E_TYPE_ERROR, "<%= module_name %>::<%= self['ruby_name'] %>.belongs_to_ruby only accepts objects of type <%= module_name %>::<%= self['ruby_name'] %>");
-    return mrb_nil_value();
-  }
-
-  if ( ((mruby_to_native_ref*)(DATA_PTR(ruby_object)))->belongs_to_ruby ) {
-    return mrb_true_value();
-  } else {
-    return mrb_false_value();
-  }
-}
 /* MRUBY_BINDING_END */
 
 <% if self['fields'].any? -%>
@@ -127,6 +86,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
 <% -%>
 <% # Note: Don't do the unboxing cleanup. The native value is definitely still referenced by the underlying struct -%>
 <% -%>
+  /* Hacky way to return whatever was passed in. Mirrors typical assignment semantics. */
   mrb_value value_as_mrb_value;
   mrb_get_args(mrb, "o", &value_as_mrb_value);
   return value_as_mrb_value;
@@ -237,8 +197,6 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
 #if BIND_<%= self['ruby_name'] %>_INITIALIZE
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "initialize", mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize, MRB_ARGS_NONE());
 #endif
-  mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "disown", mrb_<%= module_name %>_<%= self['ruby_name'] %>_disown, MRB_ARGS_ARG(1, 0));
-  mrb_define_class_method(mrb, <%= self['ruby_name'] %>_class, "belongs_to_ruby?", mrb_<%= module_name %>_<%= self['ruby_name'] %>_belongs_to_ruby, MRB_ARGS_ARG(1, 0));
 /* MRUBY_BINDING_END */
 
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::pre_attr_definitions */

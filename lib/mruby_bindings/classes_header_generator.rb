@@ -58,6 +58,7 @@ class ClassesHeaderGenerator
             end
 
             if line =~ /void.*mrb.*init\(/
+              out.puts
               break
             end
           end

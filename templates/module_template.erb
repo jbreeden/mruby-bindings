@@ -29,6 +29,12 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
      to_type_check = function['in_params'].select { |p| p['ctype'].needs_type_check? }
      to_cleanup_unboxing = function['in_params'].select { |p| p['ctype'].needs_unboxing_cleanup? }
 -%>
+<% if function['header'] -%>
+<%   function['header'].each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%   end -%>
+
+<% end -%>
 <% if function['out_count'] > 1 -%>
   mrb_value results = mrb_ary_new(mrb);
 <% end -%>
@@ -72,7 +78,7 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 -%>
   <%= function['return_type']['type_name'] == 'void' ? '' : "#{function['return_type']['type_name']} native_return_value = "  %><%= function['name'] %>(<%= argv %>);
 
-<%   if function['return_type']['type_name'] != 'void' -%>
+<%   unless function['ctype'].ignore? -%>
   /* Box the return value */
 <%     (function['ctype'].box_return('native_return_value', 'return_value')).each_line do |line| -%>
   <%= line.sub("\n", "") %>
@@ -118,6 +124,12 @@ mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 
 <%     end -%>
 <%   end -%>
+<% if function['footer'] -%>
+<%   function['footer'].each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%   end -%>
+
+<% end -%>
 <%   if function['out_count'] == 0 -%>
   return mrb_nil_value();
 <%   elsif function['out_count'] == 1 && !function['is_void'] -%>
@@ -139,6 +151,7 @@ void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
   
   struct RClass* <%= module_name %>_module = mrb_define_module(mrb, "<%= module_name%>");
   mruby_<%= module_name %>_define_macro_constants(mrb);
+  mruby_<%= module_name %>_define_enum_constants(mrb);
 
 /* MRUBY_BINDING: pre_class_initializations */
 /* MRUBY_BINDING_END */
@@ -160,7 +173,7 @@ void mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb) {
    */
 <% module_functions.each do |function| -%>
 #if BIND_<%= function['name'] %>_FUNCTION
-  mrb_define_class_method(mrb, <%= module_name %>_module, "<%= function['name'] %>", mrb_<%= module_name %>_<%= function['name'] %>, MRB_ARGS_ARG(<%= function['name'] %>_REQUIRED_ARGC, <%= function['name'] %>_OPTIONAL_ARGC));
+  mrb_define_class_method(mrb, <%= module_name %>_module, "<%= function['ruby_name'] %>", mrb_<%= module_name %>_<%= function['name'] %>, MRB_ARGS_ARG(<%= function['name'] %>_REQUIRED_ARGC, <%= function['name'] %>_OPTIONAL_ARGC));
 #endif
 <% end -%>
 /* MRUBY_BINDING_END */

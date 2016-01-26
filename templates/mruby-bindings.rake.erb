@@ -1,3 +1,5 @@
+require 'mruby_bindings'
+
 namespace :bindings do
   desc 'Extract type information from C files'
   task :scrape do
@@ -14,6 +16,14 @@ namespace :bindings do
       sh "clang2json #{header} >> declarations.json"
     end
   end
+  
+  desc 'Inspect all declarations in an interactive Pry shell (require pry gem)'
+  task :pry do
+    require 'pry'
+    MRubyBindings.read_declarations("declarations.json") do |lib|
+      binding.pry
+    end
+  end
 
   desc 'Generate bindings'
   task :generate do
@@ -24,6 +34,7 @@ namespace :bindings do
     cmd << '-load mruby-bindings.in/ctypes.rb' if File.exists?('mruby-bindings.in/ctypes.rb')
     cmd << '-load mruby-bindings.in/fn_types.rb' if File.exists?('mruby-bindings.in/fn_types.rb')
     cmd << '-load mruby-bindings.in/macro_types.rb' if File.exists?('mruby-bindings.in/macro_types.rb')
+    cmd << '-includes mruby-bindings.in/includes.h' if File.exists?('mruby-bindings.in/includes.h')
     cmd << '-output bindings'
     cmd << '-force'
     sh cmd.join(' ')

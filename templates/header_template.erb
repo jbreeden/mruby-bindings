@@ -92,9 +92,10 @@ void mrb_<%= module_name %>_<%= klass['ruby_name'] %>_init(mrb_state* mrb);
 /* MRUBY_BINDING_END */
 
 /*
- * Macro definition function declaration
- * -------------------------------------
+ * Macro & Enum definition function declarations
+ * ---------------------------------------------
  */
 void mruby_<%= module_name %>_define_macro_constants(mrb_state* mrb);
+void mruby_<%= module_name %>_define_enum_constants(mrb_state* mrb);
 
 #endif

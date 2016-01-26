@@ -1,5 +1,6 @@
 require 'fileutils'
 
+# TODO: Stop using global variables. This project outgrew these a long time ago.
 $current_function = nil
 $classes = {} # Includes structs
 $module_functions = {}
@@ -66,14 +67,18 @@ class Generator
       # Ex: `typedef struct my_type_s { ... } my_type_t`
       underlying_type_match = datum['underlying_type']['type_name'].
         sub('struct ', '').
-        sub('enum ', '')
-      underlying_type_match = underlying_type_match[1...(underlying_type_match.length - 1)].downcase
+        sub('enum ', '').
+        sub(/^(_*)/, '').
+        sub(/(_*)(t|s)?$/, '')
       underlying_type = $classes[datum['underlying_type']['type_usr']]
       
-      if (underlying_type && 
+      if (underlying_type &&
+          # If the typedef & the stuct definition start on the same line, it's definitely the name to use
           ( (underlying_type['file'] == datum['file'] && underlying_type['line'] == datum['line']) ||
-            datum['type']['type_name'].downcase.include?(underlying_type_match) ||
-            datum['type']['type_name'].downcase.include?(underlying_type_match)
+          # Otherwise see if the names are just *really* similar
+            ((-2..2) === datum['type']['type_name'].length - underlying_type_match.length) &&
+             ( datum['type']['type_name'].downcase.include?(underlying_type_match) ||
+               datum['type']['type_name'].downcase.include?(underlying_type_match) )
           )  
          )
         underlying_type['name'] = datum['type']['type_name']
@@ -161,7 +166,11 @@ class Generator
     end
     
     $classes.each do |usr, klass|
-      klass['ruby_name'] = MRubyBindings.type_name_to_rb_class(klass['name'])
+      klass['ruby_name'] = CTypes.type_translator[klass['name']]
+    end
+    
+    $enums.each do |usr, enum|
+      enum['ruby_name'] = CTypes.type_translator[enum['name']]
     end
 
     $classes.each do |usr, klass|
@@ -177,13 +186,23 @@ class Generator
     # - Add names for anonymous parameters
     # - Associate parameters & return values with specified types
     $module_functions.values.concat($classes.values.uniq.flat_map { |c| c['member_functions']}).each do |func|
+      func['ruby_name'] = CTypes.fn_translator[func['name']]
       func['out_count'] = 0
-      if func['return_type']['type_name'] != 'void'
-        func['out_count'] += 1
-      else
+      func['header'] = CTypes.get_fn_header(func['name'])
+      func['footer'] = CTypes.get_fn_footer(func['name'])
+      user_defined_ctype = CTypes.get_fn_return_type(func['name'])
+      if user_defined_ctype
+        if user_defined_ctype.ignore?
+            func['is_void'] = true
+        else
+          func['out_count'] += 1
+        end
+      elsif func['return_type']['type_name'] == 'void'
         func['is_void'] = true
+      else
+        func['out_count'] += 1
       end
-      func['ctype'] = CTypes.get_fn_return_type(func['name'])
+      func['ctype'] = user_defined_ctype
       func['ctype'] ||= CTypes.learn_data_type(func['return_type'])
       func['incomplete'] = true if func['ctype'].unknown?
       
@@ -255,10 +274,8 @@ class Generator
     end
     
     unless conf[:skip].include?('mrblib')
-      if $enums.any?
-        write_file("#{conf[:output_dir]}/mrblib/#{module_name}.rb") do |file|
-          file.puts(enums_erb.result binding)
-        end
+      write_file("#{conf[:output_dir]}/src/mruby_#{module_name}_enum_constants.#{conf[:ext]}") do |file|
+        file.puts(enums_erb.result binding)
       end
     end
     
@@ -341,6 +358,44 @@ class Generator
         next unless m['has_expansion'] && CTypes.get_macro_type(m['name']).nil?
         file.puts "# CTypes.set_macro_type('#{m['name']}', CTypes['???'])"
       end
+    end
+    File.open('mruby-bindings.out/ctypes.rb', 'w') do |file|
+      file.puts <<-EOS
+# CTypes.define('Example') do
+#   self.needs_unboxing = true
+#   self.needs_boxing_cleanup = false
+#   self.needs_unboxing_cleanup = false
+#   self.needs_type_check = true
+#   
+#   self.recv_template = 'mrb_value %{value};'
+#   self.format_specifier = 'o'
+#   self.get_args_template = '&%{value}'
+#   self.type_check_template = nil
+#   self.invocation_arg_template = '%{value}'
+#   self.field_swap_template = %{old} = %{new};
+#   
+#   self.unboxing_fn.invocation_template = '%{as} = TODO_mruby_unbox_Example(%{unbox});'
+#   self.unboxing_fn.cleanup_template = 'free(%{value});'
+#   
+#   self.boxing_fn.invocation_template = '%{as} = TODO_mruby_box_Example(%{box});'
+#   self.boxing_fn.cleanup_template = 'free(%{value});'
+# end
+
+## This block is called to determine the Ruby class name to use for a C type.
+# CTypes.translate_type_names do |name|
+#   MRubyBindings.type_name_to_rb_class(name)
+# end
+
+## This block is called to determine the Ruby method name to use for a C function.
+# CTypes.translate_fn_names do |name|
+#   name
+# end
+
+## This block is called to determine the Ruby constant name to use for a C enum value.
+# CTypes.translate_enum_names do |name|
+#   name
+# end
+EOS
     end
   end
 end
