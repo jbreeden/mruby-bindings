@@ -15,10 +15,12 @@
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_value self) {
 <% # TODO: Add CTypes.set_initializer as dual of CTypes.set_destructor -%>
-/* TODO: Remove this comment & run `mrbind enable-functions` if an initializer is desired. */
+  mrb_raise(mrb, E_NOMETHOD_ERROR, "No initializer defined");
+/* 
   <%= self['type']['type_name'] %>* native_object = (<%= self['type']['type_name'] %>*)calloc(1, sizeof(<%= self['type']['type_name'] %>));
   mruby_gift_<%= MRubyBindings.type_name_to_id(self['name']) %>_data_ptr(self, native_object);
   return self;
+*/
 }
 #endif
 /* MRUBY_BINDING_END */
@@ -31,10 +33,6 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_initialize(mrb_state* mrb, mrb_v
 <%   self['fields'].select { |f| f['access'] == 'public' }.each do |field| -%>
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::<%= field['name'] %>_reader */
 #if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_READER
-/* get_<%= field['name'] %>
- *
- * Return Type: <%= field['type']['type_name'] %>
- */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_state* mrb, mrb_value self) {
   <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= MRubyBindings.type_name_to_id(self['type']['type_name']) %>(self);
@@ -52,11 +50,6 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>(mrb_sta
 
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::<%= field['name'] %>_writer */
 #if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_WRITER
-/* set_<%= field['name'] %>
- *
- * Parameters:
- * - value: <%= field['type']['type_name'] %>
- */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_state* mrb, mrb_value self) {
   <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= MRubyBindings.type_name_to_id(self['type']['type_name']) %>(self);
@@ -66,7 +59,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
 
   mrb_get_args(mrb, "<%= field['ctype'].format_specifier %>", <%= field['ctype'].get_args_argv(field['name']) %>);
 
-<% if field['ctype'].needs_type_check? -%>
+<% if (field['ctype'].type_check(field['name']).length > 0) && field['ctype'].needs_type_check?  -%>
   /* type checking */
 <%    field['ctype'].type_check(field['name']).each_line do |line| -%>
   <%= line.sub("\n", "") %>
@@ -86,7 +79,9 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
 <% -%>
 <% # Note: Don't do the unboxing cleanup. The native value is definitely still referenced by the underlying struct -%>
 <% -%>
-  /* Hacky way to return whatever was passed in. Mirrors typical assignment semantics. */
+<% -%>
+<% # Hacky way to return whatever was passed in. Mirrors typical assignment semantics -%>
+<% -%>
   mrb_value value_as_mrb_value;
   mrb_get_args(mrb, "o", &value_as_mrb_value);
   return value_as_mrb_value;
@@ -107,16 +102,7 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>(mrb_sta
 #if BIND_<%= self['ruby_name'] %>_<%= function['name'] %>_FUNCTION
 #define <%= self['ruby_name'] %>_<%= function['name'] %>_REQUIRED_ARGC <%= function['argc'] %>
 #define <%= self['ruby_name'] %>_<%= function['name'] %>_OPTIONAL_ARGC 0
-/* <%= function['name'] %>
- *
- * Parameters:<%= " None" unless function['params'].any? %>
-<%   if function['params'].any? -%>
-<%     function['params'].each do |param| -%>
- * - <%= param['name'] %>: <%= param['type']['type_name'] %>
-<%     end -%>
-<%   end -%>
- * Return Type: <%= function['return_type']['type_name'] %>
- */
+/* <%= function['return_type']['type_name'] %> <%= function['name'] %>(<%= function['params'].map { |p| p['type']['type_name'] + ' ' + p['name'] }.join(', ') %>) */
 mrb_value
 mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
   <%= self['type']['type_name'] %> * native_self = mruby_unbox_<%= self['type']['type_name'] %>(self);
@@ -178,11 +164,11 @@ mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>(mrb_stat
 <%   end -%>
 <% end -%>
 void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
-/* MRUBY_BINDING: <%= self['ruby_name'] %>::class_init_header */
-  /* Don't double-init. */
   static int initialized = 0;
   if (initialized) return;
   else initialized = 1;
+
+/* MRUBY_BINDING: pre_class_definition */
 /* MRUBY_BINDING_END */
 
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::class_definition */
@@ -199,6 +185,7 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
 #endif
 /* MRUBY_BINDING_END */
 
+<% if self['fields'].any? -%>
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::pre_attr_definitions */
 /* MRUBY_BINDING_END */
 
@@ -206,7 +193,6 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
   /*
    * Fields
    */
-<% if self['fields'].any? -%>
 <%   self['fields'].select { |f| f['access'] == 'public' }.each do |field| -%>
 #if BIND_<%= self['ruby_name'] %>_<%= field['name'] %>_FIELD_READER
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= field['name'] %>", mrb_<%= module_name %>_<%= self['ruby_name'] %>_get_<%= field['name'] %>, MRB_ARGS_ARG(0, 0));
@@ -215,11 +201,10 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= field['name'] %>=", mrb_<%= module_name %>_<%= self['ruby_name'] %>_set_<%= field['name'] %>, MRB_ARGS_ARG(1, 0));
 #endif
 <%   end -%>
-<% else -%>
-  /* None */
-<% end -%>
 /* MRUBY_BINDING_END */
+<% end -%>
 
+<% if self['member_functions'].any? -%>
 /* MRUBY_BINDING: <%= self['ruby_name'] %>::pre_instance_method_definitions */
 /* MRUBY_BINDING_END */
 
@@ -227,18 +212,15 @@ void mrb_<%= module_name %>_<%= self['ruby_name'] %>_init(mrb_state* mrb) {
   /*
    * Member Functions
    */
-<% if self['member_functions'].any? -%>
 <%   self['member_functions'].each do |function| -%>
 #if BIND_<%= self['ruby_name'] %>_<%= function['name'] %>_FUNCTION
   mrb_define_method(mrb, <%= self['ruby_name'] %>_class, "<%= function['name'] %>", mrb_<%= module_name %>_<%= self['ruby_name'] %>_<%= function['name'] %>, <%= self['ruby_name'] %>_<%= function['name'] %>_REQUIRED_ARGC, <%= self['ruby_name'] %>_<%= function['name'] %>_OPTIONAL_ARGC));
 #endif
 <%   end -%>
-<% else -%>
-  /* None */
-<% end -%>
 /* MRUBY_BINDING_END */
+<% end -%>
 
-/* MRUBY_BINDING: <%= self['ruby_name'] %>::class_init_footer */
+/* MRUBY_BINDING: <%= self['ruby_name'] %>::post_class_definition */
 /* MRUBY_BINDING_END */
 }
 

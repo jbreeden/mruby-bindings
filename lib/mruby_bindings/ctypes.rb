@@ -3,6 +3,7 @@ require 'mruby_bindings/names'
 module CTypes
   
   @enabled_macros = {}
+  @field_types = {}
   @param_types = {}
   @return_types = {}
   @fn_headers = {}
@@ -33,6 +34,14 @@ module CTypes
     
     def get_macro_type(name)
       @enabled_macros[name]
+    end
+    
+    def get_field_type(parent_type, field)
+      @field_types[[parent_type, field]]
+    end
+    
+    def set_field_type(parent_type, field, type)
+      @field_types[[parent_type, field]] = type
     end
     
     def get_fn_param_type(fn, param)

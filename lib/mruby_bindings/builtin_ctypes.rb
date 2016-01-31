@@ -163,14 +163,14 @@ do {
 EOS
 
   self.boxing_fn.cleanup_template = <<EOS
-do {
+if (%{value} != NULL)
   int i = 0;
   while (%{value}[i] != NULL) {
     free(%{value}[i]);
     ++i;
   }
   free(%{value});
-} while (0);
+}
 EOS
 
   self.unboxing_fn.invocation_template = <<EOS

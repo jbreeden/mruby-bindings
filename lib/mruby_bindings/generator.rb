@@ -65,6 +65,7 @@ class Generator
       # character.
       # Ex: `typedef struct _my_type { ... } my_type`
       # Ex: `typedef struct my_type_s { ... } my_type_t`
+      
       underlying_type_match = datum['underlying_type']['type_name'].
         sub('struct ', '').
         sub('enum ', '').
@@ -72,19 +73,35 @@ class Generator
         sub(/(_*)(t|s)?$/, '')
       underlying_type = $classes[datum['underlying_type']['type_usr']]
       
-      if (underlying_type &&
-          # If the typedef & the stuct definition start on the same line, it's definitely the name to use
-          ( (underlying_type['file'] == datum['file'] && underlying_type['line'] == datum['line']) ||
-          # Otherwise see if the names are just *really* similar
-            ((-2..2) === datum['type']['type_name'].length - underlying_type_match.length) &&
-             ( datum['type']['type_name'].downcase.include?(underlying_type_match) ||
-               datum['type']['type_name'].downcase.include?(underlying_type_match) )
-          )  
-         )
+      do_rename = proc {
         underlying_type['name'] = datum['type']['type_name']
         underlying_type['type']['type_name'] = datum['type']['type_name']
-        
         $classes[datum['type']['type_usr']] = underlying_type
+      }
+      
+      do_new_type = proc {
+        if underlying_type && underlying_type['kind'] =~ /(Struct|Class)Decl/
+          cxxClass = $classes[datum['type']['type_usr']] || datum
+          cxxClass['fields'] ||= []
+          cxxClass['member_functions'] ||= []
+          $classes[datum['type']['type_usr']] = cxxClass
+        end
+      }
+        
+      if underlying_type && underlying_type['name'] == "struct #{datum['type']['type_name']}"
+        do_rename[]
+      elsif underlying_type && underlying_type['file'] == datum['file'] 
+          if ($last_datum['kind'] == 'StructDecl' && $last_datum['type']['type_name'] == datum['underlying_type']['type_name'])
+            do_rename[]
+          elsif (-2..2) === datum['type']['type_name'].length - underlying_type_match.length &&
+            ( datum['type']['type_name'].downcase.include?(underlying_type_match) ||
+              datum['type']['type_name'].downcase.include?(underlying_type_match) )
+            do_rename[]
+          else
+            do_new_type[]
+          end
+      elsif (underlying_type && underlying_type['file'] != datum['file'])
+        do_new_type[]
       end
       CTypes.typedef(datum['underlying_type']['type_name'], datum['type']['type_name'])
     when "ClassDecl", "StructDecl"
@@ -155,6 +172,7 @@ class Generator
         datum['is_function_like'] = false
       end
     end
+    $last_datum = datum
     nil
   rescue StandardError => ex
     $stderr.puts "ERROR: #{ex} \n  (while processing #{datum})\n  Backtrace:\n  #{ex.backtrace.join("\n  ")}"
@@ -175,8 +193,9 @@ class Generator
 
     $classes.each do |usr, klass|
       klass['fields'].each do |field|
+        field['ctype'] = CTypes.get_field_type(klass['name'], field['name'])
         CTypes.learn_data_type(field['type'])
-        field['ctype'] = CTypes[field['type']]
+        field['ctype'] ||= CTypes[field['type']]
       end
     end
 

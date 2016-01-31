@@ -73,9 +73,9 @@ module CTypes
       self.format_specifier = "o"
       self.field_swap_template = "%{old} = %{new};"
       self.boxing_fn = BoxingFn.new
-      boxing_fn.invocation_template = "%{as} = TODO_mruby_box_#{MRubyBindings.type_name_to_id(type_name).split(' ').join('_')}(%{box});"
+      boxing_fn.invocation_template = "mrb_value %{as} = TODO_mruby_box_#{MRubyBindings.type_name_to_id(type_name).split(' ').join('_')}(%{box});"
       self.unboxing_fn = BoxingFn.new
-      unboxing_fn.invocation_template = "%{as} = TODO_mruby_unbox_#{MRubyBindings.type_name_to_id(type_name).split(' ').join('_')}(%{unbox});"
+      unboxing_fn.invocation_template = "#{type_name} %{as} = TODO_mruby_unbox_#{MRubyBindings.type_name_to_id(type_name).split(' ').join('_')}(%{unbox});"
       self.instance_eval(&block) if block_given?
     end
     

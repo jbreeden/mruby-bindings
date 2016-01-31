@@ -12,16 +12,7 @@ extern "C" {
 #if BIND_<%= function['name'] %>_FUNCTION
 #define <%= function['name'] %>_REQUIRED_ARGC <%= function['in_params'].length %>
 #define <%= function['name'] %>_OPTIONAL_ARGC 0
-/* <%= function['name'] %>
- *
- * Parameters:<%= " None" unless function['in_params'].any? %>
-<% if function['in_params'].any? -%>
-<%   function['in_params'].each do |param| -%>
- * - <%= param['name'] %>: <%= param['type']['type_name'] %>
-<%   end -%>
-<% end -%>
- * Return Type: <%= function['return_type']['type_name'] %>
- */
+/* <%= function['return_type']['type_name'] %> <%= function['name'] %>(<%= function['params'].map { |p| p['type']['type_name'] + ' ' + p['name'] }.join(', ') %>) */
 mrb_value
 mrb_<%= module_name %>_<%= function['name'] %>(mrb_state* mrb, mrb_value self) {
 <%
