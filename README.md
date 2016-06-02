@@ -3,16 +3,18 @@ Generates MRuby bindings from C Header files via libclang
 
 TODO: mruby-bindings has been refactored into a Ruby Gem. The interface has changed, and the general workflow has been updated a lot. Need to update this readme.
 
-See [mruby-glib](https://github.com/jbreeden/mruby-glib) for an example. The `rakelib/mruby-bindings.rake` file shows the basic commands for working with mruby-bindings. That file is generated automatically - the template is in the `templates/` folder of this repo - then customized for the specific project. 
+See the repos listed below for some examples. The `rakelib/mruby-bindings.rake` file in each repo shows the basic commands for working with mruby-bindings. That file is generated automatically - the template is in the `templates/` folder of this repo - then customized for the specific project as needed. The `mruby-bindings.in` folder in each repo shows some of the configuartion options that are available for influencing the generated code. `mruby-bindings` will generate a `mruby-bindings.out` folder with stubs for any information it couldn't figure out. You would simply copy these files into `mruby-bindings.in`, uncomment any sections you wish to customize, and fill in any missing information. In this way, you can coach `mruby-bindings` into creating near perfect bindings.
 
-Some other gems were written with an older version of mruby-bindings. The generate code was quite a bit sloppier,
-and it was difficult to manage manual updates to the code while regenerating other portions. These issues have been addressed, but are not yet documented.
+In addition to configuration, you can also edit the generated code by hand. `mruby-bindings` will tag code sections with a sha, which is used to determine if the code has been hand edited. If an edit is detected, `mruby-bindings` will not clobber your code changes on the next run. Additionally, adding a comment at the beginning of any file with the token `MRUBY_BINDINGS_NO_CLOBBER` will prevent any modifications to that file.
+
+**Examples**
 
  - [mruby-apr](https://github.com/jbreeden/mruby-apr)
  - [mruby-sqlite](https://github.com/jbreeden/mruby-sqlite)
  - [mruby-sdl2](https://github.com/jbreeden/mruby-sdl2)
  - [mruby-wiring-pi](https://github.com/jbreeden/mruby-wiring-pi)
  - [mruby-curses](https://github.com/jbreeden/mruby-curses)
+ - [mruby-zlib](https://github.com/jbreeden/mruby-zlib)
 
 # Requirements
 [clang2json](https://github.com/jbreeden/clang2json)
