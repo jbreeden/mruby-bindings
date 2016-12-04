@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'mruby/bindings'
+
+$output_dirname = './mruby-bindings.out/summary'
+$output_filename = "#{$output_dirname}/type-occurrences.csv"
+
+
+FileUtils.mkdir_p $output_dirname
+$output_file = File.open($output_filename, 'w')
+
+type_counts = []
+typedef_resolver = MRuby::Bindings::TypedefResolver.new
+discovery = MRuby::Bindings::DiscoveryIndex.new
+
+discovery.functions.each do |func|
+  type_counts.push(type: func['return_type'], count: 1)
+end
+
+discovery.parms.each do |parm|
+  type_counts.push(type: parm['type'], count: 1)
+end
+
+discovery.types.each do |type|
+  # 0 count because this came from a type declaration,
+  # not an actual usage in the API.
+  type_counts.push(type: type['name'], count: 0)
+end
+
+$output_file.puts "\"count\",\"type\""
+$output_file.puts(type_counts.sort_by { |type_count| type_count[:type] }.reduce([]) do |acc, cur|
+  if acc.empty?
+    acc.push(count: cur[:count], type: cur[:type])
+  elsif acc.last[:type] == cur[:type]
+    acc.last[:count] += cur[:count]
+  else
+    acc.push(count: cur[:count], type: cur[:type])
+  end
+  acc
+end.sort_by { |h| -h[:count] }.map { |h|
+   "#{h[:count]},\"#{h[:type]}\"" 
+})

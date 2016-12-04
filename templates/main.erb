@@ -1,0 +1,35 @@
+#include <stdlib.h>
+#include "mruby.h"
+#include "mruby/class.h"
+#include "mruby/hash.h"
+#include "mruby/array.h"
+#include "mruby/error.h"
+#include "mruby/value.h"
+#include "mruby/variable.h"
+#include "mruby/string.h"
+#include "mruby/compile.h"
+#include "mruby/proc.h"
+#include "mruby/data.h"
+
+#include "mruby_to_native_ref.h"
+
+#include "<%= class_macros_filename %>"
+#include "generated/<%= native_object_filename %>"
+#include "generated/<%= void_ptr_filename %>"
+#include "generated/<%= classes_filename %>"
+#include "generated/<%= functions_filename %>"
+
+void
+mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb)
+{
+  mrb_define_module(mrb, "<%= MRuby::Bindings::Hooks.module_name %>");
+  mruby_<%= MRuby::Bindings::Hooks.module_name %>_NativeObject_init(mrb);
+
+  #include "generated/<%= class_initializations_filename %>"
+  #include "generated/<%= function_initializations_filename %>"
+  #include "generated/<%= enum_constants_filename %>"
+}
+
+void
+mrb_<%= gem_name.gsub('-', '_') %>_gem_final(mrb_state* mrb)
+{ }

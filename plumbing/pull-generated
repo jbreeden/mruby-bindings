@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'mruby/bindings'
+
+main_c_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}.c"
+main_c_source_path = "./mruby-bindings.out/#{MRuby::Bindings::Hooks.gem_name}/src/#{main_c_filename}"
+main_c_target_path = "./src/#{main_c_filename}"
+
+FileUtils.mkdir_p "./include" unless Dir.exists?("./include")
+FileUtils.mkdir_p "./src/generated" unless Dir.exists?("./src/generated")
+FileUtils.cp_r Dir["./mruby-bindings.out/#{MRuby::Bindings::Hooks.gem_name}/include/*"], './include'
+FileUtils.cp_r Dir["./mruby-bindings.out/#{MRuby::Bindings::Hooks.gem_name}/src/generated/*"], './src/generated'
+FileUtils.cp_r main_c_source_path, main_c_target_path unless File.exists?(main_c_target_path)

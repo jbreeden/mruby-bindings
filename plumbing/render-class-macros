@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'mruby/bindings'
+
+
+template_filename = "class-macro.erb"
+template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/#{template_filename}"
+
+output_filename = "class-macros.yaml"
+output_path = "#{MRuby::Bindings::Paths::RENDER_DIR}/#{output_filename}"
+
+class_macro_erb = ERB.new(File.read(template_path), nil, '-')
+
+module_macro_erb = ERB.new(<<-eot.strip, nil, '-')
+#define <%= MRuby::Bindings::Hooks.module_name %>_module(mrb) mrb_module_get(mrb, "<%= MRuby::Bindings::Hooks.module_name %>")
+eot
+
+native_object_macro_erb = ERB.new(<<-eot.strip, nil, '-')
+#define <%= MRuby::Bindings::Hooks.module_name %>_NativeObject_module(mrb) mrb_module_get_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "NativeObject")
+eot
+
+void_ptr_macro_erb = ERB.new(<<-eot.strip, nil, '-')
+#define <%= MRuby::Bindings::Hooks.module_name %>_VoidPtr_class(mrb) mrb_class_get_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "VoidPtr")
+eot
+
+discovery = MRuby::Bindings::DiscoveryIndex.new
+
+class_names = discovery.types.map { |t| t['ruby_name'] }
+
+File.open(output_path, 'w') do |f|
+  f << YAML.dump(MRuby::Bindings::RenderedText.new(
+    '.module', module_macro_erb.result(binding)
+    ))
+  f << YAML.dump(MRuby::Bindings::RenderedText.new(
+    '.nativeobject', native_object_macro_erb.result(binding)
+    ))
+  f << YAML.dump(MRuby::Bindings::RenderedText.new(
+    '.voidptr', void_ptr_macro_erb.result(binding)
+    ))
+  class_names.each do |class_name|
+    f << YAML.dump(MRuby::Bindings::RenderedText.new(class_name, class_macro_erb.result(binding)))
+  end
+end

@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'mruby/bindings'
+require 'yaml'
+require 'erb'
+require 'fileutils'
+
+template_filename = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/enum-constant.erb" 
+module_name = MRuby::Bindings::Hooks.module_name
+discovery = MRuby::Bindings::DiscoveryIndex.new
+erb = ERB.new(File.read(template_filename), nil, '-')
+
+unless Dir.exists? MRuby::Bindings::Paths::RENDER_DIR
+  FileUtils.mkdir_p(MRuby::Bindings::Paths::RENDER_DIR)
+end
+
+output_file = File.open(
+  MRuby::Bindings::Paths::RENDER_DIR +
+  '/enum-constants.yaml', 'w')
+
+if discovery.enum_constants?
+  discovery.enum_constants.each do |constant|
+    text = MRuby::Bindings::RenderedText.new(constant['name'], erb.result(binding))
+    output_file.puts YAML.dump(text)
+  end
+end 

@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+def run(*cmds)
+  pid_cmd_pairs = []
+  cmds.each do |cmd|
+    puts "SPAWNING: #{cmd}"
+    pid_cmd_pairs.push([spawn("ruby #{File.dirname(__FILE__)}/#{cmd}"), cmd])
+  end
+  pid_cmd_pairs.each do |pair|
+    pid = pair[0]
+    cmd = pair[1]
+    Process.wait(pid)
+    if $?.exitstatus != 0
+      $stderr.puts "ERROR: While running #{cmd}"
+      exit 1
+    end
+    puts "DONE: #{cmd}"
+  end
+end
+
+def list_cmds
+  Dir["#{File.dirname(__FILE__)}/*"].
+    map { |f| File.basename(f).sub(File.extname(f), '') }
+end
+
+cmds = list_cmds
+run('ingest-declarations')
+run(*cmds.grep(/^discover-/))
+run('summarize-type-occurrences')
+run('blueprint-functions')
+run('blueprint-ctypes')
+run(*cmds.grep(/^render-/))
+run('write-gem')
+run('pull-generated')

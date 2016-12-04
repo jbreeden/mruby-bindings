@@ -1,0 +1,63 @@
+<% class_macro = MRuby::Bindings::Hooks.module_name + '_' + type['ruby_name'] + '_class(mrb)' -%>
+<% module_name = MRuby::Bindings::Hooks.module_name -%>
+/**
+ * Ruby Class: <%= type['ruby_name'] %> 
+ * Wraps: <%= preferred_type_name %>
+ */
+
+static void
+free_<%= class_id %>(mrb_state* mrb, void* ptr)
+{
+  if (ptr && mruby_<%= module_name %>_owns(mrb, ptr)) {
+    free(ptr);
+  }
+}
+
+static const
+mrb_data_type <%= class_id %>_data_type = {
+   "<%= preferred_type_name %>", free_<%= class_id %>
+};
+
+void mrb_<%= module_name %>_<%= type['ruby_name'] %>_init(mrb_state* mrb)
+{
+  if (!mrb_const_defined(mrb, mrb_obj_value(<%= module_name %>_module(mrb)), mrb_intern_cstr(mrb, "<%= type['ruby_name'] %>"))) {
+    struct RClass* <%= type['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= type['ruby_name'] %>", mrb->object_class);
+    MRB_SET_INSTANCE_TT(<%= type['ruby_name'] %>_class, MRB_TT_DATA);
+
+    mrb_include_module(mrb, <%= type['ruby_name'] %>_class, <%= module_name %>_NativeObject_module(mrb));
+  }
+}
+
+mrb_value
+mruby_<%= module_name %>_box_<%= class_id %>(mrb_state* mrb, <%= preferred_type_name %> *unboxed)
+{
+  mruby_to_native_ref* box = mruby_<%= module_name %>_unmanaged_ref_create(unboxed);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= class_macro %>, &<%= class_id %>_data_type, box));
+}
+
+mrb_value
+mruby_<%= module_name %>_giftwrap_<%= class_id %>(mrb_state* mrb, <%= preferred_type_name %> *unboxed)
+{
+  mruby_to_native_ref* box = mruby_<%= module_name %>_managed_ref_create(unboxed);
+  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= class_macro %>, &<%= class_id %>_data_type, box));
+}
+
+void
+mruby_<%= module_name %>_set_<%= class_id %>_data_ptr(mrb_value obj, <%= preferred_type_name %> *unboxed)
+{
+  mruby_to_native_ref* box = mruby_<%= module_name %>_unmanaged_ref_create(unboxed);
+  mrb_data_init(obj, box, &<%= class_id %>_data_type);
+}
+
+void
+mruby_<%= module_name %>_gift_<%= class_id %>_data_ptr(mrb_value obj, <%= preferred_type_name %> *unboxed)
+{
+  mruby_to_native_ref* box = mruby_<%= module_name %>_managed_ref_create(unboxed);
+  mrb_data_init(obj, box, &<%= class_id %>_data_type);
+}
+
+<%= preferred_type_name %> *
+mruby_<%= module_name %>_unbox_<%= class_id %>(mrb_value boxed)
+{
+  return (<%= preferred_type_name %> *)mruby_<%= module_name %>_unbox(boxed);
+}

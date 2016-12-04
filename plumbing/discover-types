@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'fileutils'
+require 'mruby/bindings/hooks'
+
+$structdecl_filename = './mruby-bindings.out/ingested-declarations/StructDecl.json'
+$output_dirname = './mruby-bindings.out/discovery'
+$output_filename = "#{$output_dirname}/types.csv"
+
+FileUtils.rm_rf $output_filename if File.exists?($output_filename)
+FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
+
+types = []
+File.open($structdecl_filename, 'r') do |structdecl_file|
+  while line = structdecl_file.gets
+    type = JSON.parse(line)
+
+    types.push("\"#{
+        type['name']
+    }\",\"#{
+        MRuby::Bindings::Hooks.translate_type_name_to_ruby(type['name'])
+    }\",\"#{
+        type['usr']
+    }\"")
+  end
+end
+
+File.open($output_filename, 'w') do |output_file|
+  output_file.puts '"name","ruby_name","usr"'
+  types.sort.each do |type_line|
+    output_file.puts(type_line)
+  end
+end

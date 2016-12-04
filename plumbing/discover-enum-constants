@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'fileutils'
+require 'csv'
+require 'mruby/bindings/hooks'
+
+$enum_constants_filename = './mruby-bindings.out/ingested-declarations/EnumConstantDecl.json'
+$output_dirname = './mruby-bindings.out/discovery'
+$output_filename = "#{$output_dirname}/enum_constants.csv"
+
+if !File.exists?($enum_constants_filename)
+  exit 0
+end
+
+FileUtils.rm_rf $output_filename if File.exists?($output_filename)
+FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
+
+constants = []
+File.open($enum_constants_filename, 'r') do |enumdecl_file|
+  while line = enumdecl_file.gets
+    const = JSON.parse(line)
+
+    constants.push([
+      const['name'],
+      MRuby::Bindings::Hooks.translate_enum_constant_to_ruby(const['name']),
+      const['value']
+    ])
+  end
+end
+
+CSV.open($output_filename, 'w') do |output_file|
+  output_file <<  %w(name ruby_name value)
+  constants.sort.each do |line|
+    output_file.puts(line)
+  end
+end

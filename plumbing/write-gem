@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+
+require 'mruby/bindings'
+require 'erb'
+require 'fileutils'
+
+gem_name = MRuby::Bindings::Hooks.gem_name
+module_name = MRuby::Bindings::Hooks.module_name
+[gem_name, module_name].each {
+  # Quiet, linter, these are used in the erb templates
+}
+
+gem_dir = "#{MRuby::Bindings::Paths::OUTPUT_DIR}/#{MRuby::Bindings::Hooks.gem_name}"
+src_dir = "#{gem_dir}/src"
+generated_src_dir = "#{src_dir}/generated"
+include_dir = "#{gem_dir}/include"
+
+FileUtils.rm_rf(gem_dir) if Dir.exists?(gem_dir)
+FileUtils.mkdir_p(gem_dir)
+FileUtils.mkdir_p(include_dir)
+FileUtils.mkdir_p(src_dir)
+FileUtils.mkdir_p(generated_src_dir)
+
+mruby_to_native_ref_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/mruby_to_native_ref.erb"
+mruby_to_native_ref_filename = "mruby_to_native_ref.h"
+mruby_to_native_ref_path = "#{include_dir}/#{mruby_to_native_ref_filename}"
+
+native_object_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/native_object.erb"
+native_object_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_native_object.c"
+native_object_path = "#{generated_src_dir}/#{native_object_filename}"
+
+void_ptr_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/void_ptr.erb"
+void_ptr_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_void_ptr.c"
+void_ptr_path = "#{generated_src_dir}/#{void_ptr_filename}"
+
+main_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/main.erb"
+main_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}.c"
+main_path = "#{src_dir}/#{main_filename}"
+
+classes_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_classes.c"
+classes_path = "#{generated_src_dir}/#{classes_filename}"
+
+class_macros_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_class_macros.h"
+class_macros_path = "#{include_dir}/#{class_macros_filename}"
+
+functions_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_functions.c"
+functions_path = "#{generated_src_dir}/#{functions_filename}"
+
+class_initializations_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_class_initializations.c"
+class_initializations_path = "#{generated_src_dir}/#{class_initializations_filename}"
+
+function_initializations_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_function_initializations.c"
+function_Initializations_path = "#{generated_src_dir}/#{function_initializations_filename}"
+
+enum_constants_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_enum_constants.c"
+enum_constants_path = "#{generated_src_dir}/#{enum_constants_filename}"
+
+mrbgem_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/mrbgem.erb"
+mrbgem_filename = "mrbgem.rake"
+mrbgem_path = "#{gem_dir}/#{mrbgem_filename}"
+
+File.open(mrbgem_path, 'w') do |f|
+  f.write ERB.new(File.read(mrbgem_template_path), nil, '-').result(binding)
+end
+
+File.open(main_path, 'w') do |f|
+  f.write ERB.new(File.read(main_template_path), nil, '-').result(binding)
+end
+
+cmds = [
+  "erb -r 'mruby/bindings' #{mruby_to_native_ref_template_path} > #{mruby_to_native_ref_path}",
+  "erb -r 'mruby/bindings' #{native_object_template_path} > #{native_object_path}",
+  "erb -r 'mruby/bindings' #{void_ptr_template_path} > #{void_ptr_path}",
+  "mruby-bindings 'dump classes' >  #{classes_path}",
+  "mruby-bindings 'dump class-macros' >  #{class_macros_path}",
+  "mruby-bindings 'dump class-initializations' >  #{class_initializations_path}",
+  "mruby-bindings 'dump enum-constants' >  #{enum_constants_path}",
+  "mruby-bindings 'dump functions' >  #{functions_path}",
+  "mruby-bindings 'dump function-initializations' >  #{function_Initializations_path}"
+]
+
+cmds.map { |cmd|
+  [spawn(cmd), cmd]
+}.each { |pid, cmd|
+  Process.wait(pid)
+  if $?.exitstatus != 0
+    $stderr.puts "ERROR while running: #{cmd}"
+    exit 1
+  end
+}
+

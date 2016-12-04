@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'csv'
+require 'fileutils'
+require 'mruby/bindings/hooks'
+
+$fielddecl_filename = './mruby-bindings.out/ingested-declarations/FieldDecl.json'
+$output_dirname = './mruby-bindings.out/discovery'
+$output_filename = "#{$output_dirname}/fields.csv"
+
+FileUtils.rm_rf $output_filename if File.exists?($output_filename)
+FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
+
+fields = []
+File.open($fielddecl_filename, 'r') do |fielddecl_file|
+  while line = fielddecl_file.gets
+    field = JSON.parse(line)
+
+    fields.push([
+      field['member_of'], 
+      field['name'],
+      MRuby::Bindings::Hooks.translate_field_name_to_ruby(field['name']),
+      field['type']['type_name'],
+      field['usr'].sub('"', '\\"')
+    ])
+  end
+end
+
+CSV.open($output_filename, 'w') do |output_file|
+  output_file << %w(parent_type_usr name ruby_name type usr)
+  fields.sort.each do |field_line|
+    output_file << field_line
+  end
+end

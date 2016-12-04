@@ -1,0 +1,1 @@
+mrb_const_set(mrb, <%= module_name %>_mod, mrb_intern_lit(mrb, "<%= MRuby::Bindings::Hooks.translate_enum_constant_to_ruby(constant['name']) %>"), mrb_fixnum_value(<%= constant['name'] %>));

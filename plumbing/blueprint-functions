@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+
+require 'mruby/bindings'
+require 'fileutils'
+require 'csv'
+require 'pp'
+
+discovery = MRuby::Bindings::DiscoveryIndex.new
+summary = MRuby::Bindings::SummaryIndex.new
+
+$output_dirname = './mruby-bindings.out/blueprint'
+$functions_blueprint_file = "#{$output_dirname}/functions.csv"
+
+FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
+$functions_blueprint_file = CSV.open($functions_blueprint_file, 'w')
+
+known_types = {}
+discovery.types.each do |row|
+  known_types[row['name']] = true
+end
+
+discovery.typedefs.each do |row|
+  # Handles opaque, typedef-only struct declarations
+  # Ex `typedef struct _foo foo;`
+  unerlying_struct = row['underlying_type'][/^struct \S+$/]
+  if unerlying_struct
+    known_types[row['name']] = true
+    known_types[row['underlying_type']] = true
+  end
+end
+
+def try_get_simple_pointee(type)
+  result = type && type[/^(?:const\s*)?(?:struct\s*)?(\S+)\s+(?:const\s*)?\s*\*$/, 1]
+  if result && result.empty?
+    nil
+  else
+    result
+  end
+end
+
+$functions_blueprint_file << %w(count type canonical_type canonical_pointee_type plan)
+$typedef_resolver = MRuby::Bindings::TypedefResolver.new
+summary.type_occurrences.each do |row|
+  row['canonical_type'] = $typedef_resolver.canonicalize(row['type'])
+
+  pointee = try_get_simple_pointee(row['type'])
+  if pointee
+    row['canonical_pointee_type'] = $typedef_resolver.canonicalize(pointee)
+  else
+    # ensure the column is output when the row is printed
+    row['canonical_pointee_type'] = nil 
+  end
+
+  if MRuby::Bindings::CTypes[row['canonical_type']]
+    row['plan'] = 'BUILTIN_CTYPE'
+  elsif pointee
+    if known_types[row['canonical_pointee_type']]
+      row['plan'] = 'PTR_TO_KNOWN_VALUE_TYPE' 
+    else
+      row['plan'] = 'PTR_TO_UNKNOWN_VALUE_TYPE'
+    end
+  elsif MRuby::Bindings::TypeChecks.value_type?(row['canonical_type'])
+    if known_types[row['canonical_type']]
+      row['plan'] = 'KNOWN_VALUE_TYPE'
+    else
+      row['plan'] = 'UNKNOWN_VALUE_TYPE'
+    end
+  elsif MRuby::Bindings::TypeChecks.enum?(row['canonical_type'])
+    row['plan'] = 'ENUM'
+  elsif MRuby::Bindings::TypeChecks.function_pointer?(row['canonical_type'])
+    row['plan'] = 'FUNCTION_PTR'
+  elsif MRuby::Bindings::TypeChecks.pointer?(row['canonical_type'])
+    row['plan'] = 'VOID_PTR'
+  else
+    row['plan'] = 'NO_PLAN'
+  end
+
+  $functions_blueprint_file << row
+end

@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'fileutils'
+require 'mruby/bindings'
+
+output_dir = MRuby::Bindings::Paths::RENDER_DIR
+FileUtils.mkdir_p(output_dir) unless Dir.exists?(output_dir)
+rendered_function_initializations_file = File.open("#{output_dir}/function-initializations.yaml", 'w')
+
+function_initialization_erb = ERB.new(
+  File.read( MRuby::Bindings::Paths::TEMPLATE_DIR + '/function-initialization.erb'),
+  nil,
+  '-')
+
+module_name = MRuby::Bindings::Hooks.module_name
+discovery = MRuby::Bindings::DiscoveryIndex.new
+
+discovery.functions.sort_by { |func| func['name'] }.each do |function|
+  rendered_function_initializations_file.puts(
+		YAML.dump(
+			MRuby::Bindings::RenderedText.new(function['name'], function_initialization_erb.result(binding))
+			))
+end

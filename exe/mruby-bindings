@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+ARGV.each do |cmd|
+  if !system("ruby #{File.absolute_path(File.dirname(__FILE__) + "/../plumbing/")}/#{cmd}")
+    exit 1
+  end
+end

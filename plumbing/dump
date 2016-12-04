@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require "yaml"
+require "mruby/bindings"
+
+YAML.load_stream(File.open("mruby-bindings.out/render/#{ARGV[0]}.yaml"))
+    .each do |t|
+        puts t.body
+        puts
+    end

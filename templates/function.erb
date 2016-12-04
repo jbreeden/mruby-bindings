@@ -1,0 +1,81 @@
+/**
+ * <%= function['return_type'] %>
+ * <%= function['name'] %>(<%= function['parms'].map { |p| p['type'] + ' ' + p['name'] }.join(', ') %>)
+ */
+#define mruby_<%= module_name %>_<%= function['ruby_name'] %>
+#define <%= function['name'] %>_REQUIRED_ARGC <%= function['parms'].length %>
+#define <%= function['name'] %>_OPTIONAL_ARGC 0
+mrb_value
+mrb_<%= module_name %>_<%= function['ruby_name'] %>(mrb_state* mrb, mrb_value self)
+{
+<%
+     to_unbox = function['parms'].select { |p| p['ctype'].needs_unboxing? }
+     to_type_check = function['parms'].select { |p| p['ctype'].needs_type_check? }
+     to_cleanup_unboxing = function['parms'].select { |p| p['ctype'].needs_unboxing_cleanup? }
+-%>
+
+<%   if function['parms'].any? -%>
+<%     function['parms'].each do |param| -%>
+<%       type = param['ctype'] -%>
+<%       type.recv(param['name']).each_line do |line| -%>
+  <%= line.sub("\n", '') %>
+<%       end -%>
+<%     end -%>
+
+  /* Fetch the args */
+<%   format_specifiers = function['parms'].map { |p| p['ctype'].format_specifier }.join('') -%>
+<%   get_args_argv =  function['parms'].map { |p| p['ctype'].get_args_argv(p['name']) }.flatten.join(', ') -%>
+  mrb_get_args(mrb, "<%= format_specifiers %>", <%= get_args_argv %>);
+
+<%     if to_type_check.any? -%>
+  /* Type checking */
+<%       to_type_check.each do |param| -%>
+<%         (param['ctype'].type_check(param['name'])).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%         end -%>
+<%       end -%>
+
+<%     end -%>
+<%     if to_unbox.any? -%>
+  /* Unbox params */
+<%       to_unbox.each do |param| -%>
+<%         param['ctype'].unbox(param['name']).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%         end -%>
+
+<%       end -%>
+<%     end -%>
+<%   end -%>
+  /* Invocation */
+<% 
+     argv = function['parms'].map { |p| p['ctype'].invocation_argv(p['name']) }.flatten.join(', ')
+-%>
+  <%= function['return_type'] == 'void' ? '' : "#{function['return_type']} native_return_value = "  %><%= function['name'] %>(<%= argv %>);
+
+<%   unless function['ctype'].ignore? -%>
+  /* Box the return value */
+<%     (function['ctype'].box_return('native_return_value', 'return_value')).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%     end -%>
+<%     if function['ctype'].needs_boxing_cleanup? -%>
+<%       function['ctype'].cleanup_return('native_return_value').each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%       end -%>
+<%     end -%>
+
+<%   end -%>
+<%   if to_cleanup_unboxing.any? -%>
+  /* Cleanup any unboxing garbage */
+<%     to_cleanup_unboxing.each do |param| -%>
+<%       param['ctype'].cleanup_unboxing(param['name']).each_line do |line| -%>
+  <%= line.sub("\n", "") %>
+<%       end -%>
+
+<%     end -%>
+<%   end -%>
+<%   if function['return_type'] == 'void' -%>
+  return mrb_nil_value();
+<%   else -%>
+  return return_value;
+<%   end -%>
+}
