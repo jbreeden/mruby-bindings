@@ -68,9 +68,9 @@ File.open(main_path, 'w') do |f|
 end
 
 cmds = [
-  "erb -r 'mruby/bindings' #{mruby_to_native_ref_template_path} > #{mruby_to_native_ref_path}",
-  "erb -r 'mruby/bindings' #{native_object_template_path} > #{native_object_path}",
-  "erb -r 'mruby/bindings' #{void_ptr_template_path} > #{void_ptr_path}",
+  "erb -T - -r 'mruby/bindings' #{mruby_to_native_ref_template_path} > #{mruby_to_native_ref_path}",
+  "erb -T - -r 'mruby/bindings' #{native_object_template_path} > #{native_object_path}",
+  "erb -T - -r 'mruby/bindings' #{void_ptr_template_path} > #{void_ptr_path}",
   "mruby-bindings 'dump classes' >  #{classes_path}",
   "mruby-bindings 'dump class-macros' >  #{class_macros_path}",
   "mruby-bindings 'dump class-initializations' >  #{class_initializations_path}",

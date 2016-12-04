@@ -1,68 +1,106 @@
+<% module_name = MRuby::Bindings::Hooks.module_name -%>
+/**
+ * Boxing/Freeing Functions
+ */
+
 static void
-free_<%= MRuby::Bindings::Hooks.module_name %>_void_ptr(mrb_state* mrb, void* ptr)
+free_<%= module_name %>_void_ptr(mrb_state* mrb, void* ptr)
 {
-  if (ptr && mruby_<%= MRuby::Bindings::Hooks.module_name %>_owns(mrb, ptr)) {
+  if (ptr && mruby_<%= module_name %>_owns(mrb, ptr)) {
     free(((mruby_to_native_ref*)ptr)->obj);
   }
   free(ptr);
 }
 
 static const
-mrb_data_type <%= MRuby::Bindings::Hooks.module_name %>_void_ptr_data_type = {
-   "mruby_<%= MRuby::Bindings::Hooks.module_name %>_void_ptr", free_<%= MRuby::Bindings::Hooks.module_name %>_void_ptr
+mrb_data_type <%= module_name %>_void_ptr_data_type = {
+   "mruby_<%= module_name %>_void_ptr", free_<%= module_name %>_void_ptr
 };
 
-void mrb_<%= MRuby::Bindings::Hooks.module_name %>_VoidPtr_init(mrb_state* mrb)
-{
-  struct RClass* VoidPtr_class = mrb_define_class_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "VoidPtr", mrb->object_class);
-  MRB_SET_INSTANCE_TT(VoidPtr_class, MRB_TT_DATA);
-}
-
 int
-mruby_<%= MRuby::Bindings::Hooks.module_name %>_typecheck_void_ptr(mrb_state *mrb, mrb_value value, const char * underlying_type) {
+mruby_<%= module_name %>_typecheck_void_ptr(mrb_state *mrb, mrb_value value, const char * underlying_type) {
 	// TODO: Some kind of actual check...
 	// Perhaps look for the module name in the TT_TYPE name for the value's class?
 	return 1;
 }
 
 mrb_value
-mruby_<%= MRuby::Bindings::Hooks.module_name %>_box_void_ptr(mrb_state* mrb, void *unboxed)
+mruby_<%= module_name %>_box_void_ptr(mrb_state* mrb, void *unboxed)
 {
   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
   box->belongs_to_ruby = FALSE;
   box->obj = unboxed;
-  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= MRuby::Bindings::Hooks.module_name %>_VoidPtr_class(mrb), &<%= MRuby::Bindings::Hooks.module_name %>_void_ptr_data_type, box));
+  return mrb_obj_value(Data_Wrap_Struct(mrb, <%= module_name %>_VoidPtr_class(mrb), &<%= module_name %>_void_ptr_data_type, box));
 }
 
 mrb_value
-mruby_<%= MRuby::Bindings::Hooks.module_name %>_giftwrap_void_ptr(mrb_state* mrb, void *unboxed)
+mruby_<%= module_name %>_giftwrap_void_ptr(mrb_state* mrb, void *unboxed)
 {
    mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
    box->belongs_to_ruby = TRUE;
    box->obj = unboxed;
-   return mrb_obj_value(Data_Wrap_Struct(mrb, <%= MRuby::Bindings::Hooks.module_name %>_VoidPtr_class(mrb), &<%= MRuby::Bindings::Hooks.module_name %>_void_ptr_data_type, box));
+   return mrb_obj_value(Data_Wrap_Struct(mrb, <%= module_name %>_VoidPtr_class(mrb), &<%= module_name %>_void_ptr_data_type, box));
 }
 
 void
-mruby_<%= MRuby::Bindings::Hooks.module_name %>_set_void_ptr_data_ptr(mrb_value obj, void *unboxed)
+mruby_<%= module_name %>_set_void_ptr_data_ptr(mrb_value obj, void *unboxed)
 {
   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
   box->belongs_to_ruby = FALSE;
   box->obj = unboxed;
-  mrb_data_init(obj, box, &<%= MRuby::Bindings::Hooks.module_name %>_void_ptr_data_type);
+  mrb_data_init(obj, box, &<%= module_name %>_void_ptr_data_type);
 }
 
 void
-mruby_<%= MRuby::Bindings::Hooks.module_name %>_gift_void_ptr_data_ptr(mrb_value obj, void *unboxed)
+mruby_<%= module_name %>_gift_void_ptr_data_ptr(mrb_value obj, void *unboxed)
 {
   mruby_to_native_ref* box = (mruby_to_native_ref*)malloc(sizeof(mruby_to_native_ref));
   box->belongs_to_ruby = TRUE;
   box->obj = unboxed;
-  mrb_data_init(obj, box, &<%= MRuby::Bindings::Hooks.module_name %>_void_ptr_data_type);
+  mrb_data_init(obj, box, &<%= module_name %>_void_ptr_data_type);
 }
 
 void *
-mruby_<%= MRuby::Bindings::Hooks.module_name %>_unbox_void_ptr(mrb_value boxed)
+mruby_<%= module_name %>_unbox_void_ptr(mrb_value boxed)
 {
   return (void *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
+}
+
+/**
+ * Instance Methods
+ */
+
+mrb_value
+mruby_<%= module_name %>_VoidPtr_is_null(mrb_state *mrb, mrb_value self)
+{
+  char* cstr = mruby_<%= module_name %>_unbox_void_ptr(self);
+  if (cstr == NULL) {
+    return mrb_true_value();
+  } else {
+    return mrb_false_value();
+  }
+}
+
+mrb_value
+mruby_<%= module_name %>_VoidPtr_read_cstr(mrb_state *mrb, mrb_value self)
+{
+  char* cstr = mruby_<%= module_name %>_unbox_void_ptr(self);
+  if (cstr == NULL) {
+    return mrb_nil_value();
+  } else {
+    return mrb_str_new_cstr(mrb, cstr);
+  }
+}
+
+/**
+ * Initialization Function
+ */
+
+void mrb_<%= module_name %>_VoidPtr_init(mrb_state* mrb)
+{
+  struct RClass* VoidPtr_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "VoidPtr", mrb->object_class);
+  MRB_SET_INSTANCE_TT(VoidPtr_class, MRB_TT_DATA);
+
+  mrb_define_method(mrb, VoidPtr_class, "null?", mruby_<%= module_name %>_VoidPtr_is_null, MRB_ARGS_ARG(0, 0));
+  mrb_define_method(mrb, VoidPtr_class, "read_cstr", mruby_<%= module_name %>_VoidPtr_read_cstr, MRB_ARGS_ARG(0, 0));
 }
