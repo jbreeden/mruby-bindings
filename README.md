@@ -1,7 +1,7 @@
 # mruby-bindings
 Generates MRuby bindings from C Header files via libclang
 
-*TODO: mruby-bindings has been refactored into a Ruby Gem. The interface has changed, and the general workflow has been updated a lot. Need to update this readme.*
+*Warning: This gem is being rewritten. See the "rewrite" branch.*
 
 See the repos listed below for some examples. The `rakelib/mruby-bindings.rake` file in each repo shows the basic commands for working with mruby-bindings. That file is generated automatically - the template is in the `templates/` folder of this repo - then customized for the specific project as needed. The `mruby-bindings.in` folder in each repo shows some of the configuartion options that are available for influencing the generated code. `mruby-bindings` will generate a `mruby-bindings.out` folder with stubs for any information it couldn't figure out. You would simply copy these files into `mruby-bindings.in`, uncomment any sections you wish to customize, and fill in any missing information. In this way, you can coach `mruby-bindings` into creating near perfect bindings.
 
