@@ -42,7 +42,7 @@ module MRuby::Bindings
       def read_function_blueprint(row)
         case row['plan']
         when 'BUILTIN_CTYPE'
-          CTypes[row['type']] # Just return the existing ctype
+          CTypes[row['canonical_type']] # Just return the existing ctype
         when 'PTR_TO_KNOWN_VALUE_TYPE'
           CTypes.learn_pointer_to_value_type(row['type'], row['canonical_pointee_type'])
         when 'PTR_TO_UNKNOWN_VALUE_TYPE'
@@ -95,7 +95,7 @@ module MRuby::Bindings
           unboxing_fn.invocation_template = "#{pointer_type} %{as} = (mrb_nil_p(%{unbox}) ? NULL : #{unboxing_fn.name}(%{unbox}));"
 
           self.type_check_template = <<EOF
-if (!mrb_obj_is_kind_of(mrb, %{value}, #{MRuby::Bindings::Hooks.module_name}_#{ruby_type_name}_class(mrb))) {
+if (!mruby_#{ MRuby::Bindings::Hooks.module_name }_typecheck_#{ ruby_type_name }(mrb, %{value})) {
   mrb_raise(mrb, E_TYPE_ERROR, "#{ruby_type_name} expected");
   return mrb_nil_value();
 }
@@ -124,6 +124,7 @@ EOF
           unboxing_fn.invocation_template = "#{value_type} %{as} = *(#{unboxing_fn.name}(%{unbox}));"
 
           self.type_check_template = <<EOF
+if (!mruby_#{ MRuby::Bindings::Hooks.module_name }_typecheck_#{ ruby_type_name }(mrb, %{value})) {
 if (!mrb_obj_is_kind_of(mrb, %{value}, #{MRuby::Bindings::Hooks.module_name}_#{ruby_type_name}_class(mrb))) {
   mrb_raise(mrb, E_TYPE_ERROR, "#{ruby_type_name} expected");
   return mrb_nil_value();
@@ -141,11 +142,11 @@ EOF
         ruby_type_name = MRuby::Bindings::Hooks.translate_type_name_to_ruby(canonical_value_type)
 
         new_ctype = CTypes.define(pointer_type) do
-          boxing_fn.invocation_template = "mrb_value %{as} = (%{box} == NULL ? mrb_nil_value() : mruby_#{MRuby::Bindings::Hooks.module_name}_box_void_ptr(mrb, %{box}));"
-          unboxing_fn.invocation_template = "void * %{as} = (mrb_nil_p(%{unbox}) ? NULL : mruby_#{MRuby::Bindings::Hooks.module_name}_unbox_void_ptr(%{unbox}));"
+          boxing_fn.invocation_template = "mrb_value %{as} = (%{box} == NULL ? mrb_nil_value() : mruby_#{MRuby::Bindings::Hooks.module_name}_box_void_pointer(mrb, %{box}));"
+          unboxing_fn.invocation_template = "void * %{as} = (mrb_nil_p(%{unbox}) ? NULL : mruby_#{MRuby::Bindings::Hooks.module_name}_unbox_void_pointer(%{unbox}));"
 
           self.type_check_template = <<EOF
-if (!mruby_#{MRuby::Bindings::Hooks.module_name}_typecheck_void_ptr(mrb, %{value}, "#{pointer_type}")) {
+if (!mruby_#{MRuby::Bindings::Hooks.module_name}_typecheck_void_pointer(mrb, %{value}, "#{pointer_type}")) {
   return mrb_nil_value();
 }
 EOF

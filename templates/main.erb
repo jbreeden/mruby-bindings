@@ -1,3 +1,11 @@
+/**
+ * NOTE: Unlike most other generated files,
+ *       mruby-bindings will not alter this file
+ *       on subsequent code generation runs.
+ *
+ *       Feel free to make modifications of your own :)
+ */
+
 #include <stdlib.h>
 #include "mruby.h"
 #include "mruby/class.h"
@@ -11,11 +19,15 @@
 #include "mruby/proc.h"
 #include "mruby/data.h"
 
+/*
+ * TODO: Include your library here
+ */
+
 #include "mruby_to_native_ref.h"
 
 #include "<%= class_macros_filename %>"
-#include "generated/<%= native_object_filename %>"
-#include "generated/<%= void_ptr_filename %>"
+#include "generated/<%= pointer_filename %>"
+#include "generated/<%= void_pointer_filename %>"
 #include "generated/<%= classes_filename %>"
 #include "generated/<%= functions_filename %>"
 
@@ -23,7 +35,6 @@ void
 mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb)
 {
   mrb_define_module(mrb, "<%= MRuby::Bindings::Hooks.module_name %>");
-  mruby_<%= MRuby::Bindings::Hooks.module_name %>_NativeObject_init(mrb);
 
   #include "generated/<%= class_initializations_filename %>"
   #include "generated/<%= function_initializations_filename %>"

@@ -25,13 +25,13 @@ mruby_to_native_ref_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/mru
 mruby_to_native_ref_filename = "mruby_to_native_ref.h"
 mruby_to_native_ref_path = "#{include_dir}/#{mruby_to_native_ref_filename}"
 
-native_object_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/native_object.erb"
-native_object_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_native_object.c"
-native_object_path = "#{generated_src_dir}/#{native_object_filename}"
+pointer_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/pointer.erb"
+pointer_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_pointer.c"
+pointer_path = "#{generated_src_dir}/#{pointer_filename}"
 
-void_ptr_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/void_ptr.erb"
-void_ptr_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_void_ptr.c"
-void_ptr_path = "#{generated_src_dir}/#{void_ptr_filename}"
+void_pointer_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/void_pointer.erb"
+void_pointer_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_void_pointer.c"
+void_pointer_path = "#{generated_src_dir}/#{void_pointer_filename}"
 
 main_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/main.erb"
 main_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}.c"
@@ -69,8 +69,8 @@ end
 
 cmds = [
   "erb -T - -r 'mruby/bindings' #{mruby_to_native_ref_template_path} > #{mruby_to_native_ref_path}",
-  "erb -T - -r 'mruby/bindings' #{native_object_template_path} > #{native_object_path}",
-  "erb -T - -r 'mruby/bindings' #{void_ptr_template_path} > #{void_ptr_path}",
+  "erb -T - -r 'mruby/bindings' #{pointer_template_path} > #{pointer_path}",
+  "erb -T - -r 'mruby/bindings' #{void_pointer_template_path} > #{void_pointer_path}",
   "mruby-bindings 'dump classes' >  #{classes_path}",
   "mruby-bindings 'dump class-macros' >  #{class_macros_path}",
   "mruby-bindings 'dump class-initializations' >  #{class_initializations_path}",

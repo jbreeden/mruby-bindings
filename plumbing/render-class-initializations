@@ -17,8 +17,12 @@ class_erb = ERB.new(
 module_name = MRuby::Bindings::Hooks.module_name
 discovery = MRuby::Bindings::DiscoveryIndex.new
 
-type = {'ruby_name' => 'VoidPtr' }
-rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new('.voidptr', class_erb.result(binding)))
+type = {'ruby_name' => 'Pointer' }
+rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new('.pointer', class_erb.result(binding)))
+
+type = {'ruby_name' => 'VoidPointer' }
+rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new('.voidpointer', class_erb.result(binding)))
+
 discovery.types.sort_by { |type| type['ruby_name'] }.each do |type|
   rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new(type['ruby_name'], class_erb.result(binding)))
 end

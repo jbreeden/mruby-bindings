@@ -1,16 +1,26 @@
 <% class_macro = MRuby::Bindings::Hooks.module_name + '_' + type['ruby_name'] + '_class(mrb)' -%>
 <% module_name = MRuby::Bindings::Hooks.module_name -%>
+<% free_macro = 'mruby_' + module_name + '_free_' + type['ruby_name'] -%>
 /**
  * Ruby Class: <%= type['ruby_name'] %> 
  * Wraps: <%= preferred_type_name %>
  */
 
+#ifndef <%= free_macro %>
+#define <%= free_macro %>(obj) free(obj)
+#endif
+
 static void
 free_<%= class_id %>(mrb_state* mrb, void* ptr)
 {
-  if (ptr && mruby_<%= module_name %>_owns(mrb, ptr)) {
-    free(ptr);
+  mruby_to_native_ref * native_ref = (mruby_to_native_ref*)ptr;
+  if (native_ref
+      && mruby_<%= module_name %>_owns(mrb, native_ref)
+      && native_ref->obj) {
+    <%= free_macro %>(native_ref->obj);
+    native_ref->obj = NULL;
   }
+  free(native_ref);
 }
 
 static const
@@ -18,13 +28,24 @@ mrb_data_type <%= class_id %>_data_type = {
    "<%= preferred_type_name %>", free_<%= class_id %>
 };
 
-void mrb_<%= module_name %>_<%= type['ruby_name'] %>_init(mrb_state* mrb)
+void mruby_<%= module_name %>_<%= type['ruby_name'] %>_init(mrb_state* mrb)
 {
   if (!mrb_const_defined(mrb, mrb_obj_value(<%= module_name %>_module(mrb)), mrb_intern_cstr(mrb, "<%= type['ruby_name'] %>"))) {
     struct RClass* <%= type['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= type['ruby_name'] %>", mrb->object_class);
     MRB_SET_INSTANCE_TT(<%= type['ruby_name'] %>_class, MRB_TT_DATA);
 
-    mrb_include_module(mrb, <%= type['ruby_name'] %>_class, <%= module_name %>_NativeObject_module(mrb));
+    mrb_include_module(mrb, <%= type['ruby_name'] %>_class, <%= module_name %>_Pointer_module(mrb));
+  }
+}
+
+unsigned char
+mruby_<%= module_name %>_typecheck_<%= type['ruby_name'] %>(mrb_state* mrb, mrb_value obj)
+{
+  if (mrb_obj_is_kind_of(mrb, obj, <%= module_name %>_<%= type['ruby_name'] %>_class(mrb)) ||
+      mrb_obj_is_kind_of(mrb, obj, <%= module_name %>_VoidPointer_class(mrb))) {
+    return 1;
+  } else {
+    return 0;
   }
 }
 

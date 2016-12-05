@@ -9,6 +9,7 @@ mrb_value
 mrb_<%= module_name %>_<%= function['ruby_name'] %>(mrb_state* mrb, mrb_value self)
 {
 <%
+     function['parms'].each { |p| puts p.inspect if p['ctype'].nil? }
      to_unbox = function['parms'].select { |p| p['ctype'].needs_unboxing? }
      to_type_check = function['parms'].select { |p| p['ctype'].needs_type_check? }
      to_cleanup_unboxing = function['parms'].select { |p| p['ctype'].needs_unboxing_cleanup? }

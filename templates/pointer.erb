@@ -1,0 +1,41 @@
+<% module_name = MRuby::Bindings::Hooks.module_name -%>
+mrb_value
+mruby_UI_ptr_to_string(mrb_state *mrb, void *obj)
+{
+  char * native_key = (char*)calloc((((64/4) + 2) * 2), sizeof(char));
+  sprintf(native_key, "%p", obj);
+
+  mrb_value key_str = mrb_str_new_cstr(mrb, native_key);
+  free(native_key);
+  return key_str;
+}
+
+mrb_value
+mruby_<%= module_name %>_Pointer_ptr_addr(mrb_state *mrb, mrb_value self)
+{
+  return mruby_UI_ptr_to_string(mrb, mruby_<%= module_name %>_unbox(self));
+}
+
+mrb_value
+mruby_<%= module_name %>_Pointer_ptr_is_managed(mrb_state *mrb, mrb_value self)
+{
+    return mruby_<%= module_name %>_owns(mrb, DATA_PTR(self)) ? mrb_true_value() : mrb_false_value();
+}
+
+mrb_value
+mruby_<%= module_name %>_Pointer_ptr_set_managed(mrb_state *mrb, mrb_value self)
+{
+    mrb_bool flag;
+    mrb_get_args(mrb, "b", &flag);
+    ((mruby_to_native_ref*)DATA_PTR(self))->belongs_to_ruby = flag;
+    return self;
+}
+
+void
+mruby_<%= module_name %>_Pointer_init(mrb_state *mrb)
+{
+  struct RClass *Pointer_module = mrb_define_module_under(mrb, <%= module_name %>_module(mrb), "Pointer");
+  mrb_define_method(mrb, Pointer_module, "ptr_addr", mruby_<%= module_name %>_Pointer_ptr_addr, MRB_ARGS_ARG(0, 0));
+  mrb_define_method(mrb, Pointer_module, "ptr_managed?", mruby_<%= module_name %>_Pointer_ptr_is_managed, MRB_ARGS_ARG(0, 0));
+  mrb_define_method(mrb, Pointer_module, "ptr_managed=", mruby_<%= module_name %>_Pointer_ptr_set_managed, MRB_ARGS_ARG(1, 0));
+}

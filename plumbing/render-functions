@@ -5,6 +5,8 @@ require 'csv'
 require 'fileutils'
 require 'mruby/bindings'
 
+$typedef_resolver = MRuby::Bindings::TypedefResolver.new
+
 $parms_file = File.open('./mruby-bindings.out/discovery/parms.csv', 'r')
 $functions_blueprint_filename = './mruby-bindings.out/blueprint/functions.csv'
 
@@ -38,12 +40,14 @@ end
 def append_ctypes(functions_by_name)
   functions_by_name.each do |function_name, function|
     function['parms'].each_with_index do |parm, i|
-      parm['ctype'] = MRuby::Bindings::CTypes[parm['type']]
+      parm['ctype'] = (MRuby::Bindings::CTypes[parm['type']] ||
+        MRuby::Bindings::CTypes[$typedef_resolver.canonicalize(parm['type'])])
       if parm['name'].nil? || parm['name'].empty?
         parm['name'] = "arg#{i+1}"
       end
     end
-    function['ctype'] = MRuby::Bindings::CTypes[function['return_type']]
+    function['ctype'] = (MRuby::Bindings::CTypes[function['return_type']] ||
+      MRuby::Bindings::CTypes[$typedef_resolver.canonicalize(function['return_type'])])
   end
   functions_by_name
 end

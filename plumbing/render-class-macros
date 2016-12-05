@@ -16,12 +16,12 @@ module_macro_erb = ERB.new(<<-eot.strip, nil, '-')
 #define <%= MRuby::Bindings::Hooks.module_name %>_module(mrb) mrb_module_get(mrb, "<%= MRuby::Bindings::Hooks.module_name %>")
 eot
 
-native_object_macro_erb = ERB.new(<<-eot.strip, nil, '-')
-#define <%= MRuby::Bindings::Hooks.module_name %>_NativeObject_module(mrb) mrb_module_get_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "NativeObject")
+pointer_macro_erb = ERB.new(<<-eot.strip, nil, '-')
+#define <%= MRuby::Bindings::Hooks.module_name %>_Pointer_module(mrb) mrb_module_get_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "Pointer")
 eot
 
-void_ptr_macro_erb = ERB.new(<<-eot.strip, nil, '-')
-#define <%= MRuby::Bindings::Hooks.module_name %>_VoidPtr_class(mrb) mrb_class_get_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "VoidPtr")
+void_pointer_macro_erb = ERB.new(<<-eot.strip, nil, '-')
+#define <%= MRuby::Bindings::Hooks.module_name %>_VoidPointer_class(mrb) mrb_class_get_under(mrb, <%= MRuby::Bindings::Hooks.module_name %>_module(mrb), "VoidPointer")
 eot
 
 discovery = MRuby::Bindings::DiscoveryIndex.new
@@ -33,10 +33,10 @@ File.open(output_path, 'w') do |f|
     '.module', module_macro_erb.result(binding)
     ))
   f << YAML.dump(MRuby::Bindings::RenderedText.new(
-    '.nativeobject', native_object_macro_erb.result(binding)
+    '.pointer', pointer_macro_erb.result(binding)
     ))
   f << YAML.dump(MRuby::Bindings::RenderedText.new(
-    '.voidptr', void_ptr_macro_erb.result(binding)
+    '.voidpointer', void_pointer_macro_erb.result(binding)
     ))
   class_names.each do |class_name|
     f << YAML.dump(MRuby::Bindings::RenderedText.new(class_name, class_macro_erb.result(binding)))

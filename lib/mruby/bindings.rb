@@ -1,3 +1,7 @@
+module MRuby
+  module Bindings
+  end
+end
 require "mruby/bindings/version"
 require "mruby/bindings/names"
 require "mruby/bindings/type_checks"

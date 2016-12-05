@@ -2,7 +2,7 @@
 
 require 'json'
 require 'fileutils'
-require 'mruby/bindings/hooks'
+require 'mruby/bindings'
 
 $functiondecl_filename = './mruby-bindings.out/ingested-declarations/FunctionDecl.json'
 $output_dirname = './mruby-bindings.out/discovery'
