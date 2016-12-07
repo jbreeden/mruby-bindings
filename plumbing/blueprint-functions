@@ -75,5 +75,7 @@ summary.type_occurrences.each do |row|
     row['plan'] = 'NO_PLAN'
   end
 
-  $functions_blueprint_file << row
+  $functions_blueprint_file << %w(count type canonical_type canonical_pointee_type plan).map { |field|
+    row[field]
+  }
 end
