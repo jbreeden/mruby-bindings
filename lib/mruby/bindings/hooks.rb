@@ -2,15 +2,19 @@ module MRuby
   module Bindings
     module Hooks
       module Defaults
-        def self.module_name
-          raise "No module name defined!"
-        end
-        
-        def self.gem_name
-          raise "No gem name defined!"
+        def declaration_files
+          ['declarations.json']
         end
 
-        def self.translate_type_name_to_ruby(name)
+        def module_name
+          raise "No module name defined! Please override MRuby::Bindings::Hooks::module_name in mruby-bindings.in/hooks.rb"
+        end
+        
+        def gem_name
+          raise "No gem name defined! Please override MRuby::Bindings::Hooks::gem_name in mruby-bindings.in/hooks.rb"
+        end
+
+        def translate_type_name_to_ruby(name)
           name.sub(/^struct\s*/, '').
             sub(/_(s|t)$/i, '').
             each_char.reduce('') { |acc, cur|
@@ -21,45 +25,43 @@ module MRuby
             }.gsub('_', '')
         end
 
-        def self.translate_field_name_to_ruby(name)
+        def translate_field_name_to_ruby(name)
           name
         end
 
-        def self.translate_enum_constant_to_ruby(name)
+        def translate_enum_constant_to_ruby(name)
           name
         end
 
-        def self.translate_function_name_to_ruby(name)
+        def translate_function_name_to_ruby(name)
           name
         end
 
-        def self.boxing_fn_name(c_type_name)
+        def boxing_fn_name(c_type_name)
             type_as_id = MRuby::Bindings::Names.type_name_to_id(c_type_name)
             "mruby_#{MRuby::Bindings::Hooks.module_name}_box_#{type_as_id}"
         end
 
-        def self.giftwrap_fn_name(c_type_name)
+        def giftwrap_fn_name(c_type_name)
             type_as_id = MRuby::Bindings::Names.type_name_to_id(c_type_name)
             "mruby_#{MRuby::Bindings::Hooks.module_name}_giftwrap_#{type_as_id}"
         end
 
-        def self.unboxing_fn_name(c_type_name)
+        def unboxing_fn_name(c_type_name)
             type_as_id = MRuby::Bindings::Names.type_name_to_id(c_type_name)
             "mruby_#{MRuby::Bindings::Hooks.module_name}_unbox_#{type_as_id}"
         end
 
-        def self.define_builtin_ctypes
+        def define_builtin_ctypes
             # No default action
         end
+
+        # So we can easily call these methods on the Defaults module,
+        # even if they're overrided in the Hooks module.
+        extend self
       end
 
-      def self.method_missing(name, *args, &block)
-        if Defaults.respond_to?(name)
-          Defaults.send(name, *args, &block)
-        else
-          super
-        end
-      end
+      extend Defaults
     end
   end
 end
