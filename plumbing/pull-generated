@@ -9,6 +9,6 @@ main_c_target_path = "./src/#{main_c_filename}"
 
 FileUtils.mkdir_p "./include" unless Dir.exists?("./include")
 FileUtils.mkdir_p "./src/generated" unless Dir.exists?("./src/generated")
-FileUtils.cp_r Dir["./mruby-bindings.out/#{MRuby::Bindings::Hooks.gem_name}/include/*"], './include'
-FileUtils.cp_r Dir["./mruby-bindings.out/#{MRuby::Bindings::Hooks.gem_name}/src/generated/*"], './src/generated'
+FileUtils.cp_r Dir["#{MRuby::Bindings::Paths::RESULT_DIR}/include/*"], './include'
+FileUtils.cp_r Dir["#{MRuby::Bindings::Paths::RESULT_DIR}/src/generated/*"], './src/generated'
 FileUtils.cp_r main_c_source_path, main_c_target_path unless File.exists?(main_c_target_path)
