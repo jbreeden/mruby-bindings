@@ -3,7 +3,7 @@
 require 'json'
 require 'fileutils'
 
-$typedefs_filename = './mruby-bindings.out/ingested-declarations/TypedefDecl.json'
+$typedefs_filename = './mruby-bindings.out/ingested-declarations/typedef-decl.json'
 $output_dirname = './mruby-bindings.out/discovery'
 $output_filename = "#{$output_dirname}/typedefs.csv"
 

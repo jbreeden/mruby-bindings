@@ -3,9 +3,9 @@
 require 'json'
 require 'csv'
 require 'fileutils'
-require 'mruby/bindings/hooks'
+require 'mruby/bindings'
 
-$fielddecl_filename = './mruby-bindings.out/ingested-declarations/FieldDecl.json'
+$fielddecl_filename = './mruby-bindings.out/ingested-declarations/field-decl.json'
 $output_dirname = './mruby-bindings.out/discovery'
 $output_filename = "#{$output_dirname}/fields.csv"
 

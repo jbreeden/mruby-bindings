@@ -2,9 +2,9 @@
 
 require 'json'
 require 'fileutils'
-require 'mruby/bindings/hooks'
+require 'mruby/bindings'
 
-$parmdecl_filename = './mruby-bindings.out/ingested-declarations/ParmDecl.json'
+$parmdecl_filename = './mruby-bindings.out/ingested-declarations/parm-decl.json'
 $output_dirname = './mruby-bindings.out/discovery'
 $output_filename = "#{$output_dirname}/parms.csv"
 
