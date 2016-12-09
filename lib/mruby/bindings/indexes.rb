@@ -4,91 +4,13 @@ require 'mruby/bindings'
 
 module MRuby::Bindings
 
-  # Data shall be stored in "indexes" of "collections."
-  # Indexes shall respond to methods, indicating names of collections.
-  # Collections shall respond to "each," and yield hashes.
-  # There shall be no "rewind," for one day our inputs may be streamed to us.
-  # Also, why would you need to look at a thing twice? Make up your mind already.
+  # Data shall be stored in "indexes" of "streams."
+  # Indexes shall respond to methods, indicating names of streams.
+  # Streams shall respond to "each," and yield objects.
+  # There shall be no "rewind," for one day our streams may be real streams, instead of files on disk.
   # So the interface is written, so shall it be.
   
-  module SendAncestors
-    def send_ancestors(m, *args, &block)
-      ancestors[1..-1].each do |a|
-        if a.respond_to?(m)
-          return a.send(m, *args, &block)
-        end
-      end
-      raise NoMethodError.new("No ancestor responds to #{m}")
-    end
-  end
-
-  module DirectoryIndex
-    module ClassMethods
-      include SendAncestors
-
-      # Class macro for defining the directory to expose.
-      def directory(*args)
-        if args.empty?
-          return @directory || send_ancestors(:directory)
-        end
-        @directory = args[0]
-      end
-
-      # Class macro for defining the file extension to support.
-      def ext(*args)
-        if args.empty?
-          return @ext || send_ancestors(:ext)
-        end
-        @ext = args[0]
-      end
-    end
-
-    module InstanceMethods
-      def directory
-        self.class.directory
-      end
-
-      def ext
-        self.class.ext
-      end
-
-      def initialize
-        @files = {}
-      end
-
-      def method_missing(name)
-        name_str = name.to_s
-
-        hit = @files[name_str]
-        return hit if hit
-
-        filename_str = name_str.gsub('_', '-')
-        filename_str = filename_str.end_with?('?') ? filename_str[0..-2] : filename_str
-
-        path = "#{self.directory}/#{filename_str}.#{self.ext}"
-        puts path
-
-        path_exists = File.exists?(path)
-
-        if name_str.end_with?('?')
-          return path_exists
-        end
-
-        if path_exists
-          return @files[name] = self.materialize(path)
-        end
-
-        super
-      end
-    end
-
-    def self.included(other)
-      other.send(:include, InstanceMethods)
-      other.send(:extend, ClassMethods)
-    end
-  end
-
-  class CSVCollection
+  class CSVStream
     include Enumerable
 
     def initialize(csv)
@@ -106,16 +28,7 @@ module MRuby::Bindings
     end
   end
 
-  class CSVDirectoryIndex
-    include DirectoryIndex
-    ext 'csv'
-
-    def materialize(path)
-      CSVCollection.new(CSV.open(path, headers: true))
-    end
-  end
-
-  class YAMLCollection
+  class YAMLStream
     include Enumerable
 
     def initialize(file)
@@ -123,30 +36,95 @@ module MRuby::Bindings
     end
 
     def each
-      YAML.load_stream(@file).each { |obj|
-        yield obj
-      }
+      if block_given?
+        YAML.load_stream(@file).each { |obj|
+          yield obj
+        }
+      else
+        enum_for :each
+      end
     end
   end
 
-  class YAMLDirectoryIndex
-    include DirectoryIndex
-    ext 'yaml'
+  module MaterializeFiles
+    def materialize_file(path)
+      ext = File.extname(path).sub('.', '')
+      self.send("materialize_#{ext}", path)
+    end
 
-    def materialize(path)
-      YAMLCollection.new(File.open(path))
+    def materialize_csv(path)
+      CSVStream.new(CSV.open(path, headers: true))
+    end
+
+    def materialize_yaml(path)
+      YAMLStream.new(File.open(path))
     end
   end
 
-  class DiscoveryIndex < CSVDirectoryIndex
-    directory MRuby::Bindings::Paths::DISCOVERY_DIR
+  module DirectoryIndex
+    module ClassMethods
+      # Class macro for defining the directory to expose.
+      def directory(*args)
+        if args.empty?
+          return @directory
+        end
+        @directory = args[0]
+      end
+    end
+
+    module InstanceMethods
+      include MaterializeFiles
+
+      def directory
+        self.class.directory
+      end
+
+      def initialize
+        @files = {}
+      end
+
+      def method_missing(name)
+        name_str = name.to_s
+
+        hit = @files[name_str]
+        return hit if hit
+
+        filename_str = name_str.gsub('_', '-')
+        filename_str = filename_str.end_with?('?') ? filename_str[0..-2] : filename_str
+
+        glob = "#{self.directory}/#{filename_str}.*"
+        path = Dir[glob][0]
+
+        path_exists = !path.nil? && File.exists?(path)
+
+        if name_str.end_with?('?')
+          return path_exists
+        end
+
+        if path_exists
+          return @files[name] = self.materialize_file(path)
+        end
+
+        super
+      end
+    end
+
+    def self.included(other)
+      other.send(:include, InstanceMethods)
+      other.send(:extend, ClassMethods)
+    end
   end
 
-  class SummaryIndex < CSVDirectoryIndex
-    directory MRuby::Bindings::Paths::SUMMARY_DIR
+  def self.index(name, dir)
+    new_class = Class.new
+    new_class.send(:include, DirectoryIndex)
+    new_class.send(:directory, dir)
+    self.const_set(name, new_class)
   end
 
-  class RenderIndex < YAMLDirectoryIndex
-    directory MRuby::Bindings::Paths::RENDER_DIR
-  end
+  index :BlueprintIndex, MRuby::Bindings::Paths::BLUEPRINT_DIR
+  index :DiscoveryIndex, MRuby::Bindings::Paths::DISCOVERY_DIR
+  index :IngestIndex, MRuby::Bindings::Paths::INGEST_DIR
+  index :RenderIndex, MRuby::Bindings::Paths::RENDER_DIR
+  index :SummaryIndex, MRuby::Bindings::Paths::SUMMARY_DIR
 end

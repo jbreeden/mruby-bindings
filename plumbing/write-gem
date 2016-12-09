@@ -10,7 +10,7 @@ module_name = MRuby::Bindings::Hooks.module_name
   # Quiet, linter, these are used in the erb templates
 }
 
-gem_dir = "#{MRuby::Bindings::Paths::OUTPUT_DIR}/#{MRuby::Bindings::Hooks.gem_name}"
+gem_dir = MRuby::Bindings::Paths::RESULT_DIR
 src_dir = "#{gem_dir}/src"
 generated_src_dir = "#{src_dir}/generated"
 include_dir = "#{gem_dir}/include"
