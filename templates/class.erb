@@ -30,12 +30,14 @@ mrb_data_type <%= class_id %>_data_type = {
 
 void mruby_<%= module_name %>_<%= type['ruby_name'] %>_init(mrb_state* mrb)
 {
+  struct RClass* <%= type['ruby_name'] %>_class;
   if (!mrb_const_defined(mrb, mrb_obj_value(<%= module_name %>_module(mrb)), mrb_intern_cstr(mrb, "<%= type['ruby_name'] %>"))) {
-    struct RClass* <%= type['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= type['ruby_name'] %>", mrb->object_class);
-    MRB_SET_INSTANCE_TT(<%= type['ruby_name'] %>_class, MRB_TT_DATA);
-
-    mrb_include_module(mrb, <%= type['ruby_name'] %>_class, <%= module_name %>_Pointer_module(mrb));
+    <%= type['ruby_name'] %>_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "<%= type['ruby_name'] %>", mrb->object_class);
+  } else {
+    <%= type['ruby_name'] %>_class = mrb_class_get_under(mrb, <%= module_name %>_module(mrb), "<%= type['ruby_name'] %>");
   }
+  MRB_SET_INSTANCE_TT(<%= type['ruby_name'] %>_class, MRB_TT_DATA);
+  mrb_include_module(mrb, <%= type['ruby_name'] %>_class, <%= module_name %>_Pointer_module(mrb));
 }
 
 unsigned char

@@ -14,16 +14,19 @@ gem_dir = MRuby::Bindings::Paths::RESULT_DIR
 src_dir = "#{gem_dir}/src"
 generated_src_dir = "#{src_dir}/generated"
 include_dir = "#{gem_dir}/include"
+generated_include_dir = "#{include_dir}/generated"
 
 FileUtils.rm_rf(gem_dir) if Dir.exists?(gem_dir)
 FileUtils.mkdir_p(gem_dir)
 FileUtils.mkdir_p(include_dir)
+FileUtils.mkdir_p(include_dir)
+FileUtils.mkdir_p(generated_include_dir)
 FileUtils.mkdir_p(src_dir)
 FileUtils.mkdir_p(generated_src_dir)
 
 mruby_to_native_ref_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/mruby_to_native_ref.erb"
 mruby_to_native_ref_filename = "mruby_to_native_ref.h"
-mruby_to_native_ref_path = "#{include_dir}/#{mruby_to_native_ref_filename}"
+mruby_to_native_ref_path = "#{generated_include_dir}/#{mruby_to_native_ref_filename}"
 
 pointer_template_path = "#{MRuby::Bindings::Paths::TEMPLATE_DIR}/pointer.erb"
 pointer_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_pointer.c"
@@ -41,7 +44,7 @@ classes_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_classes.c"
 classes_path = "#{generated_src_dir}/#{classes_filename}"
 
 class_macros_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_class_macros.h"
-class_macros_path = "#{include_dir}/#{class_macros_filename}"
+class_macros_path = "#{generated_include_dir}/#{class_macros_filename}"
 
 functions_filename = "mruby_#{MRuby::Bindings::Hooks.module_name}_functions.c"
 functions_path = "#{generated_src_dir}/#{functions_filename}"

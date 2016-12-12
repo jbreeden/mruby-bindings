@@ -3,7 +3,13 @@
  *       mruby-bindings will not alter this file
  *       on subsequent code generation runs.
  *
- *       Feel free to make modifications of your own :)
+ *       This means you're free to make modifications of your own.
+ *
+ *       It also means that any changes to the genenerate code
+ *       must be merged in manually (but this is rare, only occurring
+ *       when a new version of mruby-bindings is used). In that case,
+ *       just diff your file with its generated version in the
+ *       mruby-bindings.out/mrbgem/src/ directory.
  */
 
 #include <stdlib.h>
@@ -23,9 +29,9 @@
  * TODO: Include your library here
  */
 
-#include "mruby_to_native_ref.h"
+#include "generated/mruby_to_native_ref.h"
 
-#include "<%= class_macros_filename %>"
+#include "generated/<%= class_macros_filename %>"
 #include "generated/<%= pointer_filename %>"
 #include "generated/<%= void_pointer_filename %>"
 #include "generated/<%= classes_filename %>"

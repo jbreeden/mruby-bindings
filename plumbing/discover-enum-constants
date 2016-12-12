@@ -7,7 +7,7 @@ require 'mruby/bindings'
 
 $enum_constants_filename = './mruby-bindings.out/ingested-declarations/enum-constant-decl.json'
 $output_dirname = './mruby-bindings.out/discovery'
-$output_filename = "#{$output_dirname}/enum_constants.csv"
+$output_filename = "#{$output_dirname}/enum-constants.csv"
 
 if !File.exists?($enum_constants_filename)
   exit 0

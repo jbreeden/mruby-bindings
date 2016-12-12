@@ -18,7 +18,9 @@ output_file = File.open(
   MRuby::Bindings::Paths::RENDER_DIR +
   '/enum-constants.yaml', 'w')
 
+puts "Render?"
 if discovery.enum_constants?
+  puts "Render!"
   discovery.enum_constants.each do |constant|
     text = MRuby::Bindings::RenderedText.new(constant['name'], erb.result(binding))
     output_file.puts YAML.dump(text)
