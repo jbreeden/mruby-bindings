@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'fileutils'
+
+$typedefs_filename = './mruby-bindings.out/ingested-declarations/typedef-decl.json'
+$output_dirname = './mruby-bindings.out/discovery'
+$output_filename = "#{$output_dirname}/typedefs.csv"
+
+FileUtils.rm_rf $output_filename if File.exists?($output_filename)
+FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
+
+reduced_typedefs = []
+File.open($typedefs_filename, 'r') do |typedefs_file|
+  while line = typedefs_file.gets
+    typedef = JSON.parse(line)
+    reduced_typedefs.push("\"#{
+      typedef['type']['type_name']
+    }\",\"#{
+      typedef['underlying_type']['type_name']
+    }\",\"#{
+      typedef['type']['type_usr']
+    }\",\"#{
+      typedef['underlying_type']['type_usr']
+    }\"")
+  end
+end
+
+File.open($output_filename, 'w') do |output_file|
+  output_file.puts '"name","underlying_type","usr","underlying_type_usr"'
+  reduced_typedefs.sort.each do |typedef_line|
+    output_file.puts(typedef_line)
+  end
+end

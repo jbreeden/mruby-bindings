@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+$pattern = Regexp.new(ARGV[0])
+
+Dir['mruby-bindings.out/**/*.csv'].each do |filename|
+  File.open(filename, 'r') do |file|
+    header_line = file.gets
+    header_printed = false
+    print_file_header_once = proc {
+      unless header_printed
+        puts filename
+        puts header_line
+        header_printed = true
+      end
+    }
+    while l = file.gets
+      if l.match($pattern)
+        print_file_header_once.call()
+        puts l
+      end
+    end
+    puts if header_printed
+  end
+end

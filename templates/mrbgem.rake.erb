@@ -1,7 +1,0 @@
-<%= conf[:gem_name].upcase.gsub('-', '_') %>_GEM_DIR = File.dirname(__FILE__)
-
-MRuby::Gem::Specification.new('<%= conf[:gem_name] %>') do |spec|
-  spec.author = 'TODO: YOUR NAME'
-  spec.license = 'TODO: Maybe MIT?'
-  spec.summary = 'Bindings for <%= conf[:module_name] %>'
-end

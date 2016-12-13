@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+Dir['./mruby-bindings.out/**/*.csv'].each do |filename|
+  puts filename
+  File.open(filename, 'r') do |f|
+    5.times { puts f.gets }
+  end
+  puts
+end

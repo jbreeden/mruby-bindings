@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'yaml'
+require 'fileutils'
+require 'mruby/bindings'
+
+output_dir = MRuby::Bindings::Paths::RENDER_DIR
+FileUtils.mkdir_p(output_dir) unless Dir.exists?(output_dir)
+rendered_class_initializations_file = File.open("#{output_dir}/class-initializations.yaml", 'w')
+
+class_erb = ERB.new(
+  File.read( MRuby::Bindings::Paths::TEMPLATE_DIR + '/class-initialization.erb'),
+  nil,
+  '-')
+
+module_name = MRuby::Bindings::Hooks.module_name
+discovery = MRuby::Bindings::DiscoveryIndex.new
+
+type = {'ruby_name' => 'Pointer' }
+rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new('.pointer', class_erb.result(binding)))
+
+type = {'ruby_name' => 'VoidPointer' }
+rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new('.voidpointer', class_erb.result(binding)))
+
+discovery.types.sort_by { |type| type['ruby_name'] }.each do |type|
+  rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new(type['ruby_name'], class_erb.result(binding)))
+end

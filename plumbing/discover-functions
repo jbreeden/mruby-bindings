@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'fileutils'
+require 'mruby/bindings'
+
+$functiondecl_filename = './mruby-bindings.out/ingested-declarations/function-decl.json'
+$output_dirname = './mruby-bindings.out/discovery'
+$output_filename = "#{$output_dirname}/functions.csv"
+
+FileUtils.rm_rf $output_filename if File.exists?($output_filename)
+FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
+
+functions = []
+File.open($functiondecl_filename, 'r') do |functiondecl_file|
+  while line = functiondecl_file.gets
+    function = JSON.parse(line)
+
+    functions.push("\"#{
+      function['name']
+    }\",\"#{
+      MRuby::Bindings::Hooks.translate_function_name_to_ruby(function['name'])
+    }\",\"#{
+      function['return_type']['type_name']
+    }\",\"#{
+      function['usr']
+    }\"")
+  end
+end
+
+File.open($output_filename, 'w') do |output_file|
+  output_file.puts '"name","ruby_name","return_type","usr"'
+  functions.each do |line|
+    output_file.puts(line)
+  end
+end

@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'fileutils'
+
+$declaration_files = ['declarations.json']
+$output_dirname = 'mruby-bindings.out/ingested-declarations'
+
+FileUtils.rm_rf $output_dirname if Dir.exists?($output_dirname)
+FileUtils.mkdir_p $output_dirname
+
+module OutFiles
+  def self.[](filename)
+    @files ||= {}
+    normalized_filename = filename.each_char.reduce('') { |acc, c|
+      c.capitalize == c ? "#{acc}-#{c.downcase}" : "#{acc}#{c}"
+    }.sub(/^-/, '')
+    @files[filename] ||= File.open($output_dirname + '/' + normalized_filename + ".json", 'a')
+  end
+
+  def self.close
+    @files ||= {}
+    @files.each do |k, f|
+      f.close
+    end
+  end
+end
+
+$declaration_files.each do |declaration_filename|
+  open(declaration_filename, 'r') do |declaration_file|
+    while line = declaration_file.gets
+      decl = JSON.parse(line)
+      OutFiles[decl['kind']].puts(line)
+    end
+  end
+end
+
+OutFiles.close

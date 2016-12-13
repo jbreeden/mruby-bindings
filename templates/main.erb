@@ -1,0 +1,52 @@
+/**
+ * NOTE: Unlike most other generated files,
+ *       mruby-bindings will not alter this file
+ *       on subsequent code generation runs.
+ *
+ *       This means you're free to make modifications of your own.
+ *
+ *       It also means that any changes to the genenerate code
+ *       must be merged in manually (but this is rare, only occurring
+ *       when a new version of mruby-bindings is used). In that case,
+ *       just diff your file with its generated version in the
+ *       mruby-bindings.out/mrbgem/src/ directory.
+ */
+
+#include <stdlib.h>
+#include "mruby.h"
+#include "mruby/class.h"
+#include "mruby/hash.h"
+#include "mruby/array.h"
+#include "mruby/error.h"
+#include "mruby/value.h"
+#include "mruby/variable.h"
+#include "mruby/string.h"
+#include "mruby/compile.h"
+#include "mruby/proc.h"
+#include "mruby/data.h"
+
+/*
+ * TODO: Include your library here
+ */
+
+#include "generated/mruby_to_native_ref.h"
+
+#include "generated/<%= class_macros_filename %>"
+#include "generated/<%= pointer_filename %>"
+#include "generated/<%= void_pointer_filename %>"
+#include "generated/<%= classes_filename %>"
+#include "generated/<%= functions_filename %>"
+
+void
+mrb_<%= gem_name.gsub('-', '_') %>_gem_init(mrb_state* mrb)
+{
+  mrb_define_module(mrb, "<%= MRuby::Bindings::Hooks.module_name %>");
+
+  #include "generated/<%= class_initializations_filename %>"
+  #include "generated/<%= function_initializations_filename %>"
+  #include "generated/<%= enum_constants_filename %>"
+}
+
+void
+mrb_<%= gem_name.gsub('-', '_') %>_gem_final(mrb_state* mrb)
+{ }

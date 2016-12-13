@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'csv'
+require 'fileutils'
+require 'mruby/bindings'
+
+$typedef_resolver = MRuby::Bindings::TypedefResolver.new
+
+$parms_file = File.open('./mruby-bindings.out/discovery/parms.csv', 'r')
+$functions_blueprint_filename = './mruby-bindings.out/blueprint/functions.csv'
+
+$output_dirname = './mruby-bindings.out/render'
+FileUtils.mkdir_p($output_dirname)
+$rendered_functions_file = File.open("#{$output_dirname}/functions.yaml", 'w+')
+
+def read_functions()
+  functions_hash = {}
+  CSV.foreach('./mruby-bindings.out/discovery/functions.csv', headers: true) do |row|
+    functions_hash[row['name']] = row.to_h
+  end
+  functions_hash
+end
+
+def append_parms(functions)
+  functions_and_parms = functions.dup
+  functions_and_parms.values.each do |func|
+    func['parms'] ||= []
+  end
+  CSV.foreach('./mruby-bindings.out/discovery/parms.csv', headers: true) do |row|
+    parm_hash = row.to_h
+    function = parm_hash['function']
+    parm_hash.delete('function')
+    functions_and_parms[function]['parms'] ||= []
+    functions_and_parms[function]['parms'].push parm_hash
+  end
+  functions_and_parms
+end
+
+def append_ctypes(functions_by_name)
+  functions_by_name.each do |function_name, function|
+    function['parms'].each_with_index do |parm, i|
+      parm['ctype'] = (MRuby::Bindings::CTypes[parm['type']] ||
+        MRuby::Bindings::CTypes[$typedef_resolver.canonicalize(parm['type'])])
+      if parm['name'].nil? || parm['name'].empty?
+        parm['name'] = "arg#{i+1}"
+      end
+    end
+    function['ctype'] = (MRuby::Bindings::CTypes[function['return_type']] ||
+      MRuby::Bindings::CTypes[$typedef_resolver.canonicalize(function['return_type'])])
+  end
+  functions_by_name
+end
+
+def render(module_name, functions_by_name)
+  function_erb = ERB.new(
+    File.read(
+      MRuby::Bindings::Paths::TEMPLATE_DIR +
+      '/function.erb'),
+    nil,
+    '-')
+
+  functions_by_name.sort_by { |name, fn| name }.each do |name, function|
+		rendered_function = function_erb.result(binding)
+		if rendered_function.include?('TODO')
+			rendered_function = rendered_function.each_line.map { |l| "//#{l}" }.join('')
+		end
+    $rendered_functions_file.puts YAML.dump(MRuby::Bindings::RenderedText.new(name, rendered_function))
+  end
+end
+
+MRuby::Bindings::CTypes.load_yaml_config('./mruby-bindings.out/blueprint/ctypes.yaml')
+functions_by_name = read_functions
+functions_by_name = append_parms(functions_by_name)
+functions_by_name = append_ctypes(functions_by_name)
+render(MRuby::Bindings::Hooks.module_name, functions_by_name)
