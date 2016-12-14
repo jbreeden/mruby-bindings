@@ -19,9 +19,7 @@ mrb_data_type <%= module_name %>_void_pointer_data_type = {
 
 int
 mruby_<%= module_name %>_typecheck_void_pointer(mrb_state *mrb, mrb_value value, const char * underlying_type) {
-	// TODO: Some kind of actual check...
-	// Perhaps look for the module name in the TT_TYPE name for the value's class?
-	return 1;
+  return mrb_nil_p(value) || mrb_obj_is_kind_of(mrb, value, <%= module_name %>_Pointer_module(mrb));
 }
 
 mrb_value
@@ -61,9 +59,26 @@ mruby_<%= module_name %>_gift_void_pointer_data_ptr(mrb_value obj, void *unboxed
 }
 
 void *
-mruby_<%= module_name %>_unbox_void_pointer(mrb_value boxed)
+mruby_<%= module_name %>_unbox_void_pointer(mrb_state* mrb, mrb_value boxed)
 {
+  if (mrb_nil_p(boxed)) {
+    return NULL;
+  }
+  if (!mrb_obj_is_kind_of(mrb, boxed, <%= module_name %>_Pointer_module(mrb))) {
+    mrb_raise(mrb, mrb->eStandardError_class, "Expected some kind of Pointer");
+    return NULL;
+  }
   return (void *)((mruby_to_native_ref *)DATA_PTR(boxed))->obj;
+}
+
+/**
+ * Class Methods
+ */
+
+mrb_value
+mruby_<%= module_name %>_VoidPointer_null(mrb_state *mrb, mrb_value self)
+{
+  return mruby_<%= module_name %>_box_void_pointer(mrb, NULL);
 }
 
 /**
@@ -73,7 +88,7 @@ mruby_<%= module_name %>_unbox_void_pointer(mrb_value boxed)
 mrb_value
 mruby_<%= module_name %>_VoidPointer_is_null(mrb_state *mrb, mrb_value self)
 {
-  char* cstr = mruby_<%= module_name %>_unbox_void_pointer(self);
+  char* cstr = mruby_<%= module_name %>_unbox_void_pointer(mrb, self);
   if (cstr == NULL) {
     return mrb_true_value();
   } else {
@@ -84,7 +99,7 @@ mruby_<%= module_name %>_VoidPointer_is_null(mrb_state *mrb, mrb_value self)
 mrb_value
 mruby_<%= module_name %>_VoidPointer_read_cstr(mrb_state *mrb, mrb_value self)
 {
-  char* cstr = mruby_<%= module_name %>_unbox_void_pointer(self);
+  char* cstr = mruby_<%= module_name %>_unbox_void_pointer(mrb, self);
   if (cstr == NULL) {
     return mrb_nil_value();
   } else {
@@ -100,6 +115,9 @@ void mruby_<%= module_name %>_VoidPointer_init(mrb_state* mrb)
 {
   struct RClass* VoidPointer_class = mrb_define_class_under(mrb, <%= module_name %>_module(mrb), "VoidPointer", mrb->object_class);
   MRB_SET_INSTANCE_TT(VoidPointer_class, MRB_TT_DATA);
+  mrb_include_module(mrb, VoidPointer_class, <%= module_name %>_Pointer_module(mrb));
+
+  mrb_define_class_method(mrb, VoidPointer_class, "null", mruby_<%= module_name %>_VoidPointer_null, MRB_ARGS_ARG(0, 0));
 
   mrb_define_method(mrb, VoidPointer_class, "null?", mruby_<%= module_name %>_VoidPointer_is_null, MRB_ARGS_ARG(0, 0));
   mrb_define_method(mrb, VoidPointer_class, "read_cstr", mruby_<%= module_name %>_VoidPointer_read_cstr, MRB_ARGS_ARG(0, 0));

@@ -143,7 +143,7 @@ EOF
 
         new_ctype = CTypes.define(pointer_type) do
           boxing_fn.invocation_template = "mrb_value %{as} = (%{box} == NULL ? mrb_nil_value() : mruby_#{MRuby::Bindings::Hooks.module_name}_box_void_pointer(mrb, %{box}));"
-          unboxing_fn.invocation_template = "void * %{as} = (mrb_nil_p(%{unbox}) ? NULL : mruby_#{MRuby::Bindings::Hooks.module_name}_unbox_void_pointer(%{unbox}));"
+          unboxing_fn.invocation_template = "void * %{as} = (mrb_nil_p(%{unbox}) ? NULL : mruby_#{MRuby::Bindings::Hooks.module_name}_unbox_void_pointer(mrb, %{unbox}));"
 
           self.type_check_template = <<EOF
 if (!mruby_#{MRuby::Bindings::Hooks.module_name}_typecheck_void_pointer(mrb, %{value}, "#{pointer_type}")) {
