@@ -1,6 +1,6 @@
-<% class_macro = MRuby::Bindings::Hooks.module_name + '_' + type['ruby_name'] + '_class(mrb)' -%>
 <% module_name = MRuby::Bindings::Hooks.module_name -%>
-<% free_macro = 'mruby_' + module_name + '_free_' + type['ruby_name'] -%>
+<% class_macro = module_name + '_' + type['ruby_name'] + '_class(mrb)' -%>
+<% free_macro = 'mruby_' + module_name + '_free_' + type['ruby_name'] + "_ptr" -%>
 /**
  * Ruby Class: <%= type['ruby_name'] %> 
  * Wraps: <%= preferred_type_name %>
@@ -11,7 +11,7 @@
 #endif
 
 static void
-free_<%= class_id %>(mrb_state* mrb, void* ptr)
+mruby_<%=module_name %>_free_<%= class_id %>(mrb_state* mrb, void* ptr)
 {
   mruby_to_native_ref * native_ref = (mruby_to_native_ref*)ptr;
   if (native_ref
@@ -25,7 +25,7 @@ free_<%= class_id %>(mrb_state* mrb, void* ptr)
 
 static const
 mrb_data_type <%= class_id %>_data_type = {
-   "<%= preferred_type_name %>", free_<%= class_id %>
+   "<%= preferred_type_name %>", mruby_<%=module_name %>_free_<%= class_id %>
 };
 
 void mruby_<%= module_name %>_<%= type['ruby_name'] %>_init(mrb_state* mrb)

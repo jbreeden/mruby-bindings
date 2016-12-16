@@ -11,24 +11,23 @@ $output_filename = "#{$output_dirname}/types.csv"
 FileUtils.rm_rf $output_filename if File.exists?($output_filename)
 FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
 
+$columns = %w(name ruby_name usr)
+
 types = []
 File.open($structdecl_filename, 'r') do |structdecl_file|
   while line = structdecl_file.gets
     type = JSON.parse(line)
 
-    types.push("\"#{
-        type['name']
-    }\",\"#{
-        MRuby::Bindings::Hooks.translate_type_name_to_ruby(type['name'])
-    }\",\"#{
-        type['usr']
-    }\"")
+    types.push(CSV::Row.new(
+      $columns,
+      [type['name'], MRuby::Bindings::Hooks.translate_type_name_to_ruby(type['name']), type['usr']]
+    ))
   end
 end
 
-File.open($output_filename, 'w') do |output_file|
-  output_file.puts '"name","ruby_name","usr"'
-  types.sort.each do |type_line|
+CSV.open($output_filename, 'w') do |output_file|
+  output_file.puts $columns
+  types.uniq{|t| t.to_s}.sort_by{|t| t.to_s}.reject{|t| t['name'].include?('anonymous at')}.each do |type_line|
     output_file.puts(type_line)
   end
 end

@@ -19,13 +19,15 @@ discovery.types.each do |row|
   known_types[row['name']] = true
 end
 
-discovery.typedefs.each do |row|
-  # Handles opaque, typedef-only struct declarations
-  # Ex `typedef struct _foo foo;`
-  unerlying_struct = row['underlying_type'][/^struct \S+$/]
-  if unerlying_struct
-    known_types[row['name']] = true
-    known_types[row['underlying_type']] = true
+if discovery.typedefs?
+  discovery.typedefs.each do |row|
+    # Handles opaque, typedef-only struct declarations
+    # Ex `typedef struct _foo foo;`
+    unerlying_struct = row['underlying_type'][/^struct \S+$/]
+    if unerlying_struct
+      known_types[row['name']] = true
+      known_types[row['underlying_type']] = true
+    end
   end
 end
 

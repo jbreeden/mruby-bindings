@@ -237,11 +237,11 @@ module MRuby::Bindings
       end
       
       def native_name(param_name)
-        "native_#{param_name}"
+        "unboxed_#{param_name}"
       end
       
       def ruby_name(param_name)
-        param_name
+        "boxed_#{param_name}"
       end
       
       def needs_type_check=(val)

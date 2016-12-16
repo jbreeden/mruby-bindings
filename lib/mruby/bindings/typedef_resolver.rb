@@ -4,8 +4,11 @@ module MRuby::Bindings
   class TypedefResolver
     def initialize
       @hash = {}
-      CSV.foreach('./mruby-bindings.out/discovery/typedefs.csv', headers: true) do |row|
-        @hash[row['name']] = row['underlying_type']
+      filename = './mruby-bindings.out/discovery/typedefs.csv'
+      if File.exists?(filename)
+        CSV.foreach(filename, headers: true) do |row|
+          @hash[row['name']] = row['underlying_type']
+        end
       end
 
       # Super-secret-probably-risky-convenience feature...
