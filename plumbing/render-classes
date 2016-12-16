@@ -18,7 +18,7 @@ discovery = MRuby::Bindings::DiscoveryIndex.new
 typedef_resolver = MRuby::Bindings::TypedefResolver.new
 
 discovery.types.sort_by { |type| type['ruby_name'] }.each do |type|
-  preferred_type_name = typedef_resolver.canonicalize(type['name'])
+  preferred_type_name = typedef_resolver.preferred_name(type['name'])
   class_id = MRuby::Bindings::Names.type_name_to_id(preferred_type_name)
   rendered_classes_file.puts YAML.dump(MRuby::Bindings::RenderedText.new(type['ruby_name'], class_erb.result(binding)))
 end

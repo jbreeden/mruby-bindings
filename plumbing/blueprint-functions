@@ -32,7 +32,7 @@ if discovery.typedefs?
 end
 
 def try_get_simple_pointee(type)
-  result = type && type[/^(?:const\s*)?(?:struct\s*)?(\S+)\s+(?:const\s*)?\s*\*$/, 1]
+  result = type && type[/^(?:const\s*)?((?:struct\s*)?(?:\S+))\s+(?:const\s*)?\s*\*$/, 1]
   if result && result.empty?
     nil
   else
@@ -40,17 +40,27 @@ def try_get_simple_pointee(type)
   end
 end
 
-$functions_blueprint_file << %w(count type canonical_type canonical_pointee_type plan)
+$columns = %w(count type preferred_name preferred_pointee_type canonical_type canonical_pointee_type plan)
+$functions_blueprint_file << $columns
 $typedef_resolver = MRuby::Bindings::TypedefResolver.new
 summary.type_occurrences.each do |row|
   row['canonical_type'] = $typedef_resolver.canonicalize(row['type'])
+  row['preferred_name'] = $typedef_resolver.preferred_name(row['type'])
 
-  pointee = try_get_simple_pointee(row['type'])
+  pointee = try_get_simple_pointee(row['canonical_type'])
   if pointee
     row['canonical_pointee_type'] = $typedef_resolver.canonicalize(pointee)
   else
     # ensure the column is output when the row is printed
     row['canonical_pointee_type'] = nil 
+  end
+
+  preferred_pointee = try_get_simple_pointee(row['canonical_type'])
+  if preferred_pointee
+    row['preferred_pointee_type'] = $typedef_resolver.preferred_name(pointee)
+  else
+    # ensure the column is output when the row is printed
+    row['preferred_pointee_type'] = nil 
   end
 
   if MRuby::Bindings::CTypes[row['canonical_type']]
@@ -77,7 +87,7 @@ summary.type_occurrences.each do |row|
     row['plan'] = 'NO_PLAN'
   end
 
-  $functions_blueprint_file << %w(count type canonical_type canonical_pointee_type plan).map { |field|
+  $functions_blueprint_file << $columns.map { |field|
     row[field]
   }
 end
