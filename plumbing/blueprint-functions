@@ -23,8 +23,8 @@ if discovery.typedefs?
   discovery.typedefs.each do |row|
     # Handles opaque, typedef-only struct declarations
     # Ex `typedef struct _foo foo;`
-    unerlying_struct = row['underlying_type'][/^struct \S+$/]
-    if unerlying_struct
+    underlying_struct = row['underlying_type'][/^struct \S+$/]
+    if underlying_struct
       known_types[row['name']] = true
       known_types[row['underlying_type']] = true
     end
@@ -40,12 +40,12 @@ def try_get_simple_pointee(type)
   end
 end
 
-$columns = %w(count type preferred_name preferred_pointee_type canonical_type canonical_pointee_type plan)
+$columns = %w(count type preferred_type_name preferred_pointee_type canonical_type canonical_pointee_type plan)
 $functions_blueprint_file << $columns
 $typedef_resolver = MRuby::Bindings::TypedefResolver.new
 summary.type_occurrences.each do |row|
   row['canonical_type'] = $typedef_resolver.canonicalize(row['type'])
-  row['preferred_name'] = $typedef_resolver.preferred_name(row['type'])
+  row['preferred_type_name'] = $typedef_resolver.preferred_type_name(row['type'])
 
   pointee = try_get_simple_pointee(row['canonical_type'])
   if pointee
@@ -57,7 +57,7 @@ summary.type_occurrences.each do |row|
 
   preferred_pointee = try_get_simple_pointee(row['canonical_type'])
   if preferred_pointee
-    row['preferred_pointee_type'] = $typedef_resolver.preferred_name(pointee)
+    row['preferred_pointee_type'] = $typedef_resolver.preferred_type_name(pointee)
   else
     # ensure the column is output when the row is printed
     row['preferred_pointee_type'] = nil 

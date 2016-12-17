@@ -4,7 +4,7 @@ module MRuby::Bindings
   class TypedefResolver
     def initialize
       @typedefs = {}
-      @preferred_names = {}
+      @preferred_type_names = {}
       filename = './mruby-bindings.out/discovery/typedefs.csv'
       if File.exists?(filename)
         CSV.foreach(filename, headers: true) do |row|
@@ -33,11 +33,11 @@ module MRuby::Bindings
         }.uniq.select { |e| !e.nil? && e.length > 0 }
 
         if reduction.length == 1
-          @preferred_names[k] = k
-          @preferred_names[v] = k
+          @preferred_type_names[k] = k
+          @preferred_type_names[v] = k
         else
-          @preferred_names[k] = k
-          @preferred_names[v] = v
+          @preferred_type_names[k] = k
+          @preferred_type_names[v] = v
         end
       end
     end
@@ -53,11 +53,11 @@ module MRuby::Bindings
     end
 
     def resolve_preferred_name(type)
-      resolve_hash(@preferred_names, type)
+      resolve_hash(@preferred_type_names, type)
     end
 
-    def preferred_name(type)
-      canonicalize_hash(@preferred_names, type)
+    def preferred_type_name(type)
+      canonicalize_hash(@preferred_type_names, type)
     end
 
     def resolve_hash(hash, type)

@@ -42,23 +42,23 @@ module MRuby::Bindings
       def read_function_blueprint(row)
         case row['plan']
         when 'BUILTIN_CTYPE'
-          CTypes[row['canonical_type']] # Just return the existing ctype
+          CTypes[row['preferred_type_name']] || CTypes[row['canonical_type']] # Just return the existing ctype
         when 'PTR_TO_KNOWN_VALUE_TYPE'
-          CTypes.learn_pointer_to_value_type(row['type'], row['canonical_pointee_type'])
+          CTypes.learn_pointer_to_value_type(row['type'], row['preferred_pointee_type'])
         when 'PTR_TO_UNKNOWN_VALUE_TYPE'
-          CTypes.learn_pointer_to_unkown_value(row['type'], row['canonical_pointee_type'])
+          CTypes.learn_pointer_to_unkown_value(row['type'], row['preferred_pointee_type'])
         when 'KNOWN_VALUE_TYPE'
-          CTypes.learn_value_type(row['type'], row['canonical_type'])
+          CTypes.learn_value_type(row['type'], row['preferred_type_name'])
         when 'UNKNOWN_VALUE_TYPE'
-          CTypes.declare_type_ignorance(row['type'], row['canonical_type'])
+          CTypes.declare_type_ignorance(row['type'], row['preferred_type_name'])
         when 'ENUM'
           CTypes.learn_enum(row['type'])
         when 'FUNCTION_PTR'
-          CTypes[row['type']] = CTypes.declare_type_ignorance(row['type'], row['canonical_type'])
+          CTypes[row['type']] = CTypes.declare_type_ignorance(row['type'], row['preferred_type_name'])
         when 'VOID_PTR'
-          CTypes.declare_type_ignorance(row['type'], row['canonical_type'])
+          CTypes.declare_type_ignorance(row['type'], row['preferred_type_name'])
         when 'NO_PLAN'
-          CTypes.declare_type_ignorance(row['type'], row['canonical_type'])
+          CTypes.declare_type_ignorance(row['type'], row['preferred_type_name'])
         else
           raise "No handler for plan: #{row['plan']}"
         end
@@ -73,12 +73,10 @@ module MRuby::Bindings
         self
       end
 
-      # Argument expected to be canonical
       def learn_enum(name)
         @types[name] = @types['int'].aliased_as(name)
       end
 
-      # Argument expected to be canonical
       def learn_pointer_to_value_type(pointer_type, canonical_value_type)
         # We don't know the type, but we know the pointee type from a struct/class decl
         # Only need to learn a new type once

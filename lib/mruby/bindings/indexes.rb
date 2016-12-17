@@ -15,8 +15,6 @@ module MRuby::Bindings
   # So the interface is written, so shall it be.
   
   class CSVStream
-    include Enumerable
-
     def initialize(csv)
       @csv = csv
     end
@@ -33,8 +31,6 @@ module MRuby::Bindings
   end
 
   class JSONStream
-    include Enumerable
-
     def initialize(file)
       @file = file
     end
@@ -51,8 +47,6 @@ module MRuby::Bindings
   end
 
   class YAMLStream
-    include Enumerable
-
     def initialize(file)
       @file = file
     end

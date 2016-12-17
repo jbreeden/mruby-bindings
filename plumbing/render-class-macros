@@ -26,7 +26,7 @@ eot
 
 discovery = MRuby::Bindings::DiscoveryIndex.new
 
-class_names = discovery.types.map { |t| t['ruby_name'] }
+class_names = discovery.types.each.map { |t| t['ruby_name'] }
 
 File.open(output_path, 'w') do |f|
   f << YAML.dump(MRuby::Bindings::RenderedText.new(

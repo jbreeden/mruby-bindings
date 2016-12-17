@@ -23,6 +23,6 @@ rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText
 type = {'ruby_name' => 'VoidPointer' }
 rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new('.voidpointer', class_erb.result(binding)))
 
-discovery.types.sort_by { |type| type['ruby_name'] }.each do |type|
+discovery.types.each.sort_by { |type| type['ruby_name'] }.each do |type|
   rendered_class_initializations_file.puts YAML.dump(MRuby::Bindings::RenderedText.new(type['ruby_name'], class_erb.result(binding)))
 end
