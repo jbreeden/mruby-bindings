@@ -9,10 +9,10 @@ discovery = MRuby::Bindings::DiscoveryIndex.new
 summary = MRuby::Bindings::SummaryIndex.new
 
 $output_dirname = './mruby-bindings.out/blueprint'
-$functions_blueprint_file = "#{$output_dirname}/functions.csv"
+$interface_blueprint_file = "#{$output_dirname}/interface.csv"
 
 FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
-$functions_blueprint_file = CSV.open($functions_blueprint_file, 'w')
+$interface_blueprint_file = CSV.open($interface_blueprint_file, 'w')
 
 known_types = {}
 discovery.types.each do |row|
@@ -41,7 +41,7 @@ def try_get_simple_pointee(type)
 end
 
 $columns = %w(count type preferred_type_name preferred_pointee_type canonical_type canonical_pointee_type plan)
-$functions_blueprint_file << $columns
+$interface_blueprint_file << $columns
 $typedef_resolver = MRuby::Bindings::TypedefResolver.new
 summary.type_occurrences.each do |row|
   row['canonical_type'] = $typedef_resolver.canonicalize(row['type'])
@@ -87,7 +87,7 @@ summary.type_occurrences.each do |row|
     row['plan'] = 'NO_PLAN'
   end
 
-  $functions_blueprint_file << $columns.map { |field|
+  $interface_blueprint_file << $columns.map { |field|
     row[field]
   }
 end

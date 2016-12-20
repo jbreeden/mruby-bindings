@@ -16,9 +16,21 @@ function_initialization_erb = ERB.new(
 module_name = MRuby::Bindings::Hooks.module_name
 discovery = MRuby::Bindings::DiscoveryIndex.new
 
+functions = discovery.functions.each.to_a
+parms = discovery.parms.each.to_a
+
+functions.each do |fn|
+  parms.each do |parm|
+    if parm['function'] == fn['name']
+      fn['parms'] ||= []
+      fn['parms'].push(parm)
+    end
+  end
+end
+
 discovery.functions.each.sort_by { |func| func['name'] }.each do |function|
   rendered_function_initializations_file.puts(
-		YAML.dump(
-			MRuby::Bindings::RenderedText.new(function['name'], function_initialization_erb.result(binding))
-			))
+    YAML.dump(
+      MRuby::Bindings::RenderedText.new(function['name'], function_initialization_erb.result(binding))
+    ))
 end

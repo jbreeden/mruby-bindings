@@ -9,7 +9,7 @@ FileUtils.mkdir_p $output_dirname
 
 $ctypes_file = File.open("#{$output_dirname}/ctypes.yaml", 'w')
 
-CSV.foreach('./mruby-bindings.out/blueprint/functions.csv', headers: true) do |row|
+CSV.foreach('./mruby-bindings.out/blueprint/interface.csv', headers: true) do |row|
   MRuby::Bindings::CTypes.read_function_blueprint(row)
 end
 

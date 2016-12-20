@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'json'
+require 'csv'
 require 'fileutils'
 require 'mruby/bindings'
 
@@ -11,24 +12,18 @@ $output_filename = "#{$output_dirname}/parms.csv"
 FileUtils.rm_rf $output_filename if File.exists?($output_filename)
 FileUtils.mkdir_p $output_dirname unless Dir.exists?($output_dirname)
 
-parms = []
-File.open($parmdecl_filename, 'r') do |parmdecl_file|
-  while line = parmdecl_file.gets
-    parm = JSON.parse(line)
+$columns = %w(function name type)
 
-    parms.push("\"#{
-      parm['function'][/@([^@]+)$/, 1]
-    }\",\"#{
-      parm['name']
-    }\",\"#{
-      parm['type']['type_name']
-    }\"")
-  end
-end
-
-File.open($output_filename, 'w') do |output_file|
-  output_file.puts '"function","name","type"'
-  parms.each do |parm_line|
-    output_file.puts(parm_line)
+CSV.open($output_filename, 'w') do |output_file|
+  output_file.puts $columns
+  File.open($parmdecl_filename, 'r') do |parmdecl_file|
+    while line = parmdecl_file.gets
+      parm = JSON.parse(line)
+      output_file << [
+        parm['function'][/@([^@]+)$/, 1],
+        parm['name'],
+        parm['type']['type_name']
+      ]
+    end
   end
 end

@@ -2,17 +2,15 @@
  * <%= function['return_type'] %>
  * <%= function['name'] %>(<%= function['parms'].map { |p| p['type'] + ' ' + p['name'] }.join(', ') %>)
  */
-#define mruby_<%= module_name %>_<%= function['ruby_name'] %>
-#define <%= function['name'] %>_REQUIRED_ARGC <%= function['parms'].length %>
-#define <%= function['name'] %>_OPTIONAL_ARGC 0
+#define mruby_<%= module_name %>_<%= function['ruby_name'] %>_FUNCTION
 mrb_value
-mrb_<%= module_name %>_<%= function['ruby_name'] %>(mrb_state* mrb, mrb_value self)
+mruby_<%= module_name %>_<%= function['ruby_name'] %>(mrb_state* mrb, mrb_value self)
 {
 <%
-     function['parms'].each { |p| puts p.inspect if p['ctype'].nil? }
-     to_unbox = function['parms'].select { |p| p['ctype'].needs_unboxing? }
-     to_type_check = function['parms'].select { |p| p['ctype'].needs_type_check? }
-     to_cleanup_unboxing = function['parms'].select { |p| p['ctype'].needs_unboxing_cleanup? }
+  function['parms'].each { |p| puts p.inspect if p['ctype'].nil? }
+  to_unbox = function['parms'].select { |p| p['ctype'].needs_unboxing? }
+  to_type_check = function['parms'].select { |p| p['ctype'].needs_type_check? }
+  to_cleanup_unboxing = function['parms'].select { |p| p['ctype'].needs_unboxing_cleanup? }
 -%>
 
 <%   if function['parms'].any? -%>

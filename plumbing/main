@@ -27,7 +27,7 @@ cmds = list_cmds
 run('ingest-declarations')
 run(*cmds.grep(/^discover-/))
 run('summarize-type-occurrences')
-run('blueprint-functions')
+run('blueprint-interface')
 run('blueprint-ctypes')
 run(*cmds.grep(/^render-/))
 run('write-gem')

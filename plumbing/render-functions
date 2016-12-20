@@ -8,7 +8,6 @@ require 'mruby/bindings'
 $typedef_resolver = MRuby::Bindings::TypedefResolver.new
 
 $parms_file = File.open('./mruby-bindings.out/discovery/parms.csv', 'r')
-$functions_blueprint_filename = './mruby-bindings.out/blueprint/functions.csv'
 
 $output_dirname = './mruby-bindings.out/render'
 FileUtils.mkdir_p($output_dirname)

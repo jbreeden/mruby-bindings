@@ -1,3 +1,3 @@
-#ifdef mruby_<%= module_name %>_<%= function['ruby_name'] %>
-mrb_define_class_method(mrb, <%= module_name %>_module(mrb), "<%= function['ruby_name'] %>", mrb_<%= module_name %>_<%= function['ruby_name'] %>, MRB_ARGS_ARG(<%= function['name'] %>_REQUIRED_ARGC, <%= function['name'] %>_OPTIONAL_ARGC));
+#ifdef mruby_<%= module_name %>_<%= function['ruby_name'] %>_FUNCTION
+  mrb_define_class_method(mrb, <%= module_name %>_module(mrb), "<%= function['ruby_name'] %>", mruby_<%= module_name %>_<%= function['ruby_name'] %>, MRB_ARGS_REQ(<%= (function['name']['parms'] || []).length %>));
 #endif
