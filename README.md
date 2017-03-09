@@ -31,7 +31,7 @@ find your/c/library -name '*.h' | xargs -n 1 clang2json >> declarations.json
 Next, you'll have to create one input file that tells mruby-bindings how to behave.
 Call it `./mruby-bindings.in/hooks.rb`, and add the following code:
 
-```
+```ruby
 module MRuby
   module Bindings
     module Hooks
