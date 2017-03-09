@@ -80,7 +80,7 @@ Though, realistically, you'll probably have to do some minor modifications first
 Even so, most of the code you will need to complete bindings to your C library
 should be there for you.
 
-## Other Stuff
+## More Details
 
 After the initial run, the only files that should be overwitten by subsequent
 invocations should be those whose parent directory is named "generated." All
@@ -98,3 +98,24 @@ with no supertype).
 
 Note: You can safely delete `mruby-bindings.out/` if you're not actively running
 mruby-bindings. It's contents are created anew for each run.
+
+## Code Layout
+
+If you're having to dive into the code, here are some things to know:
+
+- The installed executable is `./exe/mruby-bindings`
+- The `mruby-bindings` command just delegates to
+  scripts in the `plumbing/` directory. To run `plumbing/main`,
+  you would run `mruby-bindings main`. You can run multiple
+  commands by passing multiple arguments to `mruby-bindings`.
+- The plumbing scripts are meant to be small and focused.
+  The do not talk to each other directly, but rather read
+  and write intermediate results as CSV, JSON, or YAML.
+- These intermediate results are never changed once written, as a rule.
+  If you needed to add extra plumbing, you should be able to use the
+  intermediate results of a prior command without worrying about it
+  being modified.
+- The core logic is of course in `lib/`
+- The `templates/` folder holds - gasp! - templates.
+  If you really want to change the way functions are generated,
+  or how classes are defined, you could edit these.
