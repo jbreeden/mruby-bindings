@@ -35,13 +35,13 @@ Call it `./mruby-bindings.in/hooks.rb`, and add the following code:
 module MRuby
   module Bindings
     module Hooks
-      def module_name
+      def self.module_name
         # All of the classes & methods for your library
         # will be generated under a Ruby module with this name.
         "SomeValidRubyModuleName"
       end
 
-      def gem_name
+      def self.gem_name
         # Your desired gem name.
         # The convention is for them to
         # start with "mruby" and be hyphen-separated.
