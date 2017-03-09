@@ -22,9 +22,9 @@ cd your/project/folder
 [ -f declarations.json ] && rm declarations.json
 
 # Then run clang2json on your *.h or *.c files
-# Note: mruby-bindings is hardcoded to look for
-#       a file named "declarations.json" at the
-#       moment.
+# Note: mruby-bindings looks for a file named
+#       "declarations.json" by default, so the
+#       name is significant.
 find your/c/library -name '*.h' | xargs -n 1 clang2json >> declarations.json
 ```
 
