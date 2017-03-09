@@ -47,6 +47,9 @@ module MRuby
         # start with "mruby" and be hyphen-separated.
         "mruby-gem-name"
       end
+
+      # See: ./lib/mruby/bindings/hooks.rb for other
+      #      settings that you can override in this file.
     end
   end
 end
