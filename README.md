@@ -60,7 +60,7 @@ declarations.json in your current working directory,
 and use that to generate your bindings.
 
 ```bash
-jbreeden@jbreeden-eos-ssd:~/projects/mruby.d/mruby-ui$ mruby-bindings main
+your/project/folder$ mruby-bindings main
 SPAWNING: ingest-declarations
 DONE: ingest-declarations
 ...(more output)...
