@@ -25,7 +25,7 @@ cd your/project/folder
 # Note: mruby-bindings is hardcoded to look for
 #       a file named "declarations.json" at the
 #       moment.
-find your/c/library -name '*.h' | xargs -n 1 -I {} clang2json >> declarations.json
+find your/c/library -name '*.h' | xargs -n 1 clang2json >> declarations.json
 ```
 
 Next, you'll have to create one input file that tells mruby-bindings how to behave.
