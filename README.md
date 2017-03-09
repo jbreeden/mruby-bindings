@@ -84,7 +84,7 @@ should be there for you.
 
 After the initial run, the only files that should be overwitten by subsequent
 invocations should be those whose parent directory is named "generated." All
-other files, including the "main" C file (in `./src`) and the `mrbgem.rake`
+other files, including the "main" C file (`./src/mruby_MODULENAME.c`) and the `mrbgem.rake`
 file should be untouched, so you can keep any changes you make there.
 
 If you feel you need to change something inside one of the "generated" files,
