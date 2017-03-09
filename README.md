@@ -71,7 +71,7 @@ DONE: pull-generated
 ```
 
 This should create a directory called `./mruby-bindings.out/`. This directory
-just holder intermediate results. The finalized gem files should be pulled
+just holds intermediate results. The finalized gem files should be pulled
 into `./src`, `./include`, `./mrbgem`. You should also find an `mrbgem.rake`
 file in your project's root folder.
 
