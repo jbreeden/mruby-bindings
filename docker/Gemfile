@@ -1,0 +1,4 @@
+source 'https://rubygems.org'
+
+gem 'mruby-bindings', path: "#{ENV['MRUBYD']}/mruby-bindings"
+gem 'mruby-rake-tasks', path: "#{ENV['MRUBYD']}/mruby-rake-tasks"

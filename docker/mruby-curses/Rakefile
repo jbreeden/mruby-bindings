@@ -1,0 +1,11 @@
+require "mruby/rake/tasks"
+
+desc 'Run clang2json on the curses headers'
+task 'clang2json' do
+  sh "clang2json /usr/include/curses.h > declarations.json"
+end
+
+desc 'Run mruby-bindings on the clang2json output'
+task 'mruby-bindings' do
+  sh 'mruby-bindings main'
+end
