@@ -22,9 +22,9 @@ cd your/project/folder
 [ -f declarations.json ] && rm declarations.json
 
 # Then run clang2json on your *.h or *.c files
-# Note: mruby-bindings is hardcoded to look for
-#       a file named "declarations.json" at the
-#       moment.
+# Note: mruby-bindings looks for a file named
+#       "declarations.json" by default, so the
+#       name is significant.
 find your/c/library -name '*.h' | xargs -n 1 clang2json >> declarations.json
 ```
 
@@ -60,7 +60,7 @@ declarations.json in your current working directory,
 and use that to generate your bindings.
 
 ```bash
-jbreeden@jbreeden-eos-ssd:~/projects/mruby.d/mruby-ui$ mruby-bindings main
+your/project/folder$ mruby-bindings main
 SPAWNING: ingest-declarations
 DONE: ingest-declarations
 ...(more output)...
@@ -71,7 +71,7 @@ DONE: pull-generated
 ```
 
 This should create a directory called `./mruby-bindings.out/`. This directory
-just holder intermediate results. The finalized gem files should be pulled
+just holds intermediate results. The finalized gem files should be pulled
 into `./src`, `./include`, `./mrbgem`. You should also find an `mrbgem.rake`
 file in your project's root folder.
 
@@ -84,7 +84,7 @@ should be there for you.
 
 After the initial run, the only files that should be overwitten by subsequent
 invocations should be those whose parent directory is named "generated." All
-other files, including the "main" C file (in `./src`) and the `mrbgem.rake`
+other files, including the "main" C file (`./src/mruby_MODULENAME.c`) and the `mrbgem.rake`
 file should be untouched, so you can keep any changes you make there.
 
 If you feel you need to change something inside one of the "generated" files,
