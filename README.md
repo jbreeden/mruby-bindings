@@ -1,9 +1,8 @@
 # Mruby::Bindings
 
-WARNING: This project lacks documentation, useful help commands, maturity, and a respectable maintainer.
+Intended to generate mruby bindings to C libraries.
 
-If you're not the type of person to let little things like that stop you,
-then it might help you generate some bindings to your favorite C libraries for use from MRuby.
+WARNING: This project is still experimental, and unstable. If you're coming here from some of the projects generated with this tool (like mruby-apr), you'll find that mruby-bindings has since been rewritten, and so the API is very different now. There are still some significant defects that mean you probably shouldn't use it for anything serious. I intend to start versioning the project once I think it's usable and stable. Until then... feel free to look around, open issues, or make pull requests.
 
 ## Usage
 
